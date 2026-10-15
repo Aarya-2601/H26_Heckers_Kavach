@@ -2,17 +2,26 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
 
 # Pytest / Cache
 .pytest_cache/
 .coverage
 htmlcov/
+referee_sandbox/
+referee_sandbox_test/
 
 # Environments
 .env
 .venv
 venv/
 env/
+
+# Distribution / Build
+*.egg-info/
+dist/
+build/
 
 # Cloned target test repositories
 target_repo/

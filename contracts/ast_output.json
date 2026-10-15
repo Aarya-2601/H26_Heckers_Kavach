@@ -1,20 +1,20 @@
 {
-  "target_package": "appdirs",
+  "target_package": "toml",
   "blast_radius_score": 25,
-  "hero_file": "linkwatch/cache.py",
+  "hero_file": "linkwatch/config.py",
   "call_sites": [
     {
-      "file": "linkwatch/cache.py",
-      "line": 10,
-      "calling_function": "cache_dir",
-      "code_snippet": "path = os.environ.get(\"LINKWATCH_CACHE_DIR\") or user_cache_dir(\"linkwatch\")",
-      "symbol": "appdirs.user_cache_dir",
+      "file": "linkwatch/config.py",
+      "line": 37,
+      "calling_function": "load_settings",
+      "code_snippet": "data = toml.load(path)",
+      "symbol": "toml.load",
       "kind": "call",
       "private_api": false
     }
   ],
   "test_call_sites": [],
-  "context_code": "# file: linkwatch/cache.py\nfrom appdirs import user_cache_dir\n\ndef cache_dir():\n    path = os.environ.get(\"LINKWATCH_CACHE_DIR\") or user_cache_dir(\"linkwatch\")\n    os.makedirs(path, exist_ok=True)\n    return path",
+  "context_code": "# file: linkwatch/config.py\nimport toml\n\ndef load_settings(path=\"sites.toml\"):\n    data = toml.load(path)\n    return Settings(**data)",
   "context_truncated": false,
   "unparsed_files": [],
   "files_scanned": 15

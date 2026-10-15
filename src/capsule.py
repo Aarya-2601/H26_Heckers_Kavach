@@ -44,15 +44,22 @@ def generate_capsule_markdown(
     repo_target: str = "https://github.com/rishrek/LinkWatch",
     session_id: str = "lw-sec-20261015-ast-01",
     timestamp: Optional[str] = None,
+    target_package: str = "appdirs",
+    replacement_pkg: str = "platformdirs",
+    hero_file: str = "linkwatch/cache.py",
+    blast_radius: int = 25,
+    mermaid_block: Optional[str] = None,
+    telemetry: Optional[Dict[str, Any]] = None,
 ) -> str:
     """Generate the full content of CAPSULE.md adhering to strict separation of concerns."""
     run_time = timestamp or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-    mermaid_block = generate_mermaid_diagram()
+    active_mermaid = mermaid_block or generate_mermaid_diagram()
 
     return f"""# 🛡️ CAPSULE: Automated AST Remediation & Security Audit Report
 
 **Target Repository:** [`{repo_target}`]({repo_target})  
-**Target Package:** `linkwatch` (Python Website & Link Uptime Monitor)  
+**Target Package:** `{target_package}` ➔ `{replacement_pkg}` (Hero File: `{hero_file}`)  
+**Blast Radius Score:** `{blast_radius}/100`  
 **Execution Timestamp:** `{run_time}`  
 **Remediation Session ID:** `{session_id}`  
 **Harness Status:** `VERIFIED_AND_RESOLVED (Auto-Heal Completed)`  
@@ -63,7 +70,7 @@ def generate_capsule_markdown(
 
 The diagram below documents the path taken by the autonomous agent: Attempt #1 introduced a scope regression which was detected by the test runner, triggering a deterministic rewind and branching into Attempt #2.
 
-{mermaid_block}
+{active_mermaid}
 
 ---
 
@@ -178,14 +185,17 @@ tests/generated/test_docker_security.py::test_dockerfile_user_directive PASSED [
 
 
 def write_capsule_file(
+    content: Optional[str] = None,
     output_path: str = "CAPSULE.md",
     console: Optional[Console] = None,
+    **kwargs,
 ) -> Path:
     """Generate and write CAPSULE.md to the project directory."""
     target_console = console or default_console
     file_path = Path(output_path).resolve()
 
-    content = generate_capsule_markdown()
+    if content is None:
+        content = generate_capsule_markdown(**kwargs)
     file_path.write_text(content, encoding="utf-8")
 
     target_console.print()

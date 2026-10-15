@@ -212,9 +212,15 @@ def run_pipeline(
 
     capsule_text = generate_capsule_markdown(
         repo_target=repo_path,
-        session_id="heckers-gemma4-lw-01"
+        session_id=f"heckers-{target_pkg}-lw-01",
+        target_package=target_pkg,
+        replacement_pkg=chosen_replacement,
+        hero_file=hero_file,
+        blast_radius=blast_radius,
+        mermaid_block=f"```mermaid\n{mermaid}\n```",
+        telemetry=best_node.run_result
     )
-    capsule_file = write_capsule_file(output_path="CAPSULE.md")
+    capsule_file = write_capsule_file(content=capsule_text, output_path="CAPSULE.md")
     console.print(f"[bold green]✔ Deliverable Created:[/bold green] [bold yellow]{capsule_file}[/bold yellow]")
 
     # Display Test Results Table

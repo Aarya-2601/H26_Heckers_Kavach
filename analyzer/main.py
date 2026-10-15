@@ -1,5 +1,7 @@
-# We used to call requests directly here, now we go through api_client
-from src.api_client import fetch_user_data
+try:
+    from analyzer.api_client import fetch_user_data
+except ImportError:
+    from api_client import fetch_user_data
 
 
 def main():

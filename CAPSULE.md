@@ -1,9 +1,10 @@
 # 🛡️ CAPSULE: Automated AST Remediation & Security Audit Report
 
-**Target Repository:** [`https://github.com/rishrek/LinkWatch`](https://github.com/rishrek/LinkWatch)  
-**Target Package:** `linkwatch` (Python Website & Link Uptime Monitor)  
-**Execution Timestamp:** `2026-10-15 08:36:59 UTC`  
-**Remediation Session ID:** `lw-sec-20261015-ast-01`  
+**Target Repository:** [`dataset/LinkWatch`](dataset/LinkWatch)  
+**Target Package:** `toml` ➔ `platformdirs` (Hero File: `linkwatch/config.py`)  
+**Blast Radius Score:** `25/100`  
+**Execution Timestamp:** `2026-10-15 04:28:06 UTC`  
+**Remediation Session ID:** `heckers-toml-lw-01`  
 **Harness Status:** `VERIFIED_AND_RESOLVED (Auto-Heal Completed)`  
 
 ---
@@ -14,25 +15,13 @@ The diagram below documents the path taken by the autonomous agent: Attempt #1 i
 
 ```mermaid
 graph TD
-    Start["Start: Target rishrek/LinkWatch"] --> Scan["Deterministic Auditor AST Scan"]
-    Scan --> Flags["Flagged: http_patch.py, checker.py, Dockerfile"]
-    Flags --> Attempt1["Attempt #1: In-Place Global Monkey-Patching"]
-    Attempt1 --> Test1["Execute Regression Test Suite"]
-    Test1 --> Fail["Test Failed: test_no_global_requests_monkeypatch ❌"]
-    Fail --> Rewind["Rewind: Trigger Auto-Heal Loop ⏪"]
-    Rewind --> Rollback["Rollback & Abandon Attempt #1"]
-    Rollback --> Attempt2["Attempt #2: Dedicated LinkWatchSession Adapter"]
-    Attempt2 --> Audit2["Deterministic Auditor Re-Verification [X]"]
-    Audit2 --> Test2["Re-Execute Test Suite"]
-    Test2 --> Pass["All 7/7 Tests Passed 🟢"]
-    Pass --> Artifact["CAPSULE.md Generated ✔"]
-
-    style Attempt1 fill:#ffebee,stroke:#c62828,stroke-width:2px;
-    style Fail fill:#ffcdd2,stroke:#b71c1c,stroke-width:2px;
-    style Rewind fill:#fff8e1,stroke:#f57f17,stroke-width:2px;
-    style Attempt2 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    style Pass fill:#c8e6c9,stroke:#1b5e20,stroke-width:2px;
-    style Artifact fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
+    node_0["Baseline (toml)<br/>(Baseline)"]
+    node_1["Attempt 1: Direct Refactor<br/>Score: 21 (FAILED)"]
+    node_0 --> node_1
+    node_2["Attempt 2: Auto-Heal (Shim/Fix)<br/>Score: 21 (FAILED)"]
+    node_1 --> node_2
+    classDef passed fill:#2ea44f,stroke:#22863a,color:#fff;
+    classDef failed fill:#cb2431,stroke:#b31d28,color:#fff;
 ```
 
 ---

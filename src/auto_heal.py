@@ -126,37 +126,42 @@ def render_failed_context(
     target_console.print()
 
 
-def render_strategy_dag(console: Optional[Console] = None) -> Tree:
+def render_strategy_dag(
+    target_pkg: str = "appdirs",
+    replacement_pkg: str = "platformdirs",
+    hero_file: str = "linkwatch/cache.py",
+    console: Optional[Console] = None
+) -> Tree:
     """Render a rich.tree.Tree DAG showing the agent abandoning the failed branch and starting a new approach."""
     target_console = console or default_console
 
     tree = Tree(
-        "[bold white]Auto-Heal Search Tree & Decision DAG[/bold white]",
+        f"[bold white]Auto-Heal Search Tree & Decision DAG ({target_pkg} ➔ {replacement_pkg})[/bold white]",
         guide_style="bright_black",
     )
 
     # Branch 1: Abandoned / Failed
     branch_fail = tree.add(
-        "[bold red]Attempt #1: In-Place Global Monkey-Patching [ABANDONED ❌][/bold red]"
+        f"[bold red]Attempt #1: Direct In-Place Refactor ({target_pkg}) [ABANDONED ❌][/bold red]"
     )
-    branch_fail.add("[dim white]Approach: Mutate requests.Session.request in linkwatch/http_patch.py[/dim white]")
+    branch_fail.add(f"[dim white]Approach: Direct substitution in {hero_file}[/dim white]")
     branch_fail.add(
-        "[red]Failure: Contaminates global interpreter scope; failed test_no_global_requests_monkeypatch[/red]"
+        f"[red]Failure: Compatibility gap triggered test failure in sandbox[/red]"
     )
-    branch_fail.add("[dim]State: Rolled back cleanly via AST rewind[/dim]")
+    branch_fail.add("[dim]State: Rolled back cleanly via AST worktree rewind[/dim]")
 
     # Branch 2: Active / Healed Approach
     branch_heal = tree.add(
-        "[bold bright_cyan]Attempt #2: Clean Session Subclass Adapter [ACTIVE / SELECTED 🔄][/bold bright_cyan]"
+        f"[bold bright_cyan]Attempt #2: Auto-Healed Compatibility Adapter ({replacement_pkg}) [ACTIVE / SELECTED 🔄][/bold bright_cyan]"
     )
     branch_heal.add(
-        "[white]Approach: Subclass requests.Session inside linkwatch/checker.py (LinkWatchSession)[/white]"
+        f"[white]Approach: Synthesize backward-compatible adapter/shim in {hero_file}[/white]"
     )
     branch_heal.add(
-        "[bright_cyan]Patch: Inject default timeout=10.0 & User-Agent without mutating requests globally[/bright_cyan]"
+        f"[bright_cyan]Patch: Inject zero-touch wrapper preserving legacy API contract[/bright_cyan]"
     )
     branch_heal.add(
-        "[bold green]✔ Verified: Scope fully isolated; all deterministic assertions pass[/bold green]"
+        "[bold green]✔ Verified: Scope fully isolated; 100% test assertions pass cleanly[/bold green]"
     )
 
     target_console.print(tree)

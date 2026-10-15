@@ -1,10 +1,10 @@
 # 🛡️ CAPSULE: Automated AST Remediation & Security Audit Report
 
 **Target Repository:** [`dataset/LinkWatch`](dataset/LinkWatch)  
-**Target Package:** `toml` ➔ `platformdirs` (Hero File: `linkwatch/config.py`)  
-**Blast Radius Score:** `25/100`  
-**Execution Timestamp:** `2026-10-15 04:28:06 UTC`  
-**Remediation Session ID:** `heckers-toml-lw-01`  
+**Target Package:** `jinja2` ➔ `jinja2-modern (shim)` (Hero File: `linkwatch/report.py`)  
+**Blast Radius Score:** `35/100`  
+**Execution Timestamp:** `2026-10-15 05:12:52 UTC`  
+**Remediation Session ID:** `heckers-jinja2-lw-01`  
 **Harness Status:** `VERIFIED_AND_RESOLVED (Auto-Heal Completed)`  
 
 ---
@@ -15,10 +15,10 @@ The diagram below documents the path taken by the autonomous agent: Attempt #1 i
 
 ```mermaid
 graph TD
-    node_0["Baseline (toml)<br/>(Baseline)"]
-    node_1["Attempt 1: Direct Refactor<br/>Score: 21 (FAILED)"]
+    node_0["Baseline (jinja2)<br/>(Baseline)"]
+    node_1["Attempt 1: Direct Refactor<br/>Score: 19 (FAILED)"]
     node_0 --> node_1
-    node_2["Attempt 2: Auto-Heal (Shim/Fix)<br/>Score: 21 (FAILED)"]
+    node_2["Attempt 2: Auto-Heal (Shim/Fix)<br/>Score: 87 (PASSED)"]
     node_1 --> node_2
     classDef passed fill:#2ea44f,stroke:#22863a,color:#fff;
     classDef failed fill:#cb2431,stroke:#b31d28,color:#fff;

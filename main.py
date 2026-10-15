@@ -6,11 +6,13 @@ Phase 1: Foundation, Theming & Directory Tree
 
 Phase 2: Interactive Inputs & Voice Capture
 - Step 2.1: Terminal Prompts using questionary (styled in peachy-orange #ffaf87)
-- Step 2.2: Voice Input Wrapper using SpeechRecognition and sounddevice:
-    * Records dynamically while speaking, then concludes after 5 seconds of silence
-    * Voice input is completely optional
-    * Transcribed speech populates text prompt for review & editing
-- Step 2.3: Solutions formatted in bold with a one-line space after the question
+- Step 2.2: Dynamic voice capture with 5s silence wait (optional)
+- Step 2.3: Solutions formatted in bold with one-line space after prompt
+
+Phase 3: The Auditor View & Test Runner Dashboard
+- Step 3.1: Chain of Thought Live Panel (streaming Gemma's reasoning in bright_cyan)
+- Step 3.2: The Auditor View (Deterministic Auditor checklist updating [ ] to [X])
+- Step 3.3: Test Distinction & Status (Table with Pre-existing vs AI-Generated, 🟢/🔴 status, stack trace viewer)
 """
 
 import argparse
@@ -20,6 +22,12 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
+from src.dashboard import (
+    render_test_runner_table,
+    run_deterministic_auditor,
+    run_phase3_dashboard,
+    stream_chain_of_thought,
+)
 from src.prompts import (
     DEFAULT_DEPENDENCY_CHOICES,
     DEFAULT_FLAGGED_CHOICES,
@@ -44,12 +52,12 @@ def run_phase1_visualizer() -> None:
     header_text = Text()
     header_text.append("LinkWatch CLI Security & AST Remediator\n", style="bold white")
     header_text.append("Dataset Target: https://github.com/rishrek/LinkWatch\n", style="bright_cyan")
-    header_text.append("Phase 1: Visual Theme & AST Tree | Phase 2: Interactive & Voice Control", style="dim white")
+    header_text.append("Phase 1: Theme & AST Tree | Phase 2: Interactive & Voice | Phase 3: Auditor & Tests", style="dim white")
     console.print(Panel(header_text, border_style="bright_black", expand=False))
 
     console.print()
 
-    # Step 1.1: Color System & Theming Palette (no robot emojis)
+    # Step 1.1: Color System & Theming Palette
     console.print("[dim white]─── [Phase 1.1] Color System & Theming Palette ───[/dim white]")
     print_ai("AI Output: Ingesting repository dataset 'rishrek/LinkWatch' (website & link uptime checker)...")
     print_human("Human Action: Selected rishrek/LinkWatch for AST inspection & security audit.")
@@ -137,10 +145,10 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Run Phase 1 Foundation & Directory Visualizer
+    # Run Phase 1: Foundation & Directory Visualizer
     run_phase1_visualizer()
 
-    # Run Phase 2 Interactive Inputs & Optional Voice Capture
+    # Run Phase 2: Interactive Inputs & Voice Capture
     if args.non_interactive:
         console.print()
         console.print("[dim white]─── [Phase 2] Non-interactive verification mode ───[/dim white]")
@@ -149,19 +157,23 @@ def main() -> None:
         print_human(f"Simulated Action: {mock_text}")
         console.print()
         print_solution(f"Scheduled remediation AST rewrite with action: '{mock_text}'.")
-        return
+    else:
+        is_tty = sys.stdin and hasattr(sys.stdin, "isatty") and sys.stdin.isatty()
+        if not is_tty and args.mock_voice is None:
+            console.print()
+            console.print("[dim white]⚠️  Non-interactive terminal detected (no TTY). Proceeding to Dashboard.[/dim white]")
+        else:
+            run_interactive_workflow(
+                listen_voice=args.voice,
+                mock_voice_text=args.mock_voice,
+            )
 
-    # Check if running in an interactive terminal
-    is_tty = sys.stdin and hasattr(sys.stdin, "isatty") and sys.stdin.isatty()
-    if not is_tty and args.mock_voice is None:
-        console.print()
-        console.print("[dim white]⚠️  Non-interactive terminal detected (no TTY). Use --mock-voice for testing.[/dim white]")
-        return
-
-    # Interactive workflow with optional voice and bold solution
-    run_interactive_workflow(
-        listen_voice=args.voice,
-        mock_voice_text=args.mock_voice,
+    # Run Phase 3: The Auditor View & Test Runner Dashboard
+    delay = 0.05 if args.non_interactive else 0.2
+    run_phase3_dashboard(
+        delay=delay,
+        interactive_expand=not args.non_interactive,
+        console=console,
     )
 
 

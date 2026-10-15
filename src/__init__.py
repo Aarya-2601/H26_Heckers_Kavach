@@ -1,8 +1,17 @@
-"""CLI Foundation, Theming, Visualizer & Interactive Voice Package.
+"""CLI Foundation, Theming, Visualizer, Interactive Voice & Phase 3 Dashboard.
 
 Tailored for rishrek/LinkWatch dataset and AST security demonstration.
 """
 
+from src.dashboard import (
+    DEFAULT_AUDITOR_CHECKS,
+    DEFAULT_COT_STEPS,
+    DEFAULT_TEST_RESULTS,
+    render_test_runner_table,
+    run_deterministic_auditor,
+    run_phase3_dashboard,
+    stream_chain_of_thought,
+)
 from src.prompts import (
     DEFAULT_DEPENDENCY_CHOICES,
     DEFAULT_FLAGGED_CHOICES,
@@ -58,6 +67,9 @@ __all__ = [
     "DEFAULT_DEPENDENCY_CHOICES",
     "DEFAULT_FLAGGED_CHOICES",
     "INPUT_METHOD_CHOICES",
+    "DEFAULT_COT_STEPS",
+    "DEFAULT_AUDITOR_CHECKS",
+    "DEFAULT_TEST_RESULTS",
     "build_directory_tree",
     "build_tree_from_path",
     "render_directory_tree",
@@ -69,4 +81,8 @@ __all__ = [
     "prompt_select_input_method",
     "prompt_remediation_input",
     "run_interactive_workflow",
+    "stream_chain_of_thought",
+    "run_deterministic_auditor",
+    "render_test_runner_table",
+    "run_phase3_dashboard",
 ]

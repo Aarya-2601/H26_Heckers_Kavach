@@ -1,6 +1,14 @@
-"""Unit tests for UI theming, visualizer, questionary prompts, and voice input."""
+"""Unit tests for UI theming, visualizer, prompts, voice, and Phase 3 dashboard."""
 
 from rich.tree import Tree
+from src.dashboard import (
+    DEFAULT_AUDITOR_CHECKS,
+    DEFAULT_COT_STEPS,
+    DEFAULT_TEST_RESULTS,
+    render_test_runner_table,
+    run_deterministic_auditor,
+    stream_chain_of_thought,
+)
 from src.prompts import (
     DEFAULT_DEPENDENCY_CHOICES,
     DEFAULT_FLAGGED_CHOICES,
@@ -100,3 +108,39 @@ def test_voice_wrapper_mock_and_fallback():
         mock_input="refactor http_patch.py monkey patch"
     )
     assert convenience_res == "refactor http_patch.py monkey patch"
+
+
+def test_stream_chain_of_thought():
+    """Verify CoT live panel streams steps with light blue styling."""
+    with console.capture() as capture:
+        stream_chain_of_thought(steps=["Step 1: Test CoT step"], delay=0.01, console=console)
+    output = capture.get()
+    assert "Gemma Chain of Thought Reasoning" in output
+    assert "Step 1: Test CoT step" in output
+
+
+def test_run_deterministic_auditor():
+    """Verify Deterministic Auditor renders checklist items with [X] status."""
+    with console.capture() as capture:
+        run_deterministic_auditor(checks=["Checking AST for hardcoded literals"], delay=0.01, console=console)
+    output = capture.get()
+    assert "Deterministic Auditor" in output
+    assert "[X]" in output
+    assert "Checking AST for hardcoded literals" in output
+
+
+def test_render_test_runner_table():
+    """Verify test table correctly labels Pre-existing vs AI-Generated and PASSED/FAILED."""
+    with console.capture() as capture:
+        render_test_runner_table(
+            test_results=DEFAULT_TEST_RESULTS,
+            interactive_expand=False,
+            console=console,
+        )
+    output = capture.get()
+    assert "LinkWatch Test Execution Suite" in output
+    assert "Pre-existing" in output
+    assert "AI-Generated" in output
+    assert "PASSED" in output
+    assert "FAILED" in output
+    assert "test_no_global_requests_monkeypatch" in output

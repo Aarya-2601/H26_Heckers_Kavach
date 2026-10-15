@@ -1,0 +1,14 @@
+{
+  "target_package": "requests",
+  "blast_radius_score": 78,
+  "hero_file": "src/api_client.py",
+  "call_sites": [
+    {
+      "file": "src/api_client.py",
+      "line": 42,
+      "calling_function": "fetch_user_data",
+      "code_snippet": "response = requests.get(url, timeout=5)"
+    }
+  ],
+  "context_code": "import requests\n\ndef fetch_user_data(url):\n    return requests.get(url, timeout=5).json()\n"
+}

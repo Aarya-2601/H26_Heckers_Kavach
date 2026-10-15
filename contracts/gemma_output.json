@@ -1,0 +1,6 @@
+{
+  "replacement_candidate": "httpx",
+  "migration_strategy": "Direct async refactor",
+  "red_team_tests": "def test_edge_timeout():\n    import httpx\n    # synthetic adversarial test\n    pass\n",
+  "blue_team_patch": "--- a/src/api_client.py\n+++ b/src/api_client.py\n@@ -1,4 +1,4 @@\n-import requests\n+import httpx\n\n def fetch_user_data(url):\n-    return requests.get(url, timeout=5).json()\n+    return httpx.get(url, timeout=5).json()\n"
+}

@@ -12,6 +12,16 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
+# Pydantic v1 / v2 bidirectional compatibility shim
+if not hasattr(BaseModel, "model_validate"):
+    BaseModel.model_validate = classmethod(lambda cls, obj: cls.parse_obj(obj))
+if not hasattr(BaseModel, "model_validate_json"):
+    BaseModel.model_validate_json = classmethod(lambda cls, json_data: cls.parse_raw(json_data))
+if not hasattr(BaseModel, "model_dump"):
+    BaseModel.model_dump = lambda self, **kwargs: self.dict(**kwargs)
+if not hasattr(BaseModel, "model_dump_json"):
+    BaseModel.model_dump_json = lambda self, **kwargs: self.json(**kwargs)
+
 
 class TagEnum(str, Enum):
     OBSERVED = "OBSERVED"

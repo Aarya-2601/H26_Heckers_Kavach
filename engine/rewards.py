@@ -33,8 +33,20 @@ def compute_reward(
     # 1. Anti-Cheat & Tampering Checks (-9999 points)
     is_tampering = run_result.get("tampering_detected", False)
     
-    # Static sanity check on patch diff
+    # Run Person 2's deep AST auditor if available
     if patch_diff:
+        try:
+            from analyzer.auditor import audit_patch
+            audit_res = audit_patch(patch_diff)
+            if audit_res.get("tampering_detected"):
+                is_tampering = True
+                for v in audit_res.get("violations", []):
+                    breakdown["reasons"].append(f"Auditor violation: {v}")
+        except Exception:
+            pass
+
+    # Fallback static checks on patch diff
+    if patch_diff and not is_tampering:
         lines = patch_diff.splitlines()
         for line in lines:
             # Check for deleting assertions

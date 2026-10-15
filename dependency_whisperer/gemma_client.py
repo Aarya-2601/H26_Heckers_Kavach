@@ -75,16 +75,25 @@ class GemmaClient:
         raw_text = self.generate(prompt, system_prompt)
         cleaned_json = self.extract_json(raw_text)
         try:
-            return response_model.model_validate_json(cleaned_json)
-        except Exception as e:
-            try:
-                data = json.loads(cleaned_json)
+            if hasattr(response_model, "model_validate_json"):
+                return response_model.model_validate_json(cleaned_json)
+            elif hasattr(response_model, "parse_raw"):
+                return response_model.parse_raw(cleaned_json)
+        except Exception:
+            pass
+
+        try:
+            data = json.loads(cleaned_json)
+            if hasattr(response_model, "model_validate"):
                 return response_model.model_validate(data)
-            except Exception:
-                raise ValueError(
-                    f"Failed to validate Gemma response into {response_model.__name__}.\n"
-                    f"Raw response:\n{raw_text}\nCleaned JSON:\n{cleaned_json}\nError: {e}"
-                )
+            elif hasattr(response_model, "parse_obj"):
+                return response_model.parse_obj(data)
+            return response_model(**data)
+        except Exception as e:
+            raise ValueError(
+                f"Failed to validate Gemma response into {response_model.__name__}.\n"
+                f"Raw response:\n{raw_text}\nCleaned JSON:\n{cleaned_json}\nError: {e}"
+            )
 
     def extract_json(self, text: str) -> str:
         """Strip markdown fences (```json ... ```) and extract pure JSON."""

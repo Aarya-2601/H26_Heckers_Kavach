@@ -1,14 +1,21 @@
 {
-  "target_package": "requests",
-  "blast_radius_score": 78,
-  "hero_file": "src/api_client.py",
+  "target_package": "appdirs",
+  "blast_radius_score": 25,
+  "hero_file": "linkwatch/cache.py",
   "call_sites": [
     {
-      "file": "src/api_client.py",
-      "line": 42,
-      "calling_function": "fetch_user_data",
-      "code_snippet": "response = requests.get(url, timeout=5)"
+      "file": "linkwatch/cache.py",
+      "line": 10,
+      "calling_function": "cache_dir",
+      "code_snippet": "path = os.environ.get(\"LINKWATCH_CACHE_DIR\") or user_cache_dir(\"linkwatch\")",
+      "symbol": "appdirs.user_cache_dir",
+      "kind": "call",
+      "private_api": false
     }
   ],
-  "context_code": "import requests\n\ndef fetch_user_data(url):\n    return requests.get(url, timeout=5).json()\n"
+  "test_call_sites": [],
+  "context_code": "# file: linkwatch/cache.py\nfrom appdirs import user_cache_dir\n\ndef cache_dir():\n    path = os.environ.get(\"LINKWATCH_CACHE_DIR\") or user_cache_dir(\"linkwatch\")\n    os.makedirs(path, exist_ok=True)\n    return path",
+  "context_truncated": false,
+  "unparsed_files": [],
+  "files_scanned": 15
 }

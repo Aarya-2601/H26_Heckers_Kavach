@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kavach | Autonomous AST Security & Auto-Heal Engine</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <a href="#overview" class="brand-container">
+      <!-- Shield / Kavach Logo -->
+      <svg class="logo-shield" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 4L6 12V22C6 33.1 13.7 43.4 24 46C34.3 43.4 42 33.1 42 22V12L24 4Z" fill="url(#shield-grad)" stroke="#ffd700" stroke-width="2"/>
+        <path d="M24 10L12 15.5V23C12 30.8 17.1 38 24 40.5C30.9 38 36 30.8 36 23V15.5L24 10Z" fill="url(#inner-grad)" stroke="#38bdf8" stroke-width="1.5"/>
+        <defs>
+          <linearGradient id="shield-grad" x1="6" y1="4" x2="42" y2="46" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#b45309"/>
+            <stop offset="0.5" stop-color="#f59e0b"/>
+            <stop offset="1" stop-color="#fbbf24"/>
+          </linearGradient>
+          <linearGradient id="inner-grad" x1="12" y1="10" x2="36" y2="40.5" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#0369a1"/>
+            <stop offset="1" stop-color="#0284c7"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="brand-name">Kavach</span>
+    </a>
+
+    <!-- Suggested Navigation Sections -->
+    <nav>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="#overview">Overview</a></li>
+        <li class="nav-item"><a href="#auditor">AST Auditor</a></li>
+        <li class="nav-item"><a href="#autoheal">Auto-Heal DAG</a></li>
+        <li class="nav-item"><a href="#tests">Test Suite</a></li>
+        <li class="nav-item"><a href="#capsule">CAPSULE Report</a></li>
+        <li>
+          <button id="btn-chat-trigger" class="btn-chatbot-trigger">
+            <span class="pulse-dot"></span>
+            <span>AI Companion</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Homepage Hero Section with Black to Golden Glass Triangles Animation -->
+  <section id="overview" class="hero-section">
+    <canvas id="triangles-canvas"></canvas>
+
+    <div class="hero-content">
+      <div class="badge-tag">
+        <span>🛡️ Autonomous Codebase Shield</span>
+      </div>
+      <h1 class="hero-title-reveal">Kavach</h1>
+      <p class="hero-subtitle">
+        Self-healing AST security and migration platform for Python repositories.
+        Targeting <strong style="color: #fff;">rishrek/LinkWatch</strong> with deterministic auditing, curiosity-driven search, and regression prevention.
+      </p>
+      <div class="hero-actions">
+        <a href="#auditor" class="btn-primary">Explore AST Scan</a>
+        <a href="#autoheal" class="btn-secondary">View Auto-Heal Loop</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Section 1: AST Auditor & Blast Radius -->
+    <section id="auditor" class="section">
+      <div class="section-header">
+        <div class="section-label">Deterministic Verification</div>
+        <h2 class="section-title">AST Auditor & Vulnerability Scanner</h2>
+      </div>
+
+      <div class="grid-2">
+        <!-- Checklist & Flags -->
+        <div class="glass-card">
+          <div id="blast-radius-score" class="audit-metric-badge">
+            Blast Radius Score: 78/100
+          </div>
+          <p style="color: var(--text-muted); margin-bottom: 16px;">
+            Flagged vulnerable modules identified in <code style="color: #38bdf8;">rishrek/LinkWatch</code>:
+          </p>
+          <div id="flagged-files-list" style="margin-bottom: 24px;">
+            <span class="flagged-file-tag">linkwatch/http_patch.py</span>
+            <span class="flagged-file-tag">linkwatch/checker.py</span>
+            <span class="flagged-file-tag">Dockerfile</span>
+          </div>
+
+          <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 14px;">Deterministic Auditor Invariants</h3>
+          <div class="checklist-container">
+            <div class="checklist-item">
+              <span class="check-icon">[X]</span>
+              <span>Checking AST for hardcoded literals & credentials</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-icon">[X]</span>
+              <span>Scanning for deleted or altered test assertions</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-icon">[X]</span>
+              <span>Verifying function signature preservation in linkwatch/checker.py</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-icon">[X]</span>
+              <span>Enforcing scope isolation: zero unvetted global monkey-patching</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-icon">[X]</span>
+              <span>Ensuring non-root security compliance in Dockerfile</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero File & AST Context -->
+        <div class="glass-card">
+          <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 14px;">Vulnerability Context: linkwatch/checker.py</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+            Direct unbounded <code style="color: #38bdf8;">session.get()</code> invocation lacking network timeout:
+          </p>
+          <div class="code-block">def fetch(url):
+    session = S()
+    try:
+        # ⚠️ UNBOUNDED: Missing timeout kwarg can cause indefinite thread hang
+        return session.get(url, verify=certifi.where())
+    finally:
+        session.close()</div>
+
+          <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-glass);">
+            <span style="color: var(--cyan-ai); font-size: 0.85rem; font-weight: 600;">Automated Remediation:</span>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px;">
+              Inject isolated <code style="color: #fff;">LinkWatchSession</code> adapter with mandatory <code style="color: #fbbf24;">timeout=10.0</code> and scoped User-Agent header.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Auto-Heal Search DAG -->
+    <section id="autoheal" class="section">
+      <div class="section-header">
+        <div class="section-label">State Space Search</div>
+        <h2 class="section-title">Proof-of-Search DAG & Auto-Heal Loop</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="glass-card">
+          <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 16px;">Search Trajectory Nodes</h3>
+          <div id="dag-nodes-container">
+            <div class="dag-node-card baseline">
+              <div class="dag-header">
+                <strong>Baseline (jinja2)</strong>
+                <span class="score-badge">BASELINE (11374ms)</span>
+              </div>
+              <div style="font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono);">
+                ID: node_0 | Reward Score: 0
+              </div>
+            </div>
+
+            <div class="dag-node-card failed">
+              <div class="dag-header">
+                <strong>Attempt 1: Direct Refactor [FAILED ❌]</strong>
+                <span class="score-badge" style="color: #ef4444;">Score: 29 (519ms)</span>
+              </div>
+              <div style="font-size: 0.82rem; color: var(--text-muted);">
+                Intrinsic curiosity (+30) | Code bloat penalty (-1) | In-place monkey-patch scope violation
+              </div>
+            </div>
+
+            <div class="dag-node-card passed">
+              <div class="dag-header">
+                <strong>Attempt 2: Auto-Heal (Shim/Fix) [PASSED 🟢]</strong>
+                <span class="score-badge" style="color: #10b981;">Score: 97 (445ms)</span>
+              </div>
+              <div style="font-size: 0.82rem; color: var(--text-muted);">
+                Extrinsic goal (+100) | Code bloat (-3) | Clean isolated LinkWatchSession
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Winning Patch Diff Viewer -->
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-size: 1.1rem; color: #fff;">Winning Candidate Patch Diff</h3>
+            <span style="font-size: 0.78rem; background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 6px; font-weight: 700;">WINNER (node_2)</span>
+          </div>
+          <div class="code-block" style="color: #86efac;">--- a/linkwatch/report.py
++++ b/linkwatch/report.py
+@@ -1,4 +1,7 @@
++import markupsafe
++if not hasattr(markupsafe, 'soft_unicode'):
++    markupsafe.soft_unicode = str
+ from datetime import datetime
+ 
+ from jinja2 import Environment, FileSystemLoader, select_autoescape</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Test Runner Table -->
+    <section id="tests" class="section">
+      <div class="section-header">
+        <div class="section-label">Regression Invariance</div>
+        <h2 class="section-title">LinkWatch Test Execution Suite</h2>
+      </div>
+
+      <div class="glass-card">
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Test Identifier</th>
+                <th>Origin</th>
+                <th>Duration</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>tests/test_checker.py::test_check_site_up</code></td>
+                <td><span class="origin-tag pre-existing">Pre-existing</span></td>
+                <td>14ms</td>
+                <td><span class="status-badge passed">🟢 PASSED</span></td>
+              </tr>
+              <tr>
+                <td><code>tests/test_config.py::test_load_sites_valid</code></td>
+                <td><span class="origin-tag pre-existing">Pre-existing</span></td>
+                <td>6ms</td>
+                <td><span class="status-badge passed">🟢 PASSED</span></td>
+              </tr>
+              <tr>
+                <td><code>tests/test_cache.py::test_save_and_load_results</code></td>
+                <td><span class="origin-tag pre-existing">Pre-existing</span></td>
+                <td>9ms</td>
+                <td><span class="status-badge passed">🟢 PASSED</span></td>
+              </tr>
+              <tr>
+                <td><code>tests/test_report.py::test_build_html_report</code></td>
+                <td><span class="origin-tag pre-existing">Pre-existing</span></td>
+                <td>18ms</td>
+                <td><span class="status-badge passed">🟢 PASSED</span></td>
+              </tr>
+              <tr>
+                <td><code>tests/generated/test_ast_checker.py::test_fetch_explicit_timeout</code></td>
+                <td><span class="origin-tag ai-generated">AI-Generated</span></td>
+                <td>21ms</td>
+                <td><span class="status-badge passed">🟢 PASSED</span></td>
+              </tr>
+              <tr>
+                <td><code>tests/generated/test_ast_security.py::test_no_global_requests_monkeypatch</code></td>
+                <td><span class="origin-tag ai-generated">AI-Generated</span></td>
+                <td>12ms</td>
+                <td><span class="status-badge passed">🟢 PASSED (Healed)</span></td>
+              </tr>
+              <tr>
+                <td><code>tests/generated/test_docker_security.py::test_dockerfile_user_directive</code></td>
+                <td><span class="origin-tag ai-generated">AI-Generated</span></td>
+                <td>10ms</td>
+                <td><span class="status-badge passed">🟢 PASSED</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: CAPSULE Artifact -->
+    <section id="capsule" class="section">
+      <div class="section-header">
+        <div class="section-label">Deliverable Audit Trail</div>
+        <h2 class="section-title">CAPSULE.md Inspection Artifact</h2>
+      </div>
+
+      <div class="glass-card">
+        <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 16px;">
+          Generated deliverable report maintaining strict separation of AI reasoning and ground-truth telemetry:
+        </p>
+        <div id="capsule-content-box" class="capsule-markdown-box">
+          Loading CAPSULE artifact...
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Chatbot Floating Right-Panel (Rounded Rectangle) -->
+  <aside id="chatbot-panel" class="chatbot-panel">
+    <!-- Light Blue Parallax Grid (Moves with cursor) -->
+    <div id="chatbot-parallax-grid" class="chatbot-parallax-grid"></div>
+
+    <div class="chatbot-content">
+      <!-- Header -->
+      <div class="chatbot-header">
+        <div class="chatbot-title-box">
+          <span class="pulse-dot"></span>
+          <span class="chatbot-title">Kavach AI Companion</span>
+        </div>
+        <button id="btn-close-chat" class="btn-close-chat" title="Close Companion">&times;</button>
+      </div>
+
+      <!-- Message History Area -->
+      <div id="chatbot-messages" class="chatbot-messages">
+        <!-- Initial AI greeting in light blue -->
+        <div class="chat-bubble ai">
+          <div>AI Output: Ingested repository dataset 'rishrek/LinkWatch' across 26 files. Identified 3 security hotspots requiring AST review.</div>
+          <div class="solution-text">Solution: Ready to assist with dependency replacement, AST remediation, or auto-heal verification.</div>
+        </div>
+      </div>
+
+      <!-- Quick Prompt Chips -->
+      <div class="chat-chips">
+        <button class="chip-btn" data-prompt="Replace requests with httpx in checker.py">Replace requests with httpx</button>
+        <button class="chip-btn" data-prompt="Why did Attempt 1 fail?">Why did Attempt 1 fail?</button>
+        <button class="chip-btn" data-prompt="Explain Auto-Heal DAG">Explain Auto-Heal DAG</button>
+      </div>
+
+      <!-- Input Bar with Editable Voice / Text -->
+      <div class="chatbot-input-bar">
+        <input 
+          type="text" 
+          id="chat-input" 
+          class="chat-text-input" 
+          placeholder="Speak into mic or type remediation instruction..." 
+          autocomplete="off"
+        />
+        <button id="btn-chat-mic" class="btn-mic" title="Voice Input (Dynamic Silence Wait)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <button id="btn-chat-send" class="btn-send">Send</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Kavach Autonomous AST Security & Auto-Heal Engine &bull; Developed by Team Heckers</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

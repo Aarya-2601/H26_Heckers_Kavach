@@ -75,7 +75,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 74px;
+  height: 56px;
   background: transparent;
   border-bottom: 1px solid var(--border-faint);
   backdrop-filter: blur(10px);
@@ -83,7 +83,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
+  padding: 0 24px;
   z-index: 1000;
   transition: all 0.35s ease;
 }
@@ -91,14 +91,14 @@ body {
 .brand-container {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   text-decoration: none;
   cursor: pointer;
 }
 
 .logo-shield-container {
-  width: 42px;
-  height: 46px;
+  width: 32px;
+  height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,7 +112,7 @@ body {
 }
 
 .brand-wordmark-img {
-  height: 38px;
+  height: 28px;
   width: auto;
   object-fit: contain;
   background: transparent !important;
@@ -130,18 +130,20 @@ body {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 4px;
   list-style: none;
 }
 
 .nav-item a {
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.88rem;
-  font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 8px;
-  transition: all 0.25s ease;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
   border: 1px solid transparent;
 }
 
@@ -155,38 +157,41 @@ body {
   color: var(--gold-light);
   background: var(--gold-glass-hover);
   border: 1px solid var(--border-gold);
-  box-shadow: 0 0 15px rgba(223, 189, 105, 0.2);
+  box-shadow: 0 0 12px rgba(223, 189, 105, 0.2);
 }
 
 .btn-chatbot-trigger {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: linear-gradient(135deg, rgba(223, 189, 105, 0.2), rgba(223, 189, 105, 0.06));
   border: 1px solid var(--border-gold);
   color: var(--gold-light);
-  padding: 8px 18px;
-  border-radius: 20px;
-  font-size: 0.88rem;
-  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 16px rgba(223, 189, 105, 0.2);
+  transition: all 0.25s ease;
+  box-shadow: 0 0 14px rgba(223, 189, 105, 0.2);
 }
 
 .btn-chatbot-trigger:hover {
   background: linear-gradient(135deg, rgba(223, 189, 105, 0.32), rgba(223, 189, 105, 0.12));
-  box-shadow: 0 0 26px rgba(255, 215, 0, 0.45);
+  box-shadow: 0 0 22px rgba(255, 215, 0, 0.45);
   transform: translateY(-1px);
 }
 
 .pulse-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background-color: var(--gold-bright);
   border-radius: 50%;
   animation: pulseGold 1.8s infinite;
 }
+
 
 @keyframes pulseGold {
   0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
@@ -788,10 +793,10 @@ body {
 /* Layer 1: Golden Parallax Grid (Moves with cursor) */
 .chatbot-parallax-grid {
   position: absolute;
-  inset: -60px;
+  inset: -80px;
   background-image: 
-    linear-gradient(rgba(218, 165, 32, 0.16) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(218, 165, 32, 0.16) 1px, transparent 1px);
+    linear-gradient(rgba(255, 215, 0, 0.4) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(255, 215, 0, 0.4) 1.5px, transparent 1.5px);
   background-size: 32px 32px;
   pointer-events: none;
   transform-style: preserve-3d;
@@ -802,14 +807,15 @@ body {
 /* Layer 2: Golden Parallax Dots (Moves in OPPOSITE direction for enhanced 3D depth) */
 .chatbot-parallax-dots {
   position: absolute;
-  inset: -60px;
-  background-image: radial-gradient(circle, rgba(255, 215, 0, 0.75) 1.5px, transparent 2px);
+  inset: -80px;
+  background-image: radial-gradient(circle, #ffd700 2.2px, transparent 2.5px);
   background-size: 32px 32px;
   background-position: 16px 16px;
   pointer-events: none;
   transform-style: preserve-3d;
   transition: transform 0.1s cubic-bezier(0.2, 0, 0.2, 1);
   z-index: 2;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
 }
 
 .chatbot-content {
@@ -818,19 +824,21 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: rgba(6, 9, 14, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .chatbot-header {
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--border-gold);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(14, 18, 25, 0.7);
+  background: rgba(14, 18, 25, 0.85);
+  backdrop-filter: blur(8px);
 }
+
 
 .chatbot-title-box {
   display: flex;

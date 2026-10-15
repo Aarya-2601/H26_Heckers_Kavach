@@ -141,43 +141,21 @@ function initGoldenTrianglesCanvas() {
 
   initTriangles();
 
-  const startTime = performance.now();
-
-  function animate(now) {
+  function animate() {
     ctx.clearRect(0, 0, width, height);
 
-    // Initial reveal transition from black to golden glass
-    const elapsed = now ? (now - startTime) / 1000 : 0;
-    const revealFactor = Math.min(1, elapsed / 2.2);
-
+    // Deep space dark background with subtle golden atmospheric bloom
     const bgRadial = ctx.createRadialGradient(
       width / 2, height / 2, 40,
       width / 2, height / 2, Math.max(width, height) * 0.7
     );
-    bgRadial.addColorStop(0, `rgba(14, 21, 36, ${revealFactor})`);
-    bgRadial.addColorStop(0.5, `rgba(8, 12, 20, ${revealFactor})`);
-    bgRadial.addColorStop(1, "#020305");
+    bgRadial.addColorStop(0, "#0e1524");
+    bgRadial.addColorStop(0.5, "#080c14");
+    bgRadial.addColorStop(1, "#040609");
     ctx.fillStyle = bgRadial;
     ctx.fillRect(0, 0, width, height);
 
-    // Crystalline golden web connectors between proximate triangles
-    for (let i = 0; i < triangles.length; i++) {
-      for (let j = i + 1; j < triangles.length; j++) {
-        const dx = triangles[i].x - triangles[j].x;
-        const dy = triangles[i].y - triangles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 130) {
-          const lineAlpha = (1 - dist / 130) * 0.22 * revealFactor;
-          ctx.beginPath();
-          ctx.moveTo(triangles[i].x, triangles[i].y);
-          ctx.lineTo(triangles[j].x, triangles[j].y);
-          ctx.strokeStyle = `rgba(251, 191, 36, ${lineAlpha})`;
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
-        }
-      }
-    }
-
+    // Render shimmering glass triangles
     triangles.forEach((t) => {
       t.update();
       t.draw(ctx);
@@ -186,7 +164,7 @@ function initGoldenTrianglesCanvas() {
     requestAnimationFrame(animate);
   }
 
-  requestAnimationFrame(animate);
+  animate();
 }
 
 /* ==========================================================================
@@ -397,23 +375,29 @@ function initChatbotParallax() {
 
   if (!panel || !grid || !dots) return;
 
-  window.addEventListener("mousemove", (e) => {
-    if (!panel.classList.contains("open")) return;
+  function updateParallax(clientX, clientY) {
+    const normX = (clientX / window.innerWidth - 0.5) * 2;
+    const normY = (clientY / window.innerHeight - 0.5) * 2;
 
-    const normX = (e.clientX / window.innerWidth - 0.5) * 2;
-    const normY = (e.clientY / window.innerHeight - 0.5) * 2;
-
-    // Layer 1: Golden Grid moves with perspective
-    const moveX = normX * 18;
-    const moveY = normY * 18;
-    const rotX = -normY * 6;
-    const rotY = normX * 6;
+    // Layer 1: Golden Grid moves along with perspective
+    const moveX = normX * 22;
+    const moveY = normY * 22;
+    const rotX = -normY * 7;
+    const rotY = normX * 7;
     grid.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
 
     // Layer 2: Golden Parallax Dots move in OPPOSITE direction with higher velocity
-    const dotMoveX = -normX * 28;
-    const dotMoveY = -normY * 28;
+    const dotMoveX = -normX * 34;
+    const dotMoveY = -normY * 34;
     dots.style.transform = `translate3d(${dotMoveX}px, ${dotMoveY}px, 0) rotateX(${-rotX * 0.8}deg) rotateY(${-rotY * 0.8}deg)`;
+  }
+
+  // Initial center call
+  updateParallax(window.innerWidth / 2, window.innerHeight / 2);
+
+  window.addEventListener("mousemove", (e) => {
+    if (!panel.classList.contains("open")) return;
+    updateParallax(e.clientX, e.clientY);
   });
 }
 

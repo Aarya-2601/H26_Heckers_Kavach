@@ -94,3 +94,15 @@ def test_api_run_search():
     data = response.json()
     assert data["status"] in ("simulated_success", "success")
     assert "winning_node" in data
+
+
+def test_api_dossier():
+    """Verify /api/dossier returns technical pitch dossier data."""
+    response = client.get("/api/dossier")
+    assert response.status_code == 200
+    data = response.json()
+    assert "Dependency Resilience Lab" in data["title"]
+    assert len(data["vulnerabilities"]) == 4
+    assert len(data["reward_weights"]) == 5
+    assert len(data["roles"]) == 4
+

@@ -42,6 +42,7 @@ class ChatMessageResponse(BaseModel):
     solution: Optional[str] = None
     reasoning_steps: List[str] = []
     sender: str = "ai"
+    metrics_update: Optional[Dict[str, Any]] = None
 
 
 def _load_json_safe(file_path: Path) -> Dict[str, Any]:
@@ -183,6 +184,35 @@ def get_tree() -> Dict[str, Any]:
                 "sites.toml",
             ],
         },
+        "flagged_details": {
+            "linkwatch/checker.py": {
+                "file": "linkwatch/checker.py",
+                "line": 15,
+                "calling_function": "fetch() / check_site()",
+                "code_snippet": "response = requests.get(url, timeout=None)",
+                "issue": "Missing bounded socket timeout and unhandled connection exception",
+                "blast_radius": 78,
+                "role": "Hero File"
+            },
+            "linkwatch/http_patch.py": {
+                "file": "linkwatch/http_patch.py",
+                "line": 14,
+                "calling_function": "apply_global_patch()",
+                "code_snippet": "requests.Session.request = patched_request",
+                "issue": "Scope contamination: mutates global requests.Session interpreter state",
+                "blast_radius": 64,
+                "role": "Contamination Source"
+            },
+            "Dockerfile": {
+                "file": "Dockerfile",
+                "line": 18,
+                "calling_function": "Container Build Spec",
+                "code_snippet": "USER root",
+                "issue": "Container runs as superuser, violating Non-Root Deterministic Auditor rule",
+                "blast_radius": 35,
+                "role": "Security Compliance"
+            }
+        },
         "structure": {
             "linkwatch": [
                 "__init__.py",
@@ -217,6 +247,56 @@ def get_tree() -> Dict[str, Any]:
                 "sites.toml",
             ],
         },
+    }
+
+
+@app.get("/api/dossier")
+def get_dossier() -> Dict[str, Any]:
+    """Return structured technical dossier data from PROJECT_DOCUMENTATION.md."""
+    return {
+        "title": "Dependency Resilience Lab",
+        "track": "Track 1: Gemma 4 — Dependency Resilience | Hacktoberfest 2026",
+        "team": "Team Heckers (Aarya, Rushil, Param & Omisha)",
+        "target_repo": "https://github.com/rishrek/LinkWatch",
+        "vulnerabilities": [
+            {
+                "package": "appdirs==1.4.4",
+                "status": "Abandoned since May 2020",
+                "recommended": "platformdirs>=4.0.0",
+                "risk": "Deprecated across Python ecosystem; directory lookup failures on modern OS."
+            },
+            {
+                "package": "toml==0.10.2",
+                "status": "Deprecated in Python 3.11+",
+                "recommended": "tomllib / tomli",
+                "risk": "Legacy parser incompatible with standard library tomllib specifications."
+            },
+            {
+                "package": "Jinja2==2.11.3",
+                "status": "Archaic import of soft_unicode",
+                "recommended": "jinja2>=3.1.2",
+                "risk": "crashes tests/test_report.py out-of-the-box with ImportError: soft_unicode."
+            },
+            {
+                "package": "requests==2.31.0",
+                "status": "Synchronous & monkey-patched",
+                "recommended": "httpx>=0.27.0",
+                "risk": "Global monkey-patching in http_patch.py contaminates interpreter scope."
+            }
+        ],
+        "reward_weights": [
+            {"component": "R_extrinsic (Goal)", "weight": "+100 pts", "condition": "exit_code == 0 (All tests pass)", "desc": "Verified software correctness."},
+            {"component": "R_curiosity (Bonus)", "weight": "+30 pts", "condition": "New unique error signature", "desc": "Rewards exploring diverse execution paths."},
+            {"component": "P_latency (Penalty)", "weight": "-10 pts", "condition": "execution_time_ms > baseline_time_ms", "desc": "Disincentivizes performance degradation."},
+            {"component": "P_bloat (Penalty)", "weight": "-1 pt / line", "condition": "Added lines in diff patch", "desc": "Promotes minimal compatibility shims."},
+            {"component": "P_anti_cheat (Penalty)", "weight": "-9999 pts", "condition": "Tampering with tests/assertions", "desc": "Immediate catastrophic disqualification."}
+        ],
+        "roles": [
+            {"role": "Person 1: The Referee", "lead": "Aarya", "dir": "engine/", "desc": "Lead Search & Policy Architect (MCTS, Sandbox, Rewards)"},
+            {"role": "Person 2: The Detective", "lead": "Rushil", "dir": "analyzer/", "desc": "AST & Blast Radius Engineer (Scanner, Call Sites, Auditor)"},
+            {"role": "Person 3: The Whisperer", "lead": "Param", "dir": "dependency_whisperer/", "desc": "Gemma 4 Cognitive Engine (Red/Blue Teams, CoT, Patches)"},
+            {"role": "Person 4: The Presenter", "lead": "Omisha", "dir": "src/ & web/", "desc": "UI, Visualizer, CAPSULE & Web Platform"}
+        ]
     }
 
 

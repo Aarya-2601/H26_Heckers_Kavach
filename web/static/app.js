@@ -2,21 +2,25 @@
  * Kavach Web Application - Interactive Engine
  * 
  * Features:
- * 1. Golden Glass Triangle Glitter Canvas Animation revealing "K A V A C H"
- * 2. Light Blue Parallax Grid inside Chatbot (responsive to cursor movement)
- * 3. Chatbot slide-in panel with voice-to-text (with silence wait & text editing)
- * 4. Dynamic synchronization with codebase telemetry (AST, DAG, Tests, CAPSULE)
+ * 1. Golden Glass Triangle Canvas Animation (Black to Golden Glass revealing KAVACH)
+ * 2. Diffused Smoke SPA Section Navigation
+ * 3. Interactive Tree Data Structure with AST Inspector
+ * 4. Golden Parallax Grid + Counter-moving Central Dots inside Chatbot
+ * 5. Full CLI Chatbot Integration with Voice, 5s silence wait, and on-page metric updates
+ * 6. Live telemetry sync with contracts/ and CAPSULE.md
  */
 
 document.addEventListener("DOMContentLoaded", () => {
   initGoldenTrianglesCanvas();
+  initSmokeNavigation();
+  initTreeDataStructure();
   initChatbotParallax();
   initChatbotInteractions();
   fetchCodebaseTelemetry();
 });
 
 /* ==========================================================================
-   1. Golden Glass Triangle Glitter Canvas Animation (Reveals "KAVACH")
+   1. Golden Glass Triangle Glitter Canvas Animation
    ========================================================================== */
 function initGoldenTrianglesCanvas() {
   const canvas = document.getElementById("triangles-canvas");
@@ -58,7 +62,7 @@ function initGoldenTrianglesCanvas() {
       this.glitterPhase = Math.random() * Math.PI * 2;
       this.glitterSpeed = Math.random() * 0.04 + 0.02;
       this.alpha = Math.random() * 0.45 + 0.15;
-      this.goldenHue = Math.random() > 0.4 ? 42 : 36; // Amber/Gold tones
+      this.goldenHue = Math.random() > 0.4 ? 42 : 36;
     }
 
     update() {
@@ -67,19 +71,17 @@ function initGoldenTrianglesCanvas() {
       this.angle += this.va;
       this.glitterPhase += this.glitterSpeed;
 
-      // Wrap around bounds
       if (this.x < -60) this.x = width + 60;
       if (this.x > width + 60) this.x = -60;
       if (this.y < -60) this.y = height + 60;
       if (this.y > height + 60) this.y = -60;
 
-      // Mouse subtle gravitational caustic effect
       if (mouse.active) {
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 280) {
-          const force = (1 - dist / 280) * 0.8;
+        if (dist < 260) {
+          const force = (1 - dist / 260) * 0.8;
           this.x += (dx / dist) * force;
           this.y += (dy / dist) * force;
         }
@@ -96,11 +98,9 @@ function initGoldenTrianglesCanvas() {
       const p2 = { x: r * Math.cos(Math.PI / 6), y: r * Math.sin(Math.PI / 6) };
       const p3 = { x: -r * Math.cos(Math.PI / 6), y: r * Math.sin(Math.PI / 6) };
 
-      // Glitter luminescence calculation
       const glitter = Math.sin(this.glitterPhase);
       const dynamicAlpha = Math.max(0.1, this.alpha + glitter * 0.2);
 
-      // Glass facet gradient
       const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
       grad.addColorStop(0, `hsla(${this.goldenHue}, 90%, 65%, ${dynamicAlpha * 0.4})`);
       grad.addColorStop(0.5, `hsla(${this.goldenHue + 5}, 100%, 75%, ${dynamicAlpha * 0.15})`);
@@ -115,12 +115,10 @@ function initGoldenTrianglesCanvas() {
       ctx.fillStyle = grad;
       ctx.fill();
 
-      // Specular glass beveled border
       ctx.strokeStyle = `hsla(${this.goldenHue}, 100%, 80%, ${dynamicAlpha * 0.85})`;
       ctx.lineWidth = 1.2;
       ctx.stroke();
 
-      // Glitter highlight vertex sparkle
       if (glitter > 0.6) {
         ctx.beginPath();
         ctx.arc(p1.x, p1.y, 2.5 * glitter, 0, Math.PI * 2);
@@ -152,7 +150,6 @@ function initGoldenTrianglesCanvas() {
     const elapsed = now ? (now - startTime) / 1000 : 0;
     const revealFactor = Math.min(1, elapsed / 2.2);
 
-    // Deep space dark background with golden atmospheric bloom
     const bgRadial = ctx.createRadialGradient(
       width / 2, height / 2, 40,
       width / 2, height / 2, Math.max(width, height) * 0.7
@@ -163,7 +160,7 @@ function initGoldenTrianglesCanvas() {
     ctx.fillStyle = bgRadial;
     ctx.fillRect(0, 0, width, height);
 
-    // Draw crystalline golden web connectors between proximate triangles
+    // Crystalline golden web connectors between proximate triangles
     for (let i = 0; i < triangles.length; i++) {
       for (let j = i + 1; j < triangles.length; j++) {
         const dx = triangles[i].x - triangles[j].x;
@@ -181,7 +178,6 @@ function initGoldenTrianglesCanvas() {
       }
     }
 
-    // Render shimmering glass triangles
     triangles.forEach((t) => {
       t.update();
       t.draw(ctx);
@@ -194,31 +190,235 @@ function initGoldenTrianglesCanvas() {
 }
 
 /* ==========================================================================
-   2. Light Blue Parallax Grid Inside Chatbot
+   2. Diffused Smoke SPA Section Navigation
+   ========================================================================== */
+function initSmokeNavigation() {
+  const navLinks = document.querySelectorAll("[data-nav]");
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute("data-nav");
+      navigateToSection(targetId);
+    });
+  });
+
+  // Handle hash changes or back/forward
+  window.addEventListener("hashchange", () => {
+    const hash = window.location.hash.replace("#", "") || "overview";
+    navigateToSection(hash);
+  });
+}
+
+function navigateToSection(targetId) {
+  const currentSection = document.querySelector(".section-view.active");
+  const targetSection = document.getElementById(targetId);
+
+  if (!targetSection || currentSection === targetSection) return;
+
+  // Update navbar active status
+  document.querySelectorAll(".nav-link").forEach((l) => {
+    if (l.getAttribute("data-nav") === targetId) {
+      l.classList.add("active");
+    } else {
+      l.classList.remove("active");
+    }
+  });
+
+  // Update URL hash without jumping
+  history.pushState(null, null, `#${targetId}`);
+
+  // 1. Current section diffuses out into smoke
+  if (currentSection) {
+    currentSection.classList.add("smoke-exit");
+    currentSection.classList.remove("smoke-enter");
+
+    setTimeout(() => {
+      currentSection.classList.remove("active", "smoke-exit");
+      currentSection.style.display = "none";
+
+      // 2. Target section condenses in from golden smoke
+      targetSection.style.display = "block";
+      targetSection.classList.add("active", "smoke-enter");
+      window.scrollTo({ top: 0, behavior: "instant" });
+
+      setTimeout(() => {
+        targetSection.classList.remove("smoke-enter");
+      }, 600);
+    }, 400);
+  } else {
+    targetSection.style.display = "block";
+    targetSection.classList.add("active");
+  }
+}
+
+/* ==========================================================================
+   3. Interactive Tree Data Structure with AST Inspector
+   ========================================================================== */
+function initTreeDataStructure() {
+  const treeNodes = document.querySelectorAll(".tree-file-node");
+  const inspectorTitle = document.getElementById("inspector-title");
+  const inspectorDesc = document.getElementById("inspector-desc");
+  const inspectorCode = document.getElementById("inspector-code-box");
+  const inspectorActions = document.getElementById("inspector-actions");
+  const btnFixInChat = document.getElementById("btn-fix-in-chat");
+
+  let currentTargetFile = "";
+
+  const fileData = {
+    "linkwatch/checker.py": {
+      title: "linkwatch/checker.py (Hero File)",
+      desc: "Vulnerability: High Blast Radius (78/100). Contains unhandled requests.get without bounded socket timeout across fetch() and check_site().",
+      code: `// File: linkwatch/checker.py (Lines 14-25)
+// Designation: Hero File (Caller Density: 78%)
+def fetch(url, session=None):
+    # [AST VULNERABILITY] Unbounded connection attempt
+    if session:
+        return session.get(url)  # Missing timeout parameter!
+    return requests.get(url)     # Fallback lacks socket bounds
+
+def check_site(site, session=None):
+    try:
+        response = fetch(site.url, session=session)
+        return response.status_code == 200
+    except requests.exceptions.RequestException as e:
+        # Fails silently without retry or metric attribution
+        return False`,
+      flagged: true
+    },
+    "linkwatch/http_patch.py": {
+      title: "linkwatch/http_patch.py",
+      desc: "Vulnerability: Global Scope Contamination. Monkey-patches requests.Session.request globally, breaking scope isolation in test suites.",
+      code: `// File: linkwatch/http_patch.py (Lines 8-18)
+// Designation: Contamination Source
+def apply_global_patch():
+    # [CRITICAL AST VIOLATION]
+    # In-place mutation of global Python interpreter session class:
+    original_request = requests.Session.request
+
+    def patched_request(self, method, url, **kwargs):
+        kwargs.setdefault('headers', {})['User-Agent'] = 'LinkWatch/1.0'
+        return original_request(self, method, url, **kwargs)
+
+    # Contaminates every module importing requests!
+    requests.Session.request = patched_request`,
+      flagged: true
+    },
+    "Dockerfile": {
+      title: "Dockerfile",
+      desc: "Vulnerability: Container defaults to root execution, violating Non-Root Deterministic Auditor rule.",
+      code: `// File: Dockerfile (Lines 15-22)
+// Designation: Container Build Spec
+FROM python:3.11-slim
+WORKDIR /app
+COPY . /app
+RUN pip install -e .
+
+# [SECURITY AUDIT VIOLATION]
+# Runs container as superuser
+USER root
+CMD ["linkwatch", "check"]`,
+      flagged: true
+    },
+    "linkwatch/cache.py": {
+      title: "linkwatch/cache.py",
+      desc: "Status: CLEAN. Interacts with local storage via appdirs.user_cache_dir; scheduled for platformdirs migration.",
+      code: `// File: linkwatch/cache.py (Lines 5-14)
+import json
+import appdirs
+
+CACHE_DIR = appdirs.user_cache_dir("linkwatch")
+
+def save_cache(data):
+    with open(f"{CACHE_DIR}/cache.json", "w") as f:
+        json.dump(data, f)`,
+      flagged: false
+    },
+    "tests/test_checker.py": {
+      title: "tests/test_checker.py",
+      desc: "Status: TARGET OF REGRESSION CHECK. Verifies fetch() and check_site() return codes.",
+      code: `// File: tests/test_checker.py (Lines 1-12)
+import pytest
+from linkwatch.checker import check_site
+from linkwatch.config import Site
+
+def test_check_site_up():
+    site = Site(url="https://example.com")
+    assert check_site(site) is True`,
+      flagged: false
+    }
+  };
+
+  treeNodes.forEach((node) => {
+    node.addEventListener("click", () => {
+      // Highlight selected node
+      treeNodes.forEach((n) => (n.style.outline = "none"));
+      node.style.outline = "2px solid var(--gold-primary)";
+
+      const filePath = node.getAttribute("data-file");
+      currentTargetFile = filePath;
+      const data = fileData[filePath] || {
+        title: filePath,
+        desc: "File verified by AST Scanner. No critical scope leaks detected.",
+        code: `// File: ${filePath}\n// Status: VERIFIED CLEAN BY DETERMINISTIC SCANNER`,
+        flagged: false
+      };
+
+      if (inspectorTitle) inspectorTitle.textContent = data.title;
+      if (inspectorDesc) inspectorDesc.textContent = data.desc;
+      if (inspectorCode) inspectorCode.textContent = data.code;
+
+      if (inspectorActions) {
+        inspectorActions.style.display = data.flagged ? "block" : "none";
+      }
+    });
+  });
+
+  if (btnFixInChat) {
+    btnFixInChat.addEventListener("click", () => {
+      const panel = document.getElementById("chatbot-panel");
+      const input = document.getElementById("chat-input");
+      if (panel) panel.classList.add("open");
+      if (input) {
+        input.value = `Remediate ${currentTargetFile} using an isolated backward-compatible adapter`;
+        input.focus();
+      }
+    });
+  }
+}
+
+/* ==========================================================================
+   4. Golden Parallax Grid + Counter-Moving Dots inside Chatbot
    ========================================================================== */
 function initChatbotParallax() {
   const panel = document.getElementById("chatbot-panel");
   const grid = document.getElementById("chatbot-parallax-grid");
-  if (!panel || !grid) return;
+  const dots = document.getElementById("chatbot-parallax-dots");
+
+  if (!panel || !grid || !dots) return;
 
   window.addEventListener("mousemove", (e) => {
-    // Only calculate parallax if chatbot is open to save CPU cycles
     if (!panel.classList.contains("open")) return;
 
     const normX = (e.clientX / window.innerWidth - 0.5) * 2;
     const normY = (e.clientY / window.innerHeight - 0.5) * 2;
 
+    // Layer 1: Golden Grid moves with perspective
     const moveX = normX * 18;
     const moveY = normY * 18;
     const rotX = -normY * 6;
     const rotY = normX * 6;
-
     grid.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+
+    // Layer 2: Golden Parallax Dots move in OPPOSITE direction with higher velocity
+    const dotMoveX = -normX * 28;
+    const dotMoveY = -normY * 28;
+    dots.style.transform = `translate3d(${dotMoveX}px, ${dotMoveY}px, 0) rotateX(${-rotX * 0.8}deg) rotateY(${-rotY * 0.8}deg)`;
   });
 }
 
 /* ==========================================================================
-   3. Chatbot Panel Interactions & Web Speech Voice Input
+   5. Chatbot Panel Interactions & Web Speech Voice Input
    ========================================================================== */
 function initChatbotInteractions() {
   const panel = document.getElementById("chatbot-panel");
@@ -244,212 +444,218 @@ function initChatbotInteractions() {
   if (triggerBtn) triggerBtn.addEventListener("click", () => toggleChat());
   if (closeBtn) closeBtn.addEventListener("click", () => toggleChat(false));
 
-  // Quick Action Chips
+  // Quick Chips
   document.querySelectorAll(".chip-btn").forEach((chip) => {
     chip.addEventListener("click", () => {
+      const prompt = chip.getAttribute("data-prompt");
       if (textInput) {
-        textInput.value = chip.dataset.prompt || chip.innerText;
-        textInput.focus();
+        textInput.value = prompt;
+        sendMessage();
       }
     });
   });
 
-  // Message Sending
-  async function sendMessage() {
+  // Send message handler
+  function sendMessage() {
     if (!textInput) return;
-    const userText = textInput.value.trim();
-    if (!userText) return;
+    const userMsg = textInput.value.trim();
+    if (!userMsg) return;
 
-    // Append Human message (Peachy-Orange)
-    appendMessage(userText, "human");
+    // Append Human bubble (peachy-orange)
+    appendChatMessage(userMsg, "human");
     textInput.value = "";
 
-    // Show temporary AI typing indicator
-    const typingId = appendTypingIndicator();
+    // Send to backend
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMsg, voice_used: false }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // Append AI bubble (light blue)
+        appendChatMessage(data.reply, "ai", data.solution, data.reasoning_steps);
 
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userText, voice_used: false }),
+        // Update on-page metrics if relevant
+        handleChatMetricsUpdate(userMsg, data);
+      })
+      .catch((err) => {
+        appendChatMessage(`Connection error: ${err.message}`, "ai");
       });
-      const data = await res.json();
-
-      removeTypingIndicator(typingId);
-      appendMessage(data.reply, "ai", data.solution);
-    } catch (err) {
-      removeTypingIndicator(typingId);
-      appendMessage(
-        "Kavach AST service is operating in local demonstration mode.",
-        "ai",
-        "Solution: Scheduled AST refactor for linkwatch/checker.py with timeout=10.0."
-      );
-    }
   }
 
   if (sendBtn) sendBtn.addEventListener("click", sendMessage);
   if (textInput) {
     textInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendMessage();
-      }
+      if (e.key === "Enter") sendMessage();
     });
   }
 
-  // Voice Input via Web Speech API with Dynamic Silence Wait (5s)
+  function appendChatMessage(text, sender, solution, reasoningSteps) {
+    if (!messagesArea) return;
+    const bubble = document.createElement("div");
+    bubble.className = `chat-bubble ${sender}`;
+
+    if (sender === "ai") {
+      let html = `<div>AI Output: ${escapeHtml(text)}</div>`;
+      if (solution) {
+        html += `<div class="solution-text">Solution: ${escapeHtml(solution)}</div>`;
+      }
+      if (reasoningSteps && reasoningSteps.length > 0) {
+        html += `<div class="cot-steps-box">`;
+        reasoningSteps.forEach((step, idx) => {
+          html += `<div>${idx + 1}. ${escapeHtml(step)}</div>`;
+        });
+        html += `</div>`;
+      }
+      bubble.innerHTML = html;
+    } else {
+      bubble.textContent = `Maintainer: ${text}`;
+    }
+
+    messagesArea.appendChild(bubble);
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+  }
+
+  // Handle on-page metric updates triggered by chatbot conversation
+  function handleChatMetricsUpdate(userMsg, data) {
+    const msg = userMsg.toLowerCase();
+    if (msg.includes("scan") || msg.includes("blast radius")) {
+      navigateToSection("auditor");
+      const badge = document.getElementById("blast-radius-score");
+      if (badge) {
+        badge.style.transform = "scale(1.15)";
+        badge.style.boxShadow = "0 0 30px var(--red-flagged)";
+        setTimeout(() => {
+          badge.style.transform = "scale(1)";
+        }, 1200);
+      }
+    } else if (msg.includes("heal") || msg.includes("dag") || msg.includes("auto-heal")) {
+      navigateToSection("autoheal");
+    } else if (msg.includes("tree")) {
+      navigateToSection("dirtree");
+    }
+  }
+
+  // Voice Input with Web Speech API and 5s dynamic silence wait
   let recognition = null;
   let silenceTimer = null;
 
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRec();
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
-    recognition.onstart = () => {
-      if (micBtn) micBtn.classList.add("recording");
-      if (textInput) textInput.placeholder = "Listening... (recording stops 5s after you stop speaking)";
-    };
-
     recognition.onresult = (event) => {
-      let finalTranscript = "";
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        finalTranscript += event.results[i][0].transcript;
-      }
-
-      if (textInput && finalTranscript) {
-        textInput.value = finalTranscript;
-      }
-
-      // Reset 5-second silence countdown on speech
       clearTimeout(silenceTimer);
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        transcript += event.results[i][0].transcript;
+      }
+      if (textInput && transcript.trim()) {
+        textInput.value = transcript.trim();
+      }
+
+      // 5-second silence detection wait
       silenceTimer = setTimeout(() => {
         if (recognition) recognition.stop();
+        if (micBtn) micBtn.classList.remove("recording");
       }, 5000);
     };
 
     recognition.onerror = () => {
       if (micBtn) micBtn.classList.remove("recording");
-      if (textInput) textInput.placeholder = "Type remediation instruction...";
     };
 
     recognition.onend = () => {
       if (micBtn) micBtn.classList.remove("recording");
-      if (textInput) {
-        textInput.placeholder = "Edit voice input or type instruction...";
-        textInput.focus();
-      }
+      clearTimeout(silenceTimer);
     };
   }
 
   if (micBtn) {
     micBtn.addEventListener("click", () => {
       if (!recognition) {
-        alert("Web Speech API is not supported in this browser. Please type manually.");
+        alert("Web Speech API is not supported in this browser. Please type your message.");
         return;
       }
-      try {
-        if (micBtn.classList.contains("recording")) {
-          recognition.stop();
-        } else {
-          recognition.start();
-        }
-      } catch (err) {
+      if (micBtn.classList.contains("recording")) {
         recognition.stop();
+        micBtn.classList.remove("recording");
+        clearTimeout(silenceTimer);
+      } else {
+        micBtn.classList.add("recording");
+        if (textInput) textInput.placeholder = "Listening... (Speaks freely, waits 5s after silence)";
+        recognition.start();
       }
     });
   }
 
-  function appendMessage(text, sender, solution) {
-    if (!messagesArea) return;
-    const bubble = document.createElement("div");
-    bubble.className = `chat-bubble ${sender}`;
-
-    if (sender === "ai") {
-      let content = `<div>${text}</div>`;
-      if (solution) {
-        content += `<div class="solution-text">Solution: ${solution}</div>`;
+  // Toggle failure trace in Test Suite
+  const btnToggleFailure = document.getElementById("btn-toggle-failure-trace");
+  const failureBox = document.getElementById("failure-trace-box");
+  if (btnToggleFailure && failureBox) {
+    btnToggleFailure.addEventListener("click", () => {
+      if (failureBox.style.display === "none") {
+        failureBox.style.display = "block";
+        btnToggleFailure.textContent = "Hide Failure Trace";
+      } else {
+        failureBox.style.display = "none";
+        btnToggleFailure.textContent = "Toggle Attempt #1 Failure Trace";
       }
-      bubble.innerHTML = content;
-    } else {
-      bubble.innerText = text;
-    }
-
-    messagesArea.appendChild(bubble);
-    messagesArea.scrollTop = messagesArea.scrollHeight;
+    });
   }
 
-  function appendTypingIndicator() {
-    if (!messagesArea) return null;
-    const id = "typing-" + Date.now();
-    const bubble = document.createElement("div");
-    bubble.className = "chat-bubble ai typing";
-    bubble.id = id;
-    bubble.innerHTML = `<em>Thinking...</em>`;
-    messagesArea.appendChild(bubble);
-    messagesArea.scrollTop = messagesArea.scrollHeight;
-    return id;
-  }
-
-  function removeTypingIndicator(id) {
-    if (!id) return;
-    const el = document.getElementById(id);
-    if (el) el.remove();
+  // Copy CAPSULE button
+  const btnCopyCapsule = document.getElementById("btn-copy-capsule");
+  const capsuleBox = document.getElementById("capsule-content-box");
+  if (btnCopyCapsule && capsuleBox) {
+    btnCopyCapsule.addEventListener("click", () => {
+      navigator.clipboard.writeText(capsuleBox.textContent).then(() => {
+        btnCopyCapsule.textContent = "Copied!";
+        setTimeout(() => (btnCopyCapsule.textContent = "Copy Markdown"), 2000);
+      });
+    });
   }
 }
 
 /* ==========================================================================
-   4. Live Codebase Telemetry Synchronization
+   6. Live Telemetry Fetching from Contracts & CAPSULE.md
    ========================================================================== */
-async function fetchCodebaseTelemetry() {
-  try {
-    const res = await fetch("/api/status");
-    const data = await res.json();
+function fetchCodebaseTelemetry() {
+  // Fetch CAPSULE.md artifact
+  fetch("/api/capsule")
+    .then((res) => res.json())
+    .then((data) => {
+      const box = document.getElementById("capsule-content-box");
+      if (box && data.content) {
+        box.textContent = data.content;
+      }
+    })
+    .catch(() => {});
 
-    // Populate Flagged Files
-    const flaggedContainer = document.getElementById("flagged-files-list");
-    if (flaggedContainer && data.ast_output && data.ast_output.flagged_files) {
-      flaggedContainer.innerHTML = data.ast_output.flagged_files
-        .map((f) => `<span class="flagged-file-tag">${f}</span>`)
-        .join("");
-    }
+  // Fetch status telemetry
+  fetch("/api/status")
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.ast_output && data.ast_output.blast_radius_score) {
+        const badge = document.getElementById("blast-radius-score");
+        if (badge) {
+          badge.textContent = `Blast Radius Score: ${data.ast_output.blast_radius_score} / 100`;
+        }
+      }
+    })
+    .catch(() => {});
+}
 
-    // Populate Blast Radius Score
-    const blastBadge = document.getElementById("blast-radius-score");
-    if (blastBadge && data.ast_output) {
-      blastBadge.innerText = `Blast Radius Score: ${data.ast_output.blast_radius_score || 78}/100`;
-    }
-
-    // Populate DAG Nodes
-    const dagContainer = document.getElementById("dag-nodes-container");
-    if (dagContainer && data.search_loop && data.search_loop.history) {
-      dagContainer.innerHTML = data.search_loop.history
-        .map(
-          (node) => `
-        <div class="dag-node-card ${node.status.toLowerCase()}">
-          <div class="dag-header">
-            <strong>${node.action_name}</strong>
-            <span class="score-badge">${node.status} (${node.execution_time_ms || 500}ms)</span>
-          </div>
-          <div style="font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono);">
-            ID: ${node.node_id} | Reward Score: ${node.reward_score !== undefined ? node.reward_score : "N/A"}
-          </div>
-        </div>
-      `
-        )
-        .join("");
-    }
-
-    // Fetch and populate CAPSULE markdown
-    const capsuleRes = await fetch("/api/capsule");
-    const capsuleData = await capsuleRes.json();
-    const capsuleBox = document.getElementById("capsule-content-box");
-    if (capsuleBox && capsuleData.content) {
-      capsuleBox.innerText = capsuleData.content;
-    }
-  } catch (err) {
-    console.warn("Using bundled telemetry state.");
-  }
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

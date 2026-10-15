@@ -88,44 +88,21 @@
     </nav>
   </header>
 
-  <!-- ================= SECTION 1: OVERVIEW & HERO ================= -->
+  <!-- Full-Screen Golden Wave Sweep Overlay -->
+  <div id="golden-wave-sweep" class="golden-wave-sweep"></div>
+
+  <!-- ================= SECTION 1: OVERVIEW (Main Page: Just Triangles & Kavach) ================= -->
   <section id="overview" class="section-view active hero-section">
     <canvas id="triangles-canvas"></canvas>
 
-    <div class="hero-content">
-      <div class="badge-tag">
-        <span>🛡️ Autonomous Codebase Shield</span>
-      </div>
-      <!-- Logo image as website name with glittering golden glass effect -->
+    <div class="hero-content main-hero-clean">
+      <!-- Kavach in the front -->
       <div class="hero-wordmark-wrapper">
         <img src="/static/images/kavach_wordmark.png" alt="Kavach" class="hero-wordmark-img" />
       </div>
-      <p class="hero-subtitle">
-        Empirical software migration & self-healing AST security engine powered by <strong>Google DeepMind's Gemma 4</strong>.
-        Benchmarking against <strong>rishrek/LinkWatch</strong> with MCTS inference-time search, anti-cheat test auditing, and zero-drift verification.
-      </p>
-      <div class="hero-actions">
-        <a href="#dirtree" class="btn-primary" data-nav="dirtree">Inspect AST Tree</a>
-        <a href="#autoheal" class="btn-secondary" data-nav="autoheal">View Auto-Heal Loop</a>
-      </div>
 
-      <!-- Quick Metrics Strip -->
-      <div class="grid-3" style="margin-top: 48px; text-align: left;">
-        <div class="glass-card">
-          <div class="section-label">Target Repository</div>
-          <div style="font-size: 1.25rem; font-weight: 700; color: #fff;">rishrek/LinkWatch</div>
-          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">26 files &bull; 4 critical dependency hotspots</div>
-        </div>
-        <div class="glass-card">
-          <div class="section-label">AST Blast Radius</div>
-          <div style="font-size: 1.25rem; font-weight: 700; color: #fca5a5;">Score: 78 / 100</div>
-          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Hero File: linkwatch/checker.py</div>
-        </div>
-        <div class="glass-card">
-          <div class="section-label">MCTS Winning Node</div>
-          <div style="font-size: 1.25rem; font-weight: 700; color: #86efac;">Node 2: +97 Pts</div>
-          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Deterministic Pass &bull; 7/7 tests passed</div>
-        </div>
+      <div class="slide-ctrl-hint">
+        <span>Hold <kbd>Ctrl</kbd> + move sideways to sweep to next slide &rarr;</span>
       </div>
     </div>
   </section>

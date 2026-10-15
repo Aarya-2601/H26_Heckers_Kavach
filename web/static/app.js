@@ -12,12 +12,13 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   initGoldenTrianglesCanvas();
-  initSmokeNavigation();
+  initGoldenWaveNavigation();
   initTreeDataStructure();
   initChatbotParallax();
   initChatbotInteractions();
   fetchCodebaseTelemetry();
 });
+
 
 /* ==========================================================================
    1. Golden Glass Triangle Glitter Canvas Animation
@@ -168,9 +169,74 @@ function initGoldenTrianglesCanvas() {
 }
 
 /* ==========================================================================
-   2. Diffused Smoke SPA Section Navigation
+   2. Golden Wave Sweep Slide Transition & Ctrl+Sideways Navigation
    ========================================================================== */
-function initSmokeNavigation() {
+const SLIDES = ["overview", "dirtree", "auditor", "whisperer", "autoheal", "tests", "capsule", "dossier"];
+let currentSlideIndex = 0;
+let isWaveTransitioning = false;
+
+function goToSlide(targetIndex, direction = null) {
+  if (isWaveTransitioning) return;
+  if (targetIndex < 0) targetIndex = 0;
+  if (targetIndex >= SLIDES.length) targetIndex = SLIDES.length - 1;
+  if (targetIndex === currentSlideIndex) return;
+
+  isWaveTransitioning = true;
+  if (!direction) {
+    direction = targetIndex > currentSlideIndex ? "right" : "left";
+  }
+
+  const targetId = SLIDES[targetIndex];
+  const currentSection = document.getElementById(SLIDES[currentSlideIndex]);
+  const targetSection = document.getElementById(targetId);
+  const wave = document.getElementById("golden-wave-sweep");
+
+  // 1. Trigger full-screen sweeping golden wave
+  if (wave) {
+    wave.className = `golden-wave-sweep sweep-${direction}`;
+  }
+
+  // 2. At the peak of the wave (280ms), switch active slides cleanly without smoke blur
+  setTimeout(() => {
+    if (currentSection) {
+      currentSection.classList.remove("active");
+      currentSection.style.display = "none";
+    }
+    if (targetSection) {
+      targetSection.style.display = "block";
+      targetSection.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    currentSlideIndex = targetIndex;
+
+    // Update navbar active state
+    document.querySelectorAll(".nav-link").forEach((l) => {
+      if (l.getAttribute("data-nav") === targetId) {
+        l.classList.add("active");
+      } else {
+        l.classList.remove("active");
+      }
+    });
+
+    history.pushState(null, null, `#${targetId}`);
+  }, 280);
+
+  // 3. Reset wave state
+  setTimeout(() => {
+    if (wave) wave.className = "golden-wave-sweep";
+    isWaveTransitioning = false;
+  }, 680);
+}
+
+function navigateToSection(targetId) {
+  const targetIdx = SLIDES.indexOf(targetId);
+  if (targetIdx !== -1) {
+    goToSlide(targetIdx);
+  }
+}
+
+function initGoldenWaveNavigation() {
   const navLinks = document.querySelectorAll("[data-nav]");
 
   navLinks.forEach((link) => {
@@ -186,48 +252,76 @@ function initSmokeNavigation() {
     const hash = window.location.hash.replace("#", "") || "overview";
     navigateToSection(hash);
   });
-}
 
-function navigateToSection(targetId) {
-  const currentSection = document.querySelector(".section-view.active");
-  const targetSection = document.getElementById(targetId);
+  // Initial hash check
+  const initialHash = window.location.hash.replace("#", "");
+  if (initialHash && SLIDES.includes(initialHash)) {
+    const idx = SLIDES.indexOf(initialHash);
+    if (idx !== -1) {
+      currentSlideIndex = idx;
+      SLIDES.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = (id === initialHash) ? "block" : "none";
+      });
+      document.querySelectorAll(".nav-link").forEach((l) => {
+        l.classList.toggle("active", l.getAttribute("data-nav") === initialHash);
+      });
+    }
+  }
 
-  if (!targetSection || currentSection === targetSection) return;
-
-  // Update navbar active status
-  document.querySelectorAll(".nav-link").forEach((l) => {
-    if (l.getAttribute("data-nav") === targetId) {
-      l.classList.add("active");
+  // 1. Mouse sideways movement while Ctrl is held
+  let ctrlMouseStartX = null;
+  window.addEventListener("mousemove", (e) => {
+    if (e.ctrlKey) {
+      if (ctrlMouseStartX === null) {
+        ctrlMouseStartX = e.clientX;
+      } else {
+        const diffX = e.clientX - ctrlMouseStartX;
+        if (diffX > 45) {
+          // Moved sideways right -> sweep to next slide
+          ctrlMouseStartX = e.clientX;
+          goToSlide(currentSlideIndex + 1, "right");
+        } else if (diffX < -45) {
+          // Moved sideways left -> sweep to previous slide
+          ctrlMouseStartX = e.clientX;
+          goToSlide(currentSlideIndex - 1, "left");
+        }
+      }
     } else {
-      l.classList.remove("active");
+      ctrlMouseStartX = null;
     }
   });
 
-  // Update URL hash without jumping
-  history.pushState(null, null, `#${targetId}`);
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Control") {
+      ctrlMouseStartX = null;
+    }
+  });
 
-  // 1. Current section diffuses out into smoke
-  if (currentSection) {
-    currentSection.classList.add("smoke-exit");
-    currentSection.classList.remove("smoke-enter");
+  // 2. Keyboard Ctrl + Arrow keys
+  window.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && (e.key === "ArrowRight" || e.key === "Right")) {
+      e.preventDefault();
+      goToSlide(currentSlideIndex + 1, "right");
+    } else if (e.ctrlKey && (e.key === "ArrowLeft" || e.key === "Left")) {
+      e.preventDefault();
+      goToSlide(currentSlideIndex - 1, "left");
+    }
+  });
 
-    setTimeout(() => {
-      currentSection.classList.remove("active", "smoke-exit");
-      currentSection.style.display = "none";
-
-      // 2. Target section condenses in from golden smoke
-      targetSection.style.display = "block";
-      targetSection.classList.add("active", "smoke-enter");
-      window.scrollTo({ top: 0, behavior: "instant" });
-
-      setTimeout(() => {
-        targetSection.classList.remove("smoke-enter");
-      }, 600);
-    }, 400);
-  } else {
-    targetSection.style.display = "block";
-    targetSection.classList.add("active");
-  }
+  // 3. Trackpad/Wheel horizontal scroll while holding Ctrl
+  window.addEventListener("wheel", (e) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      if (Math.abs(e.deltaX) > 20) {
+        if (e.deltaX > 20) {
+          goToSlide(currentSlideIndex + 1, "right");
+        } else if (e.deltaX < -20) {
+          goToSlide(currentSlideIndex - 1, "left");
+        }
+      }
+    }
+  }, { passive: false });
 }
 
 /* ==========================================================================

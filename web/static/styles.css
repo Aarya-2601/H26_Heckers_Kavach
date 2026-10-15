@@ -115,6 +115,9 @@ body {
   height: 38px;
   width: auto;
   object-fit: contain;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
   filter: drop-shadow(0 0 12px rgba(223, 189, 105, 0.4));
   transition: transform 0.25s ease, filter 0.25s ease;
 }
@@ -297,12 +300,17 @@ body {
 
 .hero-wordmark-wrapper {
   margin-bottom: 24px;
+  background: transparent !important;
+  border: none !important;
 }
 
 .hero-wordmark-img {
   max-width: 520px;
   width: 90%;
   height: auto;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
   filter: drop-shadow(0 0 35px rgba(223, 189, 105, 0.45));
   animation: goldGlitterReveal 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

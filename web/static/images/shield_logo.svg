@@ -100,3 +100,4 @@
   <!-- 7. Subtle vertical 3D specular spine highlight -->
   <line x1="100" y1="34" x2="100" y2="180" stroke="rgba(255, 235, 170, 0.25)" stroke-width="1.2" />
 </svg>
+

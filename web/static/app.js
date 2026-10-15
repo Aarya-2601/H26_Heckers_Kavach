@@ -551,7 +551,7 @@ function initChatbotInteractions() {
     })
       .then((res) => res.json())
       .then((data) => {
-        // Append AI bubble (light blue)
+        // Append AI bubble (golden foreground)
         appendChatMessage(data.reply, "ai", data.solution, data.reasoning_steps);
 
         // Update on-page metrics if relevant

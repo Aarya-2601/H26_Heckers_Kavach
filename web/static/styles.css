@@ -960,32 +960,34 @@ body {
   transform: translateX(0);
 }
 
-/* Layer 1: Golden Parallax Grid (Moves with cursor) */
+/* Layer 1: Golden Parallax Grid (Moves with cursor) - Very light golden and subtle background */
 .chatbot-parallax-grid {
   position: absolute;
   inset: -80px;
   background-image: 
-    linear-gradient(rgba(255, 215, 0, 0.4) 1.5px, transparent 1.5px),
-    linear-gradient(90deg, rgba(255, 215, 0, 0.4) 1.5px, transparent 1.5px);
+    linear-gradient(rgba(223, 189, 105, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(223, 189, 105, 0.12) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   transform-style: preserve-3d;
   transition: transform 0.08s cubic-bezier(0.2, 0, 0.2, 1);
   z-index: 1;
+  opacity: 0.65;
 }
 
-/* Layer 2: Golden Parallax Dots (Moves in OPPOSITE direction for enhanced 3D depth) */
+/* Layer 2: Golden Parallax Dots (Moves in OPPOSITE direction) - Subtle light gold */
 .chatbot-parallax-dots {
   position: absolute;
   inset: -80px;
-  background-image: radial-gradient(circle, #ffd700 2.2px, transparent 2.5px);
+  background-image: radial-gradient(circle, rgba(255, 215, 0, 0.3) 1.5px, transparent 1.8px);
   background-size: 32px 32px;
   background-position: 16px 16px;
   pointer-events: none;
   transform-style: preserve-3d;
   transition: transform 0.1s cubic-bezier(0.2, 0, 0.2, 1);
   z-index: 2;
-  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
+  filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3));
+  opacity: 0.65;
 }
 
 .chatbot-content {
@@ -1054,16 +1056,24 @@ body {
   font-size: 0.92rem;
   line-height: 1.5;
   word-wrap: break-word;
+  position: relative;
+  z-index: 15;
 }
 
-/* AI Outputs: Light Blue (bright_cyan), No robot emoji */
+/* AI Outputs: Radiant Golden (replacing blue) */
 .chat-bubble.ai {
   align-self: flex-start;
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid var(--cyan-ai);
-  color: var(--cyan-ai);
+  background: rgba(16, 20, 28, 0.92);
+  border: 1px solid rgba(223, 189, 105, 0.5);
+  color: var(--gold-light);
   border-bottom-left-radius: 4px;
-  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.7), 0 0 18px rgba(223, 189, 105, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.chat-bubble.ai strong {
+  color: #ffffff;
 }
 
 /* Solutions: Bold with 1 empty line space separation */
@@ -1071,27 +1081,31 @@ body {
   font-weight: 800;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px dashed rgba(56, 189, 248, 0.35);
-  color: var(--white);
+  border-top: 1px dashed rgba(223, 189, 105, 0.4);
+  color: #fff9e6;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.25);
 }
 
 /* Human Inputs: Peachy-Orange (#ffaf87) */
 .chat-bubble.human {
   align-self: flex-end;
-  background: rgba(255, 175, 135, 0.12);
+  background: rgba(24, 18, 20, 0.92);
   border: 1px solid var(--peachy-human);
   color: var(--peachy-human);
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 15px rgba(255, 175, 135, 0.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 175, 135, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .cot-steps-box {
   margin-top: 10px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(8, 10, 15, 0.85);
+  border: 1px solid rgba(223, 189, 105, 0.22);
   border-radius: 8px;
   font-size: 0.8rem;
-  color: #93c5fd;
+  color: var(--gold-light);
   display: flex;
   flex-direction: column;
   gap: 6px;

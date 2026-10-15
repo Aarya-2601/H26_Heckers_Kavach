@@ -1,5 +1,6 @@
-"""Unit tests for UI theming, visualizer, prompts, voice, dashboard, and auto-heal loop."""
+"""Unit tests for UI theming, visualizer, prompts, voice, dashboard, auto-heal loop, and CAPSULE generator."""
 
+from pathlib import Path
 from rich.tree import Tree
 from src.auto_heal import (
     AUTO_HEAL_COT_STEPS,
@@ -9,6 +10,11 @@ from src.auto_heal import (
     render_healed_test_table,
     render_strategy_dag,
     stream_auto_heal_reasoning,
+)
+from src.capsule import (
+    generate_capsule_markdown,
+    generate_mermaid_diagram,
+    write_capsule_file,
 )
 from src.dashboard import (
     DEFAULT_AUDITOR_CHECKS,
@@ -185,3 +191,41 @@ def test_healed_test_table():
     assert "Post-Heal Test Execution Suite" in output
     assert "7/7 Passed" in output
     assert "FAILED" not in output
+
+
+def test_generate_mermaid_diagram():
+    """Verify Mermaid diagram syntax contains standard graph TD structure."""
+    mermaid = generate_mermaid_diagram()
+    assert "```mermaid" in mermaid
+    assert "graph TD" in mermaid
+    assert "Attempt #1" in mermaid
+    assert "Rewind: Trigger Auto-Heal Loop" in mermaid
+    assert "Attempt #2" in mermaid
+    assert "All 7/7 Tests Passed" in mermaid
+
+
+def test_generate_capsule_markdown_strict_separation():
+    """Verify CAPSULE.md maintains strict separation between AI reasoning and telemetry."""
+    doc = generate_capsule_markdown()
+
+    # Verify key sections
+    assert "1. Execution Path & Auto-Heal Topology" in doc
+    assert "2. AI Reasoning Layer (Cognitive Trace)" in doc
+    assert "3. Ground-Truth Telemetry Layer (Deterministic Verifications)" in doc
+    assert "```mermaid" in doc
+
+    # Verify AST metrics and test logs
+    assert "AST & Codebase Metrics" in doc
+    assert "Deterministic Auditor Checklist" in doc
+    assert "Test Suite Execution Logs" in doc
+    assert "rishrek/LinkWatch" in doc
+
+
+def test_write_capsule_file(tmp_path: Path):
+    """Verify write_capsule_file writes the artifact to disk successfully."""
+    target_file = tmp_path / "CAPSULE_TEST.md"
+    written_path = write_capsule_file(output_path=str(target_file), console=console)
+    assert written_path.exists()
+    content = written_path.read_text(encoding="utf-8")
+    assert "# 🛡️ CAPSULE:" in content
+    assert "```mermaid" in content

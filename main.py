@@ -18,6 +18,11 @@ Phase 4: The Auto-Heal Visual Loop
 - Step 4.1: The Rewind Visual (prominent warning divider: --- ⏪ REWIND: TRIGGERING AUTO-HEAL LOOP ---)
 - Step 4.2: State Append (failed attempt context + rich.tree strategy DAG showing abandoned vs active branches)
 - Step 4.3: New reasoning block, healed test execution suite, and bold solution
+
+Phase 5: The Final Artifact (CAPSULE.md)
+- Step 5.1: Markdown Generation (final telemetry, AST metrics, test execution logs)
+- Step 5.2: Mermaid Diagram Integration (graph TD; ... illustrating auto-heal path)
+- Step 5.3: Strict separation between AI reasoning and ground-truth telemetry
 """
 
 import argparse
@@ -28,6 +33,7 @@ from rich.table import Table
 from rich.text import Text
 
 from src.auto_heal import run_auto_heal_loop
+from src.capsule import write_capsule_file
 from src.dashboard import (
     render_test_runner_table,
     run_deterministic_auditor,
@@ -59,7 +65,7 @@ def run_phase1_visualizer() -> None:
     header_text.append("LinkWatch CLI Security & AST Remediator\n", style="bold white")
     header_text.append("Dataset Target: https://github.com/rishrek/LinkWatch\n", style="bright_cyan")
     header_text.append(
-        "Phase 1: Theme & Tree | Phase 2: Interactive Voice | Phase 3: Auditor & Tests | Phase 4: Auto-Heal Loop",
+        "Phases 1-5: Theming, Interactive Voice, Auditor, Auto-Heal & Deliverable Artifact",
         style="dim white",
     )
     console.print(Panel(header_text, border_style="bright_black", expand=False))
@@ -157,6 +163,12 @@ def main() -> None:
         action="store_true",
         help="Skip Phase 4 Auto-Heal loop",
     )
+    parser.add_argument(
+        "--output-capsule",
+        type=str,
+        default="CAPSULE.md",
+        help="Destination path for the final deliverable markdown artifact",
+    )
     args = parser.parse_args()
 
     # 1. Run Phase 1: Foundation & Directory Visualizer
@@ -190,12 +202,21 @@ def main() -> None:
         console=console,
     )
 
-    # 4. Run Phase 4: The Auto-Heal Visual Loop (when mock test intentionally fails)
+    # 4. Run Phase 4: The Auto-Heal Visual Loop
     if not args.skip_auto_heal:
         run_auto_heal_loop(
             delay=delay,
             console=console,
         )
+
+    # 5. Run Phase 5: Deliverable Artifact Generation (CAPSULE.md)
+    console.print()
+    console.print("[dim white]─── [Phase 5] Deliverable Artifact Generation ───[/dim white]")
+    capsule_path = write_capsule_file(
+        output_path=args.output_capsule,
+        console=console,
+    )
+    print_ai(f"Deliverable artifact '{capsule_path.name}' generated with Mermaid visual diagram and verified telemetry.")
 
 
 if __name__ == "__main__":

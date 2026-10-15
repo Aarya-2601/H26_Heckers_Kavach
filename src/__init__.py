@@ -1,4 +1,4 @@
-"""CLI Foundation, Theming, Visualizer, Interactive Voice, Dashboard & Auto-Heal Package.
+"""CLI Foundation, Theming, Visualizer, Interactive Voice, Dashboard, Auto-Heal & CAPSULE Generator Package.
 
 Tailored for rishrek/LinkWatch dataset and AST security demonstration.
 """
@@ -13,6 +13,11 @@ from src.auto_heal import (
     render_strategy_dag,
     run_auto_heal_loop,
     stream_auto_heal_reasoning,
+)
+from src.capsule import (
+    generate_capsule_markdown,
+    generate_mermaid_diagram,
+    write_capsule_file,
 )
 from src.dashboard import (
     DEFAULT_AUDITOR_CHECKS,
@@ -105,4 +110,7 @@ __all__ = [
     "stream_auto_heal_reasoning",
     "render_healed_test_table",
     "run_auto_heal_loop",
+    "generate_mermaid_diagram",
+    "generate_capsule_markdown",
+    "write_capsule_file",
 ]

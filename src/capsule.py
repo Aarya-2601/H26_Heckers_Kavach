@@ -193,3 +193,4 @@ def write_capsule_file(
         f"[bold green]✔ Deliverable artifact successfully written to [white]{file_path.name}[/white][/bold green]"
     )
     return file_path
+

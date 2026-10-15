@@ -1,4 +1,4 @@
-"""Unit tests for UI theming and directory tree visualizer."""
+"""Unit tests for UI theming and directory tree visualizer tailored to LinkWatch."""
 
 from rich.tree import Tree
 from src.theme import (
@@ -9,9 +9,10 @@ from src.theme import (
     custom_theme,
 )
 from src.visualizer import (
-    DEFAULT_DUMMY_FLAGGED,
-    DEFAULT_DUMMY_REPO,
+    LINKWATCH_FLAGGED_FILES,
+    LINKWATCH_REPO_STRUCTURE,
     build_directory_tree,
+    build_tree_from_path,
     render_directory_tree,
 )
 
@@ -24,30 +25,28 @@ def test_theme_color_mappings():
     assert custom_theme.styles["flagged"].color.name == "red"
 
 
-def test_build_directory_tree_renders_flagged_files():
-    """Verify build_directory_tree tags flagged files in bold red and others in neutral."""
-    flagged = {"routes.py", "crypto.py"}
-    structure = {
-        "src": {
-            "routes.py": None,
-            "helpers.py": None,
-        }
-    }
-    tree = build_directory_tree(structure=structure, flagged_files=flagged, root_label="test-repo")
+def test_build_directory_tree_linkwatch_structure():
+    """Verify LinkWatch structure renders with flagged files highlighted."""
+    tree = build_directory_tree(
+        structure=LINKWATCH_REPO_STRUCTURE,
+        flagged_files=LINKWATCH_FLAGGED_FILES,
+        root_label="rishrek/LinkWatch",
+    )
     assert isinstance(tree, Tree)
 
-    # Convert tree structure to string representation
     with console.capture() as capture:
         console.print(tree)
     output = capture.get()
 
-    assert "test-repo" in output
-    assert "routes.py" in output
-    assert "helpers.py" in output
+    assert "LinkWatch" in output
+    assert "http_patch.py" in output
+    assert "checker.py" in output
+    assert "Dockerfile" in output
+    assert "sites.toml" in output
 
 
-def test_render_directory_tree_default():
-    """Verify default dummy repo renders cleanly with default console."""
-    tree = render_directory_tree()
+def test_render_directory_tree_from_dataset_path():
+    """Verify tree builds successfully from actual LinkWatch dataset path if present."""
+    tree = render_directory_tree(source_path="dataset/LinkWatch")
     assert isinstance(tree, Tree)
     assert len(tree.children) > 0

@@ -63,3 +63,4 @@ def print_ai(message: str, **kwargs) -> None:
 def print_human(message: str, **kwargs) -> None:
     """Print a Human input or action message in peachy-orange (rgb(255,175,135))."""
     console.print(f"[human]{message}[/human]", **kwargs)
+

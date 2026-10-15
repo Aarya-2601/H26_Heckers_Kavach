@@ -171,7 +171,7 @@ function initGoldenTrianglesCanvas() {
 /* ==========================================================================
    2. Golden Wave Sweep Slide Transition & Ctrl+Sideways Navigation
    ========================================================================== */
-const SLIDES = ["overview", "dirtree", "auditor", "whisperer", "autoheal", "tests", "capsule", "dossier"];
+const SLIDES = ["overview", "dirtree", "auditor", "whisperer", "autoheal", "tests", "capsule"];
 let currentSlideIndex = 0;
 let isWaveTransitioning = false;
 

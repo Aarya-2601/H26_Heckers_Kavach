@@ -77,7 +77,6 @@
         <li class="nav-item"><a href="#autoheal" class="nav-link" data-nav="autoheal">Auto-Heal</a></li>
         <li class="nav-item"><a href="#tests" class="nav-link" data-nav="tests">Tests</a></li>
         <li class="nav-item"><a href="#capsule" class="nav-link" data-nav="capsule">CAPSULE</a></li>
-        <li class="nav-item"><a href="#dossier" class="nav-link" data-nav="dossier">Dossier</a></li>
         <li>
           <button id="btn-chat-trigger" class="btn-chatbot-trigger" title="Open AI Companion">
             <span class="pulse-dot"></span>
@@ -581,64 +580,6 @@ tests/generated/test_ast_security.py:14: AssertionError
         </div>
         <div id="capsule-content-box" class="code-drawer" style="max-height: 520px; white-space: pre-wrap; font-size: 0.88rem;">
           Loading CAPSULE artifact...
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= SECTION 8: PITCH DOSSIER ================= -->
-    <section id="dossier" class="section-view">
-      <div class="section-header">
-        <div class="section-label">Hackathon Architecture Report</div>
-        <h2 class="section-title">Technical Dossier & Pitch Architecture</h2>
-      </div>
-
-      <div class="grid-2">
-        <!-- Team & Roles -->
-        <div class="glass-card">
-          <div class="section-label">Team Heckers &bull; 4-Person Division</div>
-          <h3 style="color: #fff; margin-bottom: 14px;">Zero-Wait Parallel Contracts</h3>
-          <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem;">
-            <div style="border-left: 2px solid var(--gold-primary); padding-left: 12px;">
-              <strong style="color: var(--gold-light);">Person 1: The Referee (Aarya)</strong>
-              <div style="color: var(--text-muted);">Lead Search & Policy Architect (engine/, sandbox.py, rewards.py, MCTS)</div>
-            </div>
-            <div style="border-left: 2px solid var(--gold-primary); padding-left: 12px;">
-              <strong style="color: var(--gold-light);">Person 2: The Detective (Rushil)</strong>
-              <div style="color: var(--text-muted);">AST & Blast Radius Engineer (analyzer/, ast_scanner.py, auditor.py)</div>
-            </div>
-            <div style="border-left: 2px solid var(--gold-primary); padding-left: 12px;">
-              <strong style="color: var(--gold-light);">Person 3: The Whisperer (Param)</strong>
-              <div style="color: var(--text-muted);">Gemma 4 Cognitive Engine (dependency_whisperer/, Red/Blue Teams)</div>
-            </div>
-            <div style="border-left: 2px solid var(--gold-primary); padding-left: 12px;">
-              <strong style="color: var(--gold-light);">Person 4: The Presenter (Omisha)</strong>
-              <div style="color: var(--text-muted);">UI, Visualizer, CAPSULE Generator & Web Platform (src/, web/)</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Real World LinkWatch Vulnerability Matrix -->
-        <div class="glass-card">
-          <div class="section-label">Real-World Benchmark</div>
-          <h3 style="color: #fff; margin-bottom: 14px;">LinkWatch Target Vulnerabilities</h3>
-          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem;">
-            <div class="tree-file-node">
-              <span><strong>appdirs==1.4.4</strong> &bull; Abandoned 2020</span>
-              <span class="flagged-badge">platformdirs</span>
-            </div>
-            <div class="tree-file-node">
-              <span><strong>toml==0.10.2</strong> &bull; Deprecated Python 3.11+</span>
-              <span class="flagged-badge">tomllib</span>
-            </div>
-            <div class="tree-file-node">
-              <span><strong>Jinja2==2.11.3</strong> &bull; soft_unicode crash</span>
-              <span class="flagged-badge">jinja2>=3.1.2</span>
-            </div>
-            <div class="tree-file-node">
-              <span><strong>requests==2.31.0</strong> &bull; Global scope mutation</span>
-              <span class="flagged-badge">httpx adapter</span>
-            </div>
-          </div>
         </div>
       </div>
     </section>

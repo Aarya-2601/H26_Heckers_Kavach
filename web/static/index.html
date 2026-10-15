@@ -95,43 +95,42 @@
     <canvas id="triangles-canvas"></canvas>
 
     <div class="hero-content main-hero-clean">
-      <!-- Kavach in the front -->
+      <!-- Kavach in the Center of the Slide -->
       <div class="hero-wordmark-wrapper">
         <img src="/static/images/kavach_wordmark.png" alt="Kavach" class="hero-wordmark-img" />
       </div>
 
-      <!-- Single Catchy Subtitle Line -->
-      <p class="hero-catchy-subtitle">
-        Empirical self-healing software migration powered by <strong>Google DeepMind's Gemma 4</strong> &bull; Benchmarked on <strong>rishrek/LinkWatch</strong>
-      </p>
+      <!-- Shifted Down Lower Deck -->
+      <div class="hero-bottom-deck">
+        <!-- Subheading (Smaller in size) -->
+        <p class="hero-catchy-subtitle">
+          Empirical self-healing software migration powered by <strong>Google DeepMind's Gemma 4</strong> &bull; Benchmarked on <strong>rishrek/LinkWatch</strong>
+        </p>
 
-      <!-- Action Buttons -->
-      <div class="hero-actions">
-        <a href="#dirtree" class="btn-primary" data-nav="dirtree">Inspect AST Tree</a>
-        <a href="#autoheal" class="btn-secondary" data-nav="autoheal">View Auto-Heal Loop</a>
-      </div>
+        <!-- Action Buttons -->
+        <div class="hero-actions">
+          <a href="#dirtree" class="btn-primary" data-nav="dirtree">Inspect AST Tree</a>
+          <a href="#autoheal" class="btn-secondary" data-nav="autoheal">View Auto-Heal Loop</a>
+        </div>
 
-      <!-- Target Metrics Strip -->
-      <div class="hero-metrics-strip">
-        <div class="hero-metric-card">
-          <div class="section-label">Target Repository</div>
-          <div style="font-size: 1.05rem; font-weight: 700; color: #fff;">rishrek/LinkWatch</div>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">26 files &bull; 4 dependency hotspots</div>
+        <!-- Target Metrics Strip -->
+        <div class="hero-metrics-strip">
+          <div class="hero-metric-card">
+            <div class="section-label">Target Repository</div>
+            <div style="font-size: 0.98rem; font-weight: 700; color: #fff;">rishrek/LinkWatch</div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 2px;">26 files &bull; 4 dependency hotspots</div>
+          </div>
+          <div class="hero-metric-card">
+            <div class="section-label">AST Blast Radius</div>
+            <div style="font-size: 0.98rem; font-weight: 700; color: #fca5a5;">Score: 78 / 100</div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 2px;">Hero: linkwatch/checker.py</div>
+          </div>
+          <div class="hero-metric-card">
+            <div class="section-label">MCTS Winning Node</div>
+            <div style="font-size: 0.98rem; font-weight: 700; color: #86efac;">Node 2: +97 Pts</div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 2px;">Deterministic Pass &bull; 7/7 tests</div>
+          </div>
         </div>
-        <div class="hero-metric-card">
-          <div class="section-label">AST Blast Radius</div>
-          <div style="font-size: 1.05rem; font-weight: 700; color: #fca5a5;">Score: 78 / 100</div>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Hero: linkwatch/checker.py</div>
-        </div>
-        <div class="hero-metric-card">
-          <div class="section-label">MCTS Winning Node</div>
-          <div style="font-size: 1.05rem; font-weight: 700; color: #86efac;">Node 2: +97 Pts</div>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Deterministic Pass &bull; 7/7 tests</div>
-        </div>
-      </div>
-
-      <div class="slide-ctrl-hint">
-        <span>Hold <kbd>Ctrl</kbd> + move sideways to sweep to next slide &rarr;</span>
       </div>
     </div>
   </section>

@@ -89,39 +89,61 @@ class GemmaClient:
             data = json.loads(cleaned_json)
             if isinstance(data, dict):
                 if response_model.__name__ == "ReplacementRecommendation":
-                    if "target_dependency" not in data:
-                        data["target_dependency"] = data.get("risk_triage", {}).get("target_dependency") or "requests"
+                    target_dep = data.get("target_dependency") or data.get("risk_triage", {}).get("target_dependency")
+                    if isinstance(target_dep, dict):
+                        data["target_dependency"] = str(target_dep.get("name") or target_dep.get("library_name") or "requests")
+                    elif not target_dep:
+                        data["target_dependency"] = "requests"
+                    else:
+                        data["target_dependency"] = str(target_dep)
+
                     if "options" not in data and "replacements" in data:
                         data["options"] = data["replacements"]
-                    if "recommended_choice" not in data:
-                        data["recommended_choice"] = data.get("primary_selection") or data.get("primary_replacement") or "httpx"
+
+                    rec_choice = data.get("recommended_choice") or data.get("primary_selection") or data.get("primary_replacement")
+                    if isinstance(rec_choice, dict):
+                        data["recommended_choice"] = str(rec_choice.get("library_name") or rec_choice.get("name") or "httpx")
+                    elif not rec_choice:
+                        data["recommended_choice"] = "httpx"
+                    else:
+                        data["recommended_choice"] = str(rec_choice)
+
                     if "observed_usage_count" not in data:
                         data["observed_usage_count"] = len(data.get("usage_sites", [])) or 1
-                    if "triage" not in data:
-                        data["triage"] = {
-                            "dependency_name": data.get("target_dependency", "target"),
-                            "current_version": {"value": str(data.get("detected_version", "pinned")), "tag": "OBSERVED"},
-                            "is_deprecated": {"value": "True", "tag": "AI_SUGGESTED"},
-                            "is_unmaintained": {"value": "True", "tag": "AI_SUGGESTED"},
-                            "known_vulnerabilities": {"value": "Outdated security patches", "tag": "OBSERVED"},
-                            "python_compatibility_risk": {"value": "Python 3.12/3.13 risks", "tag": "AI_SUGGESTED"},
-                            "risk_level": "HIGH",
-                            "risk_summary": "Legacy dependency requires modern migration."
-                        }
+
+                    data["triage"] = {
+                        "dependency_name": data["target_dependency"],
+                        "current_version": {"value": str(data.get("detected_version", "pinned")), "tag": "OBSERVED"},
+                        "is_deprecated": {"value": "True", "tag": "AI_SUGGESTED"},
+                        "is_unmaintained": {"value": "True", "tag": "AI_SUGGESTED"},
+                        "known_vulnerabilities": {"value": "Outdated security patches", "tag": "OBSERVED"},
+                        "python_compatibility_risk": {"value": "Python 3.12/3.13 risks", "tag": "AI_SUGGESTED"},
+                        "risk_level": "HIGH",
+                        "risk_summary": "Legacy dependency requires modern migration."
+                    }
                     norm_options = []
                     for opt in data.get("options", []):
                         if isinstance(opt, dict):
+                            pros_raw = opt.get("pros", ["Modern async architecture"])
+                            pros = [pros_raw] if isinstance(pros_raw, str) else list(pros_raw)
+
+                            cons_raw = opt.get("cons", ["Requires dependency updates"])
+                            cons = [cons_raw] if isinstance(cons_raw, str) else list(cons_raw)
+
+                            bc_raw = opt.get("known_breaking_changes") or opt.get("breaking_changes", [])
+                            breaking_changes = [bc_raw] if isinstance(bc_raw, str) else (list(bc_raw) if isinstance(bc_raw, (list, tuple)) else [])
+
                             norm_opt = {
                                 "library_name": opt.get("library_name") or opt.get("name") or "httpx",
                                 "recommended_version_spec": opt.get("recommended_version_spec", ">=0.27.0"),
                                 "ecosystem_health": opt.get("ecosystem_health", "Active"),
-                                "pros": opt.get("pros", ["Modern async architecture"]),
-                                "cons": opt.get("cons", ["Requires dependency updates"]),
+                                "pros": pros,
+                                "cons": cons,
                                 "migration_difficulty": opt.get("migration_difficulty", "LOW"),
-                                "breaking_changes": opt.get("known_breaking_changes") or opt.get("breaking_changes", []),
+                                "breaking_changes": breaking_changes,
                                 "api_mappings": []
                             }
-                            mapping_table = opt.get("api_mapping_table", {})
+                            mapping_table = opt.get("api_mapping_table") or opt.get("api_mapping", {})
                             if isinstance(mapping_table, dict):
                                 for old_k, new_v in mapping_table.items():
                                     norm_opt["api_mappings"].append({

@@ -7,14 +7,26 @@ Run with:
 
 import argparse
 import sys
-import uvicorn
+from pathlib import Path
+
+# Ensure root directory is in sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# Soft_unicode shim for markup/jinja compatibility
+import markupsafe
+if not hasattr(markupsafe, "soft_unicode"):
+    markupsafe.soft_unicode = str
+
+from web.server import app
 
 
 def main():
     parser = argparse.ArgumentParser(description="Kavach Web Interface Runner")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="Host address (default: 127.0.0.1)")
     parser.add_argument("--port", type=int, default=8000, help="Port (default: 8000)")
-    parser.add_argument("--reload", action="store_true", help="Enable live auto-reload for dev")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     args = parser.parse_args()
 
     print("=" * 60)
@@ -23,9 +35,8 @@ def main():
     print(f" 📚 Tailored for target repository: https://github.com/rishrek/LinkWatch")
     print("=" * 60)
 
-    uvicorn.run("web.server:app", host=args.host, port=args.port, reload=args.reload)
+    app.run(host=args.host, port=args.port, debug=args.debug)
 
 
 if __name__ == "__main__":
     main()
-

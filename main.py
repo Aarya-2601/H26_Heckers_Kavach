@@ -117,6 +117,33 @@ def run_pipeline(
             else:
                 target_pkg = user_choice.split()[0].strip()
                 chosen_replacement = f"{target_pkg}-modern"
+
+        print_human(f"Selected Dependency Target: {target_pkg} ➔ {chosen_replacement}")
+
+        # Choose Input Method (Voice or Manual Typing)
+        chosen_method = prompt_select_input_method()
+        voice_text = ""
+        if chosen_method and "Voice" in chosen_method:
+            console.print("[dim white]─── Dynamic Voice Input Capture ───[/dim white]")
+            from src.voice import capture_voice_input
+            voice_text = capture_voice_input(
+                silence_after_speech=5.0,
+                fallback_text=f"migrate {target_pkg} to {chosen_replacement} with backward-compatible adapter"
+            )
+
+        # Questionary prompt with editable input space
+        console.print()
+        console.print("[dim white]─── Terminal Prompt (Maintainer Instruction) ───[/dim white]")
+        default_inst = voice_text or f"migrate {target_pkg} to {chosen_replacement} with zero-touch adapter"
+        confirmed_inst = prompt_remediation_input(default_text=default_inst)
+        if not confirmed_inst:
+            confirmed_inst = default_inst
+
+        print_human(f"Confirmed Remediation Instruction: {confirmed_inst}")
+        console.print()
+        print_solution(
+            f"Scheduled remediation AST rewrite for '{target_pkg}' with directive: '{confirmed_inst}'."
+        )
     else:
         # Map default replacement for non-interactive mode
         if target_pkg == "appdirs":

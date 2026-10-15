@@ -41,6 +41,9 @@ class GemmaClient:
         backend: Optional[str] = None,  # "hosted", "local", "mock", or None for auto-detect
         local_url: Optional[str] = None,
     ):
+        configured_model = os.environ.get("GEMMA_MODEL_NAME") or os.environ.get("GEMINI_MODEL_NAME")
+        if configured_model:
+            model_name = configured_model
         self.metadata = GemmaModelMetadata(model_name=model_name)
         self.api_key = api_key or os.environ.get("GEMMA_API_KEY") or os.environ.get("GEMINI_API_KEY")
         self.local_url = local_url or os.environ.get("GEMMA_LOCAL_URL") or "http://localhost:11434/v1/chat/completions"
@@ -108,10 +111,6 @@ class GemmaClient:
         return text
 
     def _generate_hosted(self, prompt: str, system_prompt: str = "") -> str:
-        url = (
-            f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{self.metadata.model_name}:generateContent?key={self.api_key}"
-        )
         contents = []
         if system_prompt:
             contents.append({"role": "user", "parts": [{"text": f"SYSTEM INSTRUCTION: {system_prompt}"}]})
@@ -126,19 +125,35 @@ class GemmaClient:
                 "maxOutputTokens": 4096,
             },
         }
-        try:
-            resp = requests.post(url, json=payload, timeout=45)
-            resp.raise_for_status()
-            data = resp.json()
-            candidates = data.get("candidates", [])
-            if candidates:
-                parts = candidates[0].get("content", {}).get("parts", [])
-                if parts:
-                    return parts[0].get("text", "")
-            return "{}"
-        except Exception as e:
-            print(f"[Whisperer Warning] Hosted Gemma API call failed ({e}). Falling back to Deterministic Mock Engine.")
-            return self._generate_mock(prompt)
+
+        model_candidates = [self.metadata.model_name]
+        if "gemma" in self.metadata.model_name.lower():
+            model_candidates.extend(["gemini-2.0-flash", "gemini-1.5-flash", "gemma-2-27b-it", "gemma-2-9b-it"])
+
+        last_error = None
+        for model in model_candidates:
+            url = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{model}:generateContent?key={self.api_key}"
+            )
+            try:
+                resp = requests.post(url, json=payload, timeout=30)
+                if resp.status_code == 404:
+                    continue
+                resp.raise_for_status()
+                data = resp.json()
+                candidates = data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        return parts[0].get("text", "")
+                return "{}"
+            except Exception as e:
+                last_error = e
+                continue
+
+        print(f"[Whisperer Warning] Hosted API call failed ({last_error}). Falling back to Deterministic Mock Engine.")
+        return self._generate_mock(prompt)
 
     def _generate_local(self, prompt: str, system_prompt: str = "") -> str:
         messages = []

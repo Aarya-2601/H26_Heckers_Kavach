@@ -12,6 +12,9 @@ import json
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Ensure root directory is on sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -24,7 +27,7 @@ from analyzer.blast_radius import compute_blast_radius
 from analyzer.auditor import audit_patch
 
 # Person 3 imports
-from dependency_whisperer import DependencyWhisperer
+from dependency_whisperer import DependencyWhisperer, GemmaClient
 from dependency_whisperer.adapters import TeamBridge
 from dependency_whisperer.schemas import TaggedField, TagEnum
 
@@ -162,7 +165,8 @@ def run_pipeline(
     ]
     stream_chain_of_thought(steps=cot_steps, delay=0.15)
 
-    whisperer = DependencyWhisperer()
+    gemma_client = GemmaClient(backend=backend)
+    whisperer = DependencyWhisperer(client=gemma_client)
     hero_full_path = os.path.join(repo_path, hero_file)
     hero_code = open(hero_full_path, encoding="utf-8").read() if os.path.exists(hero_full_path) else ""
 
@@ -300,14 +304,19 @@ def main():
     parser.add_argument("--repo", default="dataset/LinkWatch", help="Path to target repository")
     parser.add_argument("--package", default="appdirs", help="Target package to audit/migrate (e.g. appdirs, toml, jinja2)")
     parser.add_argument("--interactive", action="store_true", help="Launch interactive questionary prompts")
-    parser.add_argument("--backend", default="mock", choices=["mock", "hosted"], help="Gemma 4 inference backend")
+    parser.add_argument("--backend", default="auto", choices=["auto", "hosted", "mock", "local"], help="Gemma 4 inference backend (defaults to 'auto': uses hosted if API key set, mock otherwise)")
 
     args = parser.parse_args()
+    backend = args.backend
+    if backend == "auto":
+        has_key = bool(os.environ.get("GEMMA_API_KEY") or os.environ.get("GEMINI_API_KEY"))
+        backend = "hosted" if has_key else "mock"
+
     run_pipeline(
         repo_path=args.repo,
         target_pkg=args.package,
         interactive=args.interactive,
-        backend=args.backend
+        backend=backend
     )
 
 

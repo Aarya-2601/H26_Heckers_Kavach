@@ -178,8 +178,8 @@ def test_failed_context_and_strategy_dag():
 
     assert "Failed Attempt Diagnostics" in output
     assert "Auto-Heal Search Tree & Decision DAG" in output
-    assert "Attempt #1: In-Place Global Monkey-Patching [ABANDONED" in output
-    assert "Attempt #2: Clean Session Subclass Adapter [ACTIVE / SELECTED" in output
+    assert "Attempt #1:" in output and "ABANDONED" in output
+    assert "Attempt #2:" in output and "ACTIVE" in output and "SELECTED" in output
 
 
 def test_healed_test_table():

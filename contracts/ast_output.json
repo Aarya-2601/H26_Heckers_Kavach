@@ -1,20 +1,38 @@
 {
-  "target_package": "toml",
-  "blast_radius_score": 25,
-  "hero_file": "linkwatch/config.py",
+  "target_package": "jinja2",
+  "blast_radius_score": 35,
+  "hero_file": "linkwatch/report.py",
   "call_sites": [
     {
-      "file": "linkwatch/config.py",
-      "line": 37,
-      "calling_function": "load_settings",
-      "code_snippet": "data = toml.load(path)",
-      "symbol": "toml.load",
+      "file": "linkwatch/report.py",
+      "line": 9,
+      "calling_function": "make_env",
+      "code_snippet": "return Environment(",
+      "symbol": "jinja2.Environment",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "linkwatch/report.py",
+      "line": 10,
+      "calling_function": "make_env",
+      "code_snippet": "loader=FileSystemLoader(template_dir()),",
+      "symbol": "jinja2.FileSystemLoader",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "linkwatch/report.py",
+      "line": 11,
+      "calling_function": "make_env",
+      "code_snippet": "autoescape=select_autoescape([\"html\", \"j2\"]),",
+      "symbol": "jinja2.select_autoescape",
       "kind": "call",
       "private_api": false
     }
   ],
   "test_call_sites": [],
-  "context_code": "# file: linkwatch/config.py\nimport toml\n\ndef load_settings(path=\"sites.toml\"):\n    data = toml.load(path)\n    return Settings(**data)",
+  "context_code": "# file: linkwatch/report.py\nfrom jinja2 import Environment, FileSystemLoader, select_autoescape\n\ndef make_env():\n    return Environment(\n        loader=FileSystemLoader(template_dir()),\n        autoescape=select_autoescape([\"html\", \"j2\"]),\n    )",
   "context_truncated": false,
   "unparsed_files": [],
   "files_scanned": 15

@@ -1,0 +1,177 @@
+{
+  "package": "linkwatch",
+  "total_files": 5,
+  "total_tests": 10,
+  "total_asserts": 21,
+  "project_refs": [
+    "linkwatch.cache.load_results",
+    "linkwatch.cache.save_results",
+    "linkwatch.checker.check_site",
+    "linkwatch.checker.fetch",
+    "linkwatch.cli.cli",
+    "linkwatch.config.Settings",
+    "linkwatch.config.Site",
+    "linkwatch.config.load_settings"
+  ],
+  "assert_literals": [
+    "Caf\u00e9 Cr\u00e8me",
+    "connection error",
+    "linkwatch test page",
+    "linkwatch/1.0",
+    "status.html"
+  ],
+  "files": [
+    {
+      "file": "conftest.py",
+      "sha256": "20787c7b47bcf8334b5758d41c9ca5a01bf836dd0da17ae167e518226f2a3d61",
+      "fixtures": [
+        "server",
+        "closed_port"
+      ],
+      "tests": []
+    },
+    {
+      "file": "test_cache.py",
+      "sha256": "9fa238b44b1ba4d1375ac392ac2c4234da910f5a6ac348d5d51176ea03222550",
+      "fixtures": [],
+      "tests": [
+        {
+          "name": "test_cache_round_trip",
+          "line": 6,
+          "asserts": 3,
+          "args": [
+            "tmp_path",
+            "monkeypatch"
+          ],
+          "project_refs": [
+            "linkwatch.cache.load_results",
+            "linkwatch.cache.save_results"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "test_checker.py",
+      "sha256": "05c0224faa1d9b80739c110261c3f362128fd202ba33f85c6e937fe6ccdf2ab7",
+      "fixtures": [],
+      "tests": [
+        {
+          "name": "test_ok_is_up",
+          "line": 9,
+          "asserts": 3,
+          "args": [
+            "server"
+          ],
+          "project_refs": [
+            "linkwatch.checker.check_site"
+          ]
+        },
+        {
+          "name": "test_missing_is_down",
+          "line": 16,
+          "asserts": 2,
+          "args": [
+            "server"
+          ],
+          "project_refs": [
+            "linkwatch.checker.check_site"
+          ]
+        },
+        {
+          "name": "test_redirect_is_up",
+          "line": 22,
+          "asserts": 2,
+          "args": [
+            "server"
+          ],
+          "project_refs": [
+            "linkwatch.checker.check_site"
+          ]
+        },
+        {
+          "name": "test_slow_is_up",
+          "line": 28,
+          "asserts": 1,
+          "args": [
+            "server"
+          ],
+          "project_refs": [
+            "linkwatch.checker.check_site"
+          ]
+        },
+        {
+          "name": "test_closed_port_is_down",
+          "line": 33,
+          "asserts": 2,
+          "args": [
+            "closed_port"
+          ],
+          "project_refs": [
+            "linkwatch.checker.check_site"
+          ]
+        },
+        {
+          "name": "test_latin1_title",
+          "line": 39,
+          "asserts": 1,
+          "args": [
+            "server"
+          ],
+          "project_refs": [
+            "linkwatch.checker.check_site"
+          ]
+        },
+        {
+          "name": "test_user_agent",
+          "line": 44,
+          "asserts": 1,
+          "args": [
+            "server"
+          ],
+          "project_refs": [
+            "linkwatch.checker.fetch"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "test_config.py",
+      "sha256": "fef1c828f89a593a07cf19ddc5c4ee6e695eb67b40b7382993de4e211a0281ca",
+      "fixtures": [],
+      "tests": [
+        {
+          "name": "test_sites_file_loads",
+          "line": 8,
+          "asserts": 4,
+          "args": [],
+          "project_refs": [
+            "linkwatch.config.Settings",
+            "linkwatch.config.Site",
+            "linkwatch.config.load_settings"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "test_report.py",
+      "sha256": "543c54976b30e8f7bfd8b226678178eeb6ea60405bfbda1d7e15f73760e97108",
+      "fixtures": [],
+      "tests": [
+        {
+          "name": "test_report_renders_all_sites",
+          "line": 16,
+          "asserts": 2,
+          "args": [
+            "tmp_path",
+            "monkeypatch"
+          ],
+          "project_refs": [
+            "linkwatch.cache.save_results",
+            "linkwatch.cli.cli"
+          ]
+        }
+      ]
+    }
+  ],
+  "unparsed": []
+}

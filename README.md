@@ -1,90 +1,104 @@
-# Gemma 4 Dependency Exit Capsule Engine
+# Gemma 4 Dependency Exit Capsule
 
-This repository implements an automated software resilience lab designed to migrate deprecated dependencies using Gemma 4. Rather than acting as a standard LLM chat wrapper, this system utilizes an Inference-Time Search (MCTS) architecture, an Asymmetric Adversarial Arena (Red/Blue teams), and deterministic sandboxed execution to empirically prove the safest migration path.
+## 1. Problem and Solution Overview
 
-## Core Architecture & Innovations
-
-* **AST Blast Radius & Hero Files:** Uses static analysis to calculate a blast radius score and pinpoint the "Hero File" (the file with the highest dependency coupling). This isolates the exact bytes being mutated and prevents context window fragmentation.
+* **The Problem:** Dependency migration is highly risky and often avoided by maintainers because rewriting code across multiple files introduces subtle syntax bugs and merge conflicts. Standard AI tools fail at this because they simply attempt to rewrite entire files via chat, often hallucinating test passes or cheating by modifying the tests themselves.
 
 
-* **Adversarial Testing (Red vs. Blue):** Employs Gemma 4 in two distinct roles. The Red Team acts as a fuzzer generating extreme edge-case tests (null payloads, boundary limits), while the Blue Team generates unified diff patches for the migration.
-
-
-* **The Oracle & Anti-Tamper Sandbox:** Generated tests are first run against the legacy codebase; if they pass, they are locked into an immutable vault. A deterministic auditor verifies the Git diff to ensure the AI does not cheat by deleting assertions or hardcoding literal values.
-
-
-* **Deterministic Reward Engine:** A Python harness scores proposed migration patches based on clean compilation, passing sandboxed tests, latency, and code bloat. This forces the search tree to dynamically abandon inferior patches and auto-heal errors without fine-tuning weights.
-
-
-* **The Exit Capsule:** Generates a verifiable `CAPSULE.md` and `exit-capsule.json` featuring a Mermaid.js state exploration graph, strictly separating raw deterministic test telemetry from AI reasoning.
+* **The Solution:** This project is an automated software resilience lab that pairs Gemma 4 with an Inference-Time Search (Monte Carlo Tree Search) and deterministic sandboxed execution. Instead of blindly replacing code, the system calculates the "blast radius" of a bad dependency, slices the code using an Abstract Syntax Tree (AST), and isolates the changes. It then forces the AI into an Asymmetric Adversarial Arena: a "Red Team" AI generates edge-case tests, while a "Blue Team" AI attempts to write the patch. A Python execution harness acts as an absolute referee, running the tests in a sandbox and scoring the AI's patch deterministically. The final output is a verifiable "Dependency Exit Capsule" containing mathematical proof of the safest migration path.
 
 
 
-## Repository Structure
+## 2. Setup Instructions
 
-* `analyzer/`: Static code analysis. Scans for target packages, extracts call sites, computes the blast radius, and runs the anti-cheat AST guard.
-
-
-* `ai/`: Gemma 4 cognitive engine. Handles prompts for replacement candidate recommendations, Red Team fuzzer tests, and Blue Team migration diffs.
+* Ensure you have Python installed on your system.
+* Clone the repository and set up the expected folder structure containing `analyzer/`, `ai/`, `engine/`, and `ui/` directories.
 
 
-* `engine/`: The execution backend. Manages the MCTS search state machine, ephemeral subprocess test sandboxing, and calculates the reward score.
+* Install the required terminal interface dependencies by running `pip install rich questionary`.
 
 
-* `ui/`: Interactive front-end. Powers the terminal wizard, renders the AST tree visualizer, and builds the final Exit Capsule deliverable.
+* Obtain a Google AI Studio API key and set it as an environment variable (e.g., `GEMINI_API_KEY`), or install Ollama locally to run the models on your own hardware.
 
 
 
-## 6-Hour Plan of Action
+## 3. Usage Instructions
 
-**Phase 1: Foundation & Contract Locking (0:00 - 0:20)**
-
-* Initialize repository and install `rich` and `questionary` dependencies.
+* Start the interactive terminal wizard by executing the main Python script (e.g., `python ui/cli.py` or `python main.py`).
 
 
-* Commit the three frozen JSON mock schemas (`ast_output.json`, `gemma_output.json`, `run_result.json`) to the `contracts/` directory to enable simultaneous development.
+* When prompted by the CLI, select the at-risk dependency you want to replace from the detected list, or type a custom package name.
 
 
-
-**Phase 2: Isolated Development (0:20 - 3:30)**
-
-* **Person 1 (Engine):** Build `sandbox.py` to capture raw exit codes/stderr via subprocess, and construct the `rewards.py` heuristic calculator.
+* The tool will automatically detect the "Hero File" (the file with the highest blast radius); press Enter to confirm this or type a manual override.
 
 
-* **Person 2 (Analyzer):** Build `ast_scanner.py` to walk AST nodes for call sites, and `blast_radius.py` to calculate file hit counts.
+* Review the three replacement candidates suggested by the AI and select one to test.
 
 
-* **Person 3 (AI):** Build `gemma_client.py` and configure the Google GenAI SDK to return structured JSON for candidate options, adversarial tests, and patches.
+* The system will run the MCTS search and adversarial sandbox, displaying live spinners and branch evaluations.
 
 
-* **Person 4 (UI):** Build `cli.py` to handle user selection menus and the interactive live dashboard.
+* Once finished, view the generated `CAPSULE.md` file in your root directory to see the verified execution logs and the Mermaid state diagram.
 
 
 
-**Phase 3: Pairwise Integration (3:30 - 4:45)**
+## 4. Architecture
 
-* **Pair A (Person 2 + 4):** Hook the AST parser and Hero File selector into the interactive CLI menus.
+The architecture is divided into four isolated modules that enforce a strict separation of powers:
 
-
-* **Pair B (Person 1 + 3):** Connect Gemma 4 outputs directly into the MCTS search loop and isolated sandbox runner.
-
+* **analyzer/ (AST & Blast Radius):** Performs static code analysis using AST to find all call sites of the deprecated library, computes the blast radius score, and isolates the "Hero File". It also acts as an anti-cheat auditor, scanning the generated patches to ensure the AI did not delete assertions or hardcode literal values.
 
 
-**Phase 4: Master Integration (4:45 - 5:30)**
-
-* Create `main.py` entry point.
+* **ai/ (Gemma 4 Cognitive Engine):** Manages the AI prompt instructions. It splits Gemma 4 into a Red Team fuzzer (which writes extreme edge-case tests like null payloads) and a Blue Team migrator (which generates unified Git diffs to patch the code).
 
 
-* Wire the UI to invoke the search loop with user-selected parameters and run the entire pipeline against a target repository.
+* **engine/ (Search Loop & Sandbox Runner):** The deterministic brain of the operation. It treats the code migration as a search game, running the AI's patches inside ephemeral subprocesses (like pytest). It calculates a reward score based on clean compilation, passing tests, and execution latency, automatically dropping branches that fail.
+
+
+* **ui/ (Interactive CLI & Exit Capsule):** Builds the front-end using terminal rendering libraries. It handles the interactive user menus, displays the live AST tree and search progress, and formats the final `exit-capsule.json` and `CAPSULE.md`.
 
 
 
-**Phase 5: Polish & Demo Prep (5:30 - 6:00)**
+## 5. Dependencies
 
-* Generate the final `CAPSULE.md`.
-
-
-* Review AST metrics, telemetry separation, and Mermaid graphs.
+* `rich` and `questionary`: Required for building the interactive terminal UI, live dashboards, and menus.
 
 
-* Execute the live demo script end-to-end to confirm terminal aesthetics and slide timings.
+* `google-genai` SDK or the standard `openai` Python SDK: Required for communicating with the Gemma 4 API or a local Ollama instance.
+
+
+* `pytest` (or `npm test`): Required by the execution sandbox to run native test commands in subprocesses.
+
+
+* `ast` (Python standard library) or `tree-sitter`: Required for parsing code into Abstract Syntax Trees.
+
+
+
+## 6. AI Model Details
+
+* **Model Name:** Gemma 4.
+
+
+* **Model Version:** Includes variants such as the 31B dense flagship, the 26B A4B Mixture-of-Experts, and the E4B/E2B edge-optimized models. (Note: `gemini-2.5-flash` is listed as a potential API fallback in the codebase).
+
+
+* **Source Access Method:** The model can be accessed via local execution using Ollama or vLLM, through the Google AI Studio / Vertex AI Cloud API, or via Python Transformers.
+
+
+* **Applicable License:** Released under the Apache 2.0 open-weight license.
+
+
+* **Role in the Project:** The model is strictly utilized for reasoning and code generation. It acts as a candidate recommender, an adversarial Red Team generating unseen edge-case tests, and a Blue Team generating structured unified Git diffs to replace the old library. The model does not execute code; it only outputs JSON and patches to the Python harness.
+
+
+
+## 7. Known Limitations
+
+* **Ecosystem Constraints:** The pipeline's automated sandbox is typically scoped to one specific ecosystem at a time (e.g., Python with `pytest` and `requirements.txt`, or Node.js with `npm test`), meaning the deterministic execution harness must be adapted for different languages.
+
+
+* **Context Window Boundaries:** While Gemma 4 supports large context windows, dumping entire codebases into the prompt can cause failures; the system relies heavily on the AST analyzer successfully chunking the codebase into specific function boundaries to keep the inference loop fast.
+
+
+* **Oracle Reliance:** The system's anti-hallucination filter requires the target repository to have a working legacy state. Newly generated tests must first pass against the original codebase to be locked in as ground truth; if the original code is fundamentally broken, the "Oracle Filter" cannot validate new tests.

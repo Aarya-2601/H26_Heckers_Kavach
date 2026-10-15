@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+referee_sandbox/
+referee_sandbox_test/
+*.egg-info/
+dist/
+build/

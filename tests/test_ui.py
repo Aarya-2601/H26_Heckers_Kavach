@@ -1,6 +1,15 @@
-"""Unit tests for UI theming, visualizer, prompts, voice, and Phase 3 dashboard."""
+"""Unit tests for UI theming, visualizer, prompts, voice, dashboard, and auto-heal loop."""
 
 from rich.tree import Tree
+from src.auto_heal import (
+    AUTO_HEAL_COT_STEPS,
+    HEALED_TEST_RESULTS,
+    print_rewind_divider,
+    render_failed_context,
+    render_healed_test_table,
+    render_strategy_dag,
+    stream_auto_heal_reasoning,
+)
 from src.dashboard import (
     DEFAULT_AUDITOR_CHECKS,
     DEFAULT_COT_STEPS,
@@ -144,3 +153,35 @@ def test_render_test_runner_table():
     assert "PASSED" in output
     assert "FAILED" in output
     assert "test_no_global_requests_monkeypatch" in output
+
+
+def test_rewind_divider():
+    """Verify rewind divider prints prominent warning header without clearing terminal."""
+    with console.capture() as capture:
+        print_rewind_divider(console=console)
+    output = capture.get()
+    assert "REWIND: TRIGGERING AUTO-HEAL LOOP" in output
+
+
+def test_failed_context_and_strategy_dag():
+    """Verify failed context and decision tree DAG illustrate abandoned and active branches."""
+    with console.capture() as capture:
+        render_failed_context(console=console)
+        render_strategy_dag(console=console)
+    output = capture.get()
+
+    assert "Failed Attempt Diagnostics" in output
+    assert "Auto-Heal Search Tree & Decision DAG" in output
+    assert "Attempt #1: In-Place Global Monkey-Patching [ABANDONED" in output
+    assert "Attempt #2: Clean Session Subclass Adapter [ACTIVE / SELECTED" in output
+
+
+def test_healed_test_table():
+    """Verify post-heal test table shows all tests passed."""
+    with console.capture() as capture:
+        render_healed_test_table(console=console)
+    output = capture.get()
+
+    assert "Post-Heal Test Execution Suite" in output
+    assert "7/7 Passed" in output
+    assert "FAILED" not in output

@@ -13,6 +13,11 @@ Phase 3: The Auditor View & Test Runner Dashboard
 - Step 3.1: Chain of Thought Live Panel (streaming Gemma's reasoning in bright_cyan)
 - Step 3.2: The Auditor View (Deterministic Auditor checklist updating [ ] to [X])
 - Step 3.3: Test Distinction & Status (Table with Pre-existing vs AI-Generated, 🟢/🔴 status, stack trace viewer)
+
+Phase 4: The Auto-Heal Visual Loop
+- Step 4.1: The Rewind Visual (prominent warning divider: --- ⏪ REWIND: TRIGGERING AUTO-HEAL LOOP ---)
+- Step 4.2: State Append (failed attempt context + rich.tree strategy DAG showing abandoned vs active branches)
+- Step 4.3: New reasoning block, healed test execution suite, and bold solution
 """
 
 import argparse
@@ -22,6 +27,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
+from src.auto_heal import run_auto_heal_loop
 from src.dashboard import (
     render_test_runner_table,
     run_deterministic_auditor,
@@ -52,7 +58,10 @@ def run_phase1_visualizer() -> None:
     header_text = Text()
     header_text.append("LinkWatch CLI Security & AST Remediator\n", style="bold white")
     header_text.append("Dataset Target: https://github.com/rishrek/LinkWatch\n", style="bright_cyan")
-    header_text.append("Phase 1: Theme & AST Tree | Phase 2: Interactive & Voice | Phase 3: Auditor & Tests", style="dim white")
+    header_text.append(
+        "Phase 1: Theme & Tree | Phase 2: Interactive Voice | Phase 3: Auditor & Tests | Phase 4: Auto-Heal Loop",
+        style="dim white",
+    )
     console.print(Panel(header_text, border_style="bright_black", expand=False))
 
     console.print()
@@ -118,7 +127,7 @@ def run_phase1_visualizer() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="LinkWatch CLI Security & Interactive Voice Remediator")
+    parser = argparse.ArgumentParser(description="LinkWatch CLI Security, Auditor & Auto-Heal Dashboard")
     parser.add_argument(
         "--non-interactive",
         action="store_true",
@@ -143,12 +152,17 @@ def main() -> None:
         action="store_false",
         help="Skip microphone listening step and use manual typing",
     )
+    parser.add_argument(
+        "--skip-auto-heal",
+        action="store_true",
+        help="Skip Phase 4 Auto-Heal loop",
+    )
     args = parser.parse_args()
 
-    # Run Phase 1: Foundation & Directory Visualizer
+    # 1. Run Phase 1: Foundation & Directory Visualizer
     run_phase1_visualizer()
 
-    # Run Phase 2: Interactive Inputs & Voice Capture
+    # 2. Run Phase 2: Interactive Inputs & Voice Capture
     if args.non_interactive:
         console.print()
         console.print("[dim white]─── [Phase 2] Non-interactive verification mode ───[/dim white]")
@@ -168,13 +182,20 @@ def main() -> None:
                 mock_voice_text=args.mock_voice,
             )
 
-    # Run Phase 3: The Auditor View & Test Runner Dashboard
+    # 3. Run Phase 3: The Auditor View & Test Runner Dashboard
     delay = 0.05 if args.non_interactive else 0.2
     run_phase3_dashboard(
         delay=delay,
         interactive_expand=not args.non_interactive,
         console=console,
     )
+
+    # 4. Run Phase 4: The Auto-Heal Visual Loop (when mock test intentionally fails)
+    if not args.skip_auto_heal:
+        run_auto_heal_loop(
+            delay=delay,
+            console=console,
+        )
 
 
 if __name__ == "__main__":

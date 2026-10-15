@@ -1,8 +1,19 @@
-"""CLI Foundation, Theming, Visualizer, Interactive Voice & Phase 3 Dashboard.
+"""CLI Foundation, Theming, Visualizer, Interactive Voice, Dashboard & Auto-Heal Package.
 
 Tailored for rishrek/LinkWatch dataset and AST security demonstration.
 """
 
+from src.auto_heal import (
+    AUTO_HEAL_COT_STEPS,
+    HEALED_TEST_RESULTS,
+    REWIND_COLOR,
+    print_rewind_divider,
+    render_failed_context,
+    render_healed_test_table,
+    render_strategy_dag,
+    run_auto_heal_loop,
+    stream_auto_heal_reasoning,
+)
 from src.dashboard import (
     DEFAULT_AUDITOR_CHECKS,
     DEFAULT_COT_STEPS,
@@ -70,6 +81,9 @@ __all__ = [
     "DEFAULT_COT_STEPS",
     "DEFAULT_AUDITOR_CHECKS",
     "DEFAULT_TEST_RESULTS",
+    "REWIND_COLOR",
+    "AUTO_HEAL_COT_STEPS",
+    "HEALED_TEST_RESULTS",
     "build_directory_tree",
     "build_tree_from_path",
     "render_directory_tree",
@@ -85,4 +99,10 @@ __all__ = [
     "run_deterministic_auditor",
     "render_test_runner_table",
     "run_phase3_dashboard",
+    "print_rewind_divider",
+    "render_failed_context",
+    "render_strategy_dag",
+    "stream_auto_heal_reasoning",
+    "render_healed_test_table",
+    "run_auto_heal_loop",
 ]

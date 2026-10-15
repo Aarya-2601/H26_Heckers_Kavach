@@ -154,6 +154,7 @@ def run_pipeline(
             chosen_replacement = "jinja2-modern (shim)"
         elif target_pkg == "requests":
             chosen_replacement = "httpx"
+        confirmed_inst = f"migrate {target_pkg} to {chosen_replacement} with zero-touch adapter"
 
     # -------------------------------------------------------------
     # PHASE 1: Detective Static Analysis & AST Mapping
@@ -184,11 +185,12 @@ def run_pipeline(
     
     # Stream Chain of Thought reasoning panel
     cot_steps = [
-        f"1. Ingesting AST slices from {hero_file}...",
-        f"2. Analyzing risk for deprecated package '{target_pkg}'...",
-        f"3. Identified API breaking changes & drop-in migration target: '{chosen_replacement}'.",
-        f"4. Synthesizing Set A (Compatibility Gates) & Set B (Differential Tests)...",
-        f"5. Emitting Unified Git Diff and preparing for Ephemeral Sandbox execution."
+        f"1. Ingesting Maintainer Directive: '{confirmed_inst}'...",
+        f"2. Parsing AST slices from {hero_file}...",
+        f"3. Analyzing risk for deprecated package '{target_pkg}'...",
+        f"4. Identified API breaking changes & drop-in migration target: '{chosen_replacement}'.",
+        f"5. Synthesizing Set A (Compatibility Gates) & Set B (Differential Tests)...",
+        f"6. Emitting Unified Git Diff and preparing for Ephemeral Sandbox execution."
     ]
     stream_chain_of_thought(steps=cot_steps, delay=0.15)
 
@@ -201,7 +203,8 @@ def run_pipeline(
         dependency_name=target_pkg,
         detected_version="pinned",
         hero_file=hero_file,
-        hero_code=hero_code
+        hero_code=hero_code,
+        user_instruction=confirmed_inst
     )
 
     console.print(f"\n[bold green]✓ Gemma 4 Recommendation:[/bold green] Migrate [yellow]{target_pkg}[/yellow] → [bold cyan]{chosen_replacement}[/bold cyan]")

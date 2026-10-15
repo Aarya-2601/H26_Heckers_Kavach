@@ -33,6 +33,7 @@ custom_theme = Theme(
         "ai": COLOR_AI_OUTPUT,
         "ai_output": COLOR_AI_OUTPUT,
         "ai.text": COLOR_AI_OUTPUT,
+        "solution": f"bold {COLOR_AI_OUTPUT}",
         # Human inputs/actions mapped to peachy-orange (rgb(255,175,135))
         "human": COLOR_HUMAN_ACTION,
         "human_action": COLOR_HUMAN_ACTION,
@@ -64,3 +65,7 @@ def print_human(message: str, **kwargs) -> None:
     """Print a Human input or action message in peachy-orange (rgb(255,175,135))."""
     console.print(f"[human]{message}[/human]", **kwargs)
 
+
+def print_solution(solution: str, **kwargs) -> None:
+    """Print the AI solution in bold light blue (bright_cyan)."""
+    console.print(f"[bold bright_cyan]Solution: {solution}[/bold bright_cyan]", **kwargs)

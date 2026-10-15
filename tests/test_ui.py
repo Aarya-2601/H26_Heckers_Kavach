@@ -4,6 +4,7 @@ from rich.tree import Tree
 from src.prompts import (
     DEFAULT_DEPENDENCY_CHOICES,
     DEFAULT_FLAGGED_CHOICES,
+    INPUT_METHOD_CHOICES,
     PEACHY_ORANGE_HEX,
     custom_questionary_style,
 )
@@ -13,6 +14,7 @@ from src.theme import (
     COLOR_HUMAN_ACTION,
     console,
     custom_theme,
+    print_solution,
 )
 from src.visualizer import (
     LINKWATCH_FLAGGED_FILES,
@@ -29,6 +31,17 @@ def test_theme_color_mappings():
     assert custom_theme.styles["human"].color.triplet == (255, 175, 135)
     assert custom_theme.styles["flagged"].bold is True
     assert custom_theme.styles["flagged"].color.name == "red"
+
+
+def test_solution_styling_is_bold():
+    """Verify print_solution outputs bold text without ai emoji."""
+    with console.capture() as capture:
+        print_solution("Replace requests with httpx in linkwatch/checker.py")
+    output = capture.get()
+
+    assert "Solution:" in output
+    assert "Replace requests with httpx" in output
+    assert "🤖" not in output
 
 
 def test_build_directory_tree_linkwatch_structure():
@@ -55,7 +68,6 @@ def test_questionary_peachy_orange_styling():
     """Verify Questionary prompt styling uses the peachy-orange hex code #ffaf87."""
     assert PEACHY_ORANGE_HEX.lower() == "#ffaf87"
 
-    # Verify style dictionary contains peachy-orange rules for prompt text and markers
     rule_map = dict(custom_questionary_style.style_rules)
     assert "qmark" in rule_map
     assert "fg:#ffaf87" in rule_map["qmark"]
@@ -69,6 +81,8 @@ def test_questionary_choices():
     """Verify selection menus contain expected LinkWatch audit options."""
     assert any("requests" in choice for choice in DEFAULT_DEPENDENCY_CHOICES)
     assert any("http_patch.py" in choice for choice in DEFAULT_FLAGGED_CHOICES)
+    assert any("Voice" in choice for choice in INPUT_METHOD_CHOICES)
+    assert any("Manual" in choice for choice in INPUT_METHOD_CHOICES)
 
 
 def test_voice_wrapper_mock_and_fallback():

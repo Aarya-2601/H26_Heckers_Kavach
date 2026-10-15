@@ -6,11 +6,13 @@ Tailored for rishrek/LinkWatch dataset and AST security demonstration.
 from src.prompts import (
     DEFAULT_DEPENDENCY_CHOICES,
     DEFAULT_FLAGGED_CHOICES,
+    INPUT_METHOD_CHOICES,
     PEACHY_ORANGE_HEX,
     custom_questionary_style,
     prompt_remediation_input,
     prompt_select_dependency,
     prompt_select_flagged_file,
+    prompt_select_input_method,
     run_interactive_workflow,
 )
 from src.theme import (
@@ -23,6 +25,7 @@ from src.theme import (
     custom_theme,
     print_ai,
     print_human,
+    print_solution,
 )
 from src.visualizer import (
     DEFAULT_DUMMY_FLAGGED,
@@ -40,6 +43,7 @@ __all__ = [
     "custom_theme",
     "print_ai",
     "print_human",
+    "print_solution",
     "COLOR_AI_OUTPUT",
     "COLOR_HUMAN_ACTION",
     "COLOR_FLAGGED",
@@ -53,6 +57,7 @@ __all__ = [
     "DEFAULT_DUMMY_FLAGGED",
     "DEFAULT_DEPENDENCY_CHOICES",
     "DEFAULT_FLAGGED_CHOICES",
+    "INPUT_METHOD_CHOICES",
     "build_directory_tree",
     "build_tree_from_path",
     "render_directory_tree",
@@ -61,6 +66,7 @@ __all__ = [
     "voice_wrapper",
     "prompt_select_dependency",
     "prompt_select_flagged_file",
+    "prompt_select_input_method",
     "prompt_remediation_input",
     "run_interactive_workflow",
 ]

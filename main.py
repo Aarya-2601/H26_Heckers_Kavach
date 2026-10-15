@@ -6,8 +6,11 @@ Phase 1: Foundation, Theming & Directory Tree
 
 Phase 2: Interactive Inputs & Voice Capture
 - Step 2.1: Terminal Prompts using questionary (styled in peachy-orange #ffaf87)
-- Step 2.2: Voice Input Wrapper using SpeechRecognition and sounddevice
-- Step 2.3: Voice transcribed text populates terminal prompt as default in peachy-orange
+- Step 2.2: Voice Input Wrapper using SpeechRecognition and sounddevice:
+    * Records dynamically while speaking, then concludes after 5 seconds of silence
+    * Voice input is completely optional
+    * Transcribed speech populates text prompt for review & editing
+- Step 2.3: Solutions formatted in bold with a one-line space after the question
 """
 
 import argparse
@@ -20,12 +23,14 @@ from rich.text import Text
 from src.prompts import (
     DEFAULT_DEPENDENCY_CHOICES,
     DEFAULT_FLAGGED_CHOICES,
+    INPUT_METHOD_CHOICES,
     prompt_remediation_input,
     prompt_select_dependency,
     prompt_select_flagged_file,
+    prompt_select_input_method,
     run_interactive_workflow,
 )
-from src.theme import console, print_ai, print_human
+from src.theme import console, print_ai, print_human, print_solution
 from src.visualizer import (
     LINKWATCH_FLAGGED_FILES,
     LINKWATCH_REPO_STRUCTURE,
@@ -44,12 +49,12 @@ def run_phase1_visualizer() -> None:
 
     console.print()
 
-    # Step 1.1: Color System & Theming Palette
+    # Step 1.1: Color System & Theming Palette (no robot emojis)
     console.print("[dim white]─── [Phase 1.1] Color System & Theming Palette ───[/dim white]")
-    print_ai("🤖 AI Output: Ingesting repository dataset 'rishrek/LinkWatch' (website & link uptime checker)...")
-    print_human("👤 Human Action: Selected rishrek/LinkWatch for AST inspection & security audit.")
-    print_ai("🤖 AI Output: AST scanner parsed 26 files across linkwatch/, tests/, and root manifests.")
-    print_human("👤 Human Action: Confirmed flagged files for review: http_patch.py, checker.py, Dockerfile.")
+    print_ai("AI Output: Ingesting repository dataset 'rishrek/LinkWatch' (website & link uptime checker)...")
+    print_human("Human Action: Selected rishrek/LinkWatch for AST inspection & security audit.")
+    print_ai("AI Output: AST scanner parsed 26 files across linkwatch/, tests/, and root manifests.")
+    print_human("Human Action: Confirmed flagged files for review: http_patch.py, checker.py, Dockerfile.")
 
     console.print()
 
@@ -118,23 +123,32 @@ def main() -> None:
         help="Provide mock voice input text to bypass microphone hardware in testing",
     )
     parser.add_argument(
-        "--skip-voice",
+        "--voice",
+        dest="voice",
         action="store_true",
-        help="Skip microphone listening step and proceed to prompt directly",
+        default=None,
+        help="Force enable voice capture step",
+    )
+    parser.add_argument(
+        "--no-voice",
+        dest="voice",
+        action="store_false",
+        help="Skip microphone listening step and use manual typing",
     )
     args = parser.parse_args()
 
     # Run Phase 1 Foundation & Directory Visualizer
     run_phase1_visualizer()
 
-    # Run Phase 2 Interactive Inputs & Voice Capture
+    # Run Phase 2 Interactive Inputs & Optional Voice Capture
     if args.non_interactive:
         console.print()
         console.print("[dim white]─── [Phase 2] Non-interactive verification mode ───[/dim white]")
         mock_text = args.mock_voice or "replace requests with httpx in linkwatch/checker.py"
-        print_ai("🤖 AI Output: Non-interactive mode engaged. Skipping live stdin prompts.")
-        print_human(f"👤 Simulated Action: {mock_text}")
-        print_ai("✨ Verified Phase 2 pipeline configuration.")
+        print_ai("AI Output: Non-interactive mode engaged. Skipping live stdin prompts.")
+        print_human(f"Simulated Action: {mock_text}")
+        console.print()
+        print_solution(f"Scheduled remediation AST rewrite with action: '{mock_text}'.")
         return
 
     # Check if running in an interactive terminal
@@ -144,9 +158,9 @@ def main() -> None:
         console.print("[dim white]⚠️  Non-interactive terminal detected (no TTY). Use --mock-voice for testing.[/dim white]")
         return
 
-    # Interactive workflow
+    # Interactive workflow with optional voice and bold solution
     run_interactive_workflow(
-        listen_voice=not args.skip_voice,
+        listen_voice=args.voice,
         mock_voice_text=args.mock_voice,
     )
 

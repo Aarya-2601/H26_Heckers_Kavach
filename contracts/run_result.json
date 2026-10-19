@@ -1,0 +1,114 @@
+<<<<<<< Updated upstream
+=======
+{
+  "winning_node": {
+    "node_id": "node_1",
+    "parent_id": "node_0",
+    "action_name": "Attempt 1: Direct Refactor",
+    "patch_diff": "--- a/linkwatch/report.py\n+++ b/linkwatch/report.py\n@@ -1,3 +1,4 @@\n+# Attempt 1 direct refactor\n from datetime import datetime\n",
+    "run_result": {
+      "exit_code": 1,
+      "passed": false,
+      "stdout": "",
+      "raw_stderr": "D:\\H26_Heckers_Kavach\\.venv\\Scripts\\python.exe: No module named pytest",
+      "execution_time_ms": 35,
+      "timed_out": false,
+      "tampering_detected": false
+    },
+    "reward_score": 29,
+    "reward_breakdown": {
+      "extrinsic_reward": 0,
+      "intrinsic_curiosity": 30,
+      "anti_cheat_penalty": 0,
+      "efficiency_penalty": 0,
+      "code_bloat_penalty": -1,
+      "tampering_detected": false,
+      "reasons": [
+        "Intrinsic curiosity bonus: Discovered new error signature (+30).",
+        "Code bloat penalty: 1 lines added in diff (-1)."
+      ]
+    },
+    "status": "FAILED"
+  },
+  "total_nodes_explored": 3,
+  "history": [
+    {
+      "node_id": "node_0",
+      "parent_id": null,
+      "action_name": "Baseline (jinja2)",
+      "patch_diff": "",
+      "run_result": {
+        "exit_code": 1,
+        "passed": false,
+        "stdout": "",
+        "raw_stderr": "D:\\H26_Heckers_Kavach\\.venv\\Scripts\\python.exe: No module named pytest",
+        "execution_time_ms": 45,
+        "timed_out": false,
+        "tampering_detected": false
+      },
+      "reward_score": 0,
+      "reward_breakdown": {},
+      "status": "BASELINE"
+    },
+    {
+      "node_id": "node_1",
+      "parent_id": "node_0",
+      "action_name": "Attempt 1: Direct Refactor",
+      "patch_diff": "--- a/linkwatch/report.py\n+++ b/linkwatch/report.py\n@@ -1,3 +1,4 @@\n+# Attempt 1 direct refactor\n from datetime import datetime\n",
+      "run_result": {
+        "exit_code": 1,
+        "passed": false,
+        "stdout": "",
+        "raw_stderr": "D:\\H26_Heckers_Kavach\\.venv\\Scripts\\python.exe: No module named pytest",
+        "execution_time_ms": 35,
+        "timed_out": false,
+        "tampering_detected": false
+      },
+      "reward_score": 29,
+      "reward_breakdown": {
+        "extrinsic_reward": 0,
+        "intrinsic_curiosity": 30,
+        "anti_cheat_penalty": 0,
+        "efficiency_penalty": 0,
+        "code_bloat_penalty": -1,
+        "tampering_detected": false,
+        "reasons": [
+          "Intrinsic curiosity bonus: Discovered new error signature (+30).",
+          "Code bloat penalty: 1 lines added in diff (-1)."
+        ]
+      },
+      "status": "FAILED"
+    },
+    {
+      "node_id": "node_2",
+      "parent_id": "node_1",
+      "action_name": "Attempt 2: Auto-Heal (Shim/Fix)",
+      "patch_diff": "--- a/linkwatch/report.py\n+++ b/linkwatch/report.py\n@@ -1,4 +1,7 @@\n+import markupsafe\n+if not hasattr(markupsafe, 'soft_unicode'):\n+    markupsafe.soft_unicode = str\n from datetime import datetime\n \n from jinja2 import Environment, FileSystemLoader, select_autoescape\n",
+      "run_result": {
+        "exit_code": 1,
+        "passed": false,
+        "stdout": "",
+        "raw_stderr": "D:\\H26_Heckers_Kavach\\.venv\\Scripts\\python.exe: No module named pytest",
+        "execution_time_ms": 37,
+        "timed_out": false,
+        "tampering_detected": false
+      },
+      "reward_score": -3,
+      "reward_breakdown": {
+        "extrinsic_reward": 0,
+        "intrinsic_curiosity": 0,
+        "anti_cheat_penalty": 0,
+        "efficiency_penalty": 0,
+        "code_bloat_penalty": -3,
+        "tampering_detected": false,
+        "reasons": [
+          "Code bloat penalty: 3 lines added in diff (-3)."
+        ]
+      },
+      "status": "FAILED"
+    }
+  ],
+  "mermaid_dag": "graph TD\n    node_0[\"Baseline (jinja2)<br/>(Baseline)\"]\n    node_1[\"Attempt 1: Direct Refactor<br/>Score: 29 (FAILED)\"]\n    class node_1 failed;\n    node_0 --> node_1\n    node_2[\"Attempt 2: Auto-Heal (Shim/Fix)<br/>Score: -3 (FAILED)\"]\n    class node_2 failed;\n    node_1 --> node_2\n    classDef passed fill:#2ea44f,stroke:#22863a,color:#fff;\n    classDef failed fill:#cb2431,stroke:#b31d28,color:#fff;",
+  "image_artifact": "D:\\H26_Heckers_Kavach\\capsule_decision_tree.png"
+}
+>>>>>>> Stashed changes

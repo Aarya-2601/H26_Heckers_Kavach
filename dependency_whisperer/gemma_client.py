@@ -43,10 +43,22 @@ class GemmaClient:
     ):
         self.metadata = GemmaModelMetadata(model_name=model_name)
         self.api_key = api_key or os.environ.get("GEMMA_API_KEY") or os.environ.get("GEMINI_API_KEY")
-        self.local_url = local_url or os.environ.get("GEMMA_LOCAL_URL") or "http://localhost:11434/v1/chat/completions"
 
+        # Build local URL: prefer OLLAMA_HOST env var, then GEMMA_LOCAL_URL, then hardcoded default
+        ollama_host = os.environ.get("OLLAMA_HOST", "").rstrip("/")
+        default_local_url = (
+            f"{ollama_host}/v1/chat/completions"
+            if ollama_host
+            else "http://localhost:11434/v1/chat/completions"
+        )
+        self.local_url = local_url or os.environ.get("GEMMA_LOCAL_URL") or default_local_url
+
+        # Backend resolution priority: explicit arg > GEMMA_BACKEND env var > api_key > USE_LOCAL_GEMMA > mock
+        env_backend = os.environ.get("GEMMA_BACKEND", "").strip().lower()
         if backend:
             self.backend = backend
+        elif env_backend in ("hosted", "local", "mock"):
+            self.backend = env_backend
         elif self.api_key:
             self.backend = "hosted"
         elif os.environ.get("USE_LOCAL_GEMMA"):
@@ -137,19 +149,40 @@ class GemmaClient:
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": prompt})
 
-        payload = {
-            "model": self.metadata.model_name,
-            "messages": messages,
-            "temperature": 0.1,
-        }
-        try:
-            resp = requests.post(self.local_url, json=payload, timeout=60)
-            resp.raise_for_status()
-            data = resp.json()
-            return data["choices"][0]["message"]["content"]
-        except Exception as e:
-            print(f"[Whisperer Warning] Local Gemma call failed ({e}). Falling back to Deterministic Mock Engine.")
-            return self._generate_mock(prompt)
+        # Try native Ollama endpoint first (/api/chat), fallback to OpenAI /v1 format
+        ollama_base = self.local_url.split("/v1")[0].rstrip("/")
+        endpoints_to_try = [
+            f"{ollama_base}/api/chat",
+            self.local_url,
+        ]
+
+        last_err = None
+        for endpoint in endpoints_to_try:
+            is_native = endpoint.endswith("/api/chat")
+            payload = {
+                "model": self.metadata.model_name,
+                "messages": messages,
+                "temperature": 0.1,
+            }
+            if is_native:
+                payload["stream"] = False
+
+            try:
+                resp = requests.post(endpoint, json=payload, timeout=120)
+                if resp.status_code == 404:
+                    continue
+                resp.raise_for_status()
+                data = resp.json()
+                if is_native:
+                    return data.get("message", {}).get("content", "")
+                else:
+                    return data["choices"][0]["message"]["content"]
+            except Exception as e:
+                last_err = e
+                continue
+
+        print(f"[Whisperer Warning] Local Gemma call failed ({last_err}). Falling back to Deterministic Mock Engine.")
+        return self._generate_mock(prompt)
 
     def _generate_mock(self, prompt: str) -> str:
         prompt_lower = prompt.lower()

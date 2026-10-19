@@ -50,6 +50,7 @@ class DependencyWhisperer:
         usage_locations: Optional[List[DependencyUsageLocation]] = None,
         hero_file: str = "",
         hero_code: str = "",
+        user_instruction: Optional[str] = None,
     ) -> ReplacementRecommendation:
         locations = usage_locations or []
         usage_summary = "\n".join(
@@ -64,6 +65,8 @@ class DependencyWhisperer:
             hero_file=hero_file or "unknown_file.py",
             hero_code=hero_code or f"# Usage of {dependency_name}",
         )
+        if user_instruction:
+            prompt += f"\n\nUSER DIRECTIVE / HITL INSTRUCTION:\n{user_instruction}\n(Adhere strictly to this user instruction when proposing replacements and strategy.)"
 
         return self.client.generate_structured(
             prompt=prompt,

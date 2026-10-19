@@ -145,23 +145,46 @@ def run_demo(whisperer: DependencyWhisperer, bridge: TeamBridge):
     print("=" * 78)
 
 
+def _resolve_hero(hero_file: Optional[str]) -> tuple[str, str]:
+    """Smart resolver to locate hero files across local and dataset/ directories."""
+    if not hero_file:
+        return "", ""
+    candidates = [
+        Path(hero_file),
+        Path("dataset") / hero_file,
+        Path("dataset") / "LinkWatch" / hero_file,
+    ]
+    if hero_file.startswith("LinkWatch/") or hero_file.startswith("LinkWatch\\"):
+        rel = hero_file.replace("LinkWatch/", "").replace("LinkWatch\\", "")
+        candidates.append(Path("dataset") / "LinkWatch" / rel)
+
+    for cand in candidates:
+        if cand.exists() and cand.is_file():
+            return str(cand), cand.read_text(encoding="utf-8")
+
+    p = Path(hero_file)
+    if p.exists() and p.is_file():
+        return str(p), p.read_text(encoding="utf-8")
+    return hero_file, ""
+
+
 def run_triage(whisperer: DependencyWhisperer, dep: str, version: str, hero_file: Optional[str]):
-    hero_code = ""
-    if hero_file and Path(hero_file).exists():
-        hero_code = Path(hero_file).read_text(encoding="utf-8")
+    hero_resolved, hero_code = _resolve_hero(hero_file)
     res = whisperer.triage_and_suggest_replacements(
         dependency_name=dep,
         detected_version=version,
-        hero_file=hero_file or "",
+        hero_file=hero_resolved or "",
         hero_code=hero_code,
     )
     print(json.dumps(res.model_dump(), indent=2))
 
 
 def run_tests(whisperer: DependencyWhisperer, bridge: TeamBridge, dep: str, replacement: Optional[str], hero_file: str, out_dir: str):
-    hero_code = Path(hero_file).read_text(encoding="utf-8")
-    repl = replacement or "platformdirs" if dep == "appdirs" else "tomllib"
-    plan = whisperer.generate_compatibility_suite(dep, repl, hero_file, hero_code)
+    hero_resolved, hero_code = _resolve_hero(hero_file)
+    if not hero_code:
+        raise FileNotFoundError(f"Could not find hero file: {hero_file}")
+    repl = replacement or ("platformdirs" if dep == "appdirs" else "tomllib")
+    plan = whisperer.generate_compatibility_suite(dep, repl, hero_resolved, hero_code)
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
     fpath = out_path / f"test_{dep}_{repl}.py"
@@ -170,9 +193,11 @@ def run_tests(whisperer: DependencyWhisperer, bridge: TeamBridge, dep: str, repl
 
 
 def run_migrate(whisperer: DependencyWhisperer, dep: str, replacement: Optional[str], hero_file: str, out_file: Optional[str]):
-    hero_code = Path(hero_file).read_text(encoding="utf-8")
-    repl = replacement or "platformdirs" if dep == "appdirs" else "tomllib"
-    patch = whisperer.synthesize_migration(hero_file, hero_code, dep, repl)
+    hero_resolved, hero_code = _resolve_hero(hero_file)
+    if not hero_code:
+        raise FileNotFoundError(f"Could not find hero file: {hero_file}")
+    repl = replacement or ("platformdirs" if dep == "appdirs" else "tomllib")
+    patch = whisperer.synthesize_migration(hero_resolved, hero_code, dep, repl)
     if out_file:
         Path(out_file).write_text(patch.migrated_code, encoding="utf-8")
         print(f"Saved migrated code to {out_file}")
@@ -181,11 +206,13 @@ def run_migrate(whisperer: DependencyWhisperer, dep: str, replacement: Optional[
 
 
 def run_full(whisperer: DependencyWhisperer, bridge: TeamBridge, dep: str, version: str, hero_file: str, out_capsule: str):
-    hero_code = Path(hero_file).read_text(encoding="utf-8")
-    triage_rec = whisperer.triage_and_suggest_replacements(dep, version, hero_file=hero_file, hero_code=hero_code)
+    hero_resolved, hero_code = _resolve_hero(hero_file)
+    if not hero_code:
+        raise FileNotFoundError(f"Could not find hero file: {hero_file}")
+    triage_rec = whisperer.triage_and_suggest_replacements(dep, version, hero_file=hero_resolved, hero_code=hero_code)
     chosen_opt = next(o for o in triage_rec.options if o.library_name == triage_rec.recommended_choice)
-    suite = whisperer.generate_compatibility_suite(dep, chosen_opt.library_name, hero_file, hero_code)
-    patch = whisperer.synthesize_migration(hero_file, hero_code, dep, chosen_opt.library_name, chosen_opt.api_mappings)
+    suite = whisperer.generate_compatibility_suite(dep, chosen_opt.library_name, hero_resolved, hero_code)
+    patch = whisperer.synthesize_migration(hero_resolved, hero_code, dep, chosen_opt.library_name, chosen_opt.api_mappings)
     capsule = whisperer.build_exit_capsule_payload(triage_rec, chosen_opt, suite, patch)
     bridge.export_presenter_capsule(capsule, out_capsule)
     print(f"Full Exit Capsule generated and saved to {out_capsule}")

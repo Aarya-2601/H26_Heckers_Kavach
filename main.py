@@ -344,8 +344,17 @@ def main():
     args = parser.parse_args()
     backend = args.backend
     if backend == "auto":
-        has_key = bool(os.environ.get("GEMMA_API_KEY") or os.environ.get("GEMINI_API_KEY"))
-        backend = "hosted" if has_key else "mock"
+        # Priority: GEMMA_BACKEND env var (set in .env) > API key heuristic > OLLAMA heuristic > mock.
+        # This ensures .env is the single source of truth when no --backend flag is given.
+        env_backend = os.environ.get("GEMMA_BACKEND", "").strip().lower()
+        if env_backend in ("hosted", "local", "mock"):
+            backend = env_backend
+        elif os.environ.get("GEMMA_API_KEY") or os.environ.get("GEMINI_API_KEY"):
+            backend = "hosted"
+        elif os.environ.get("USE_LOCAL_GEMMA") or os.environ.get("OLLAMA_HOST"):
+            backend = "local"
+        else:
+            backend = "mock"
 
     run_pipeline(
         repo_path=args.repo,

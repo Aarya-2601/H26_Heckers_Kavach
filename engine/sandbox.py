@@ -56,10 +56,17 @@ def execute_test_suite(
             "tampering_detected": False
         }
     except subprocess.TimeoutExpired as e:
+        # e.stdout may be bytes, str, or None — normalise to a plain string.
+        if isinstance(e.stdout, bytes):
+            timed_out_stdout = e.stdout.decode(errors="replace")
+        elif isinstance(e.stdout, str):
+            timed_out_stdout = e.stdout
+        else:
+            timed_out_stdout = ""
         return {
             "exit_code": -1,
             "passed": False,
-            "stdout": e.stdout.decode() if isinstance(e.stdout, bytes) else (e.stdout or ""),
+            "stdout": timed_out_stdout,
             "raw_stderr": "Execution timed out.",
             "execution_time_ms": timeout * 1000,
             "timed_out": True,

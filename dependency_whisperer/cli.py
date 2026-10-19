@@ -6,6 +6,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Optional, Tuple
 
 from .adapters import TeamBridge
 from .gemma_client import GemmaClient
@@ -145,7 +146,7 @@ def run_demo(whisperer: DependencyWhisperer, bridge: TeamBridge):
     print("=" * 78)
 
 
-def _resolve_hero(hero_file: Optional[str]) -> tuple[str, str]:
+def _resolve_hero(hero_file: Optional[str]) -> Tuple[str, str]:
     """Smart resolver to locate hero files across local and dataset/ directories."""
     if not hero_file:
         return "", ""

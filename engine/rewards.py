@@ -45,20 +45,27 @@ def compute_reward(
         except Exception:
             pass
 
-    # Fallback static checks on patch diff
+    # Fallback static checks on patch diff.
+    # NOTE: The primary auditor (audit_patch from analyzer.auditor) already ran above.
+    # This fallback only triggers when audit_patch raises an exception (see except block).
     if patch_diff and not is_tampering:
         lines = patch_diff.splitlines()
+        in_test_file = False  # track whether current diff hunk is inside a test file
         for line in lines:
-            # Check for deleting assertions
-            if line.startswith("-") and not line.startswith("---"):
-                if "assert " in line or "assertEqual" in line or "expect(" in line:
-                    is_tampering = True
-                    breakdown["reasons"].append("Anti-cheat trigger: detected deletion of test assertions in patch.")
-            # Check for modifying test files directly
+            # Update context whenever we see a file header pair.
             if line.startswith("--- a/") or line.startswith("+++ b/"):
                 if "test_" in line or "/tests/" in line or ".audit_tests" in line:
                     is_tampering = True
+                    in_test_file = True
                     breakdown["reasons"].append("Anti-cheat trigger: detected modification of test suites in patch.")
+                else:
+                    in_test_file = False
+            # Only flag assert deletions when they occur inside test files.
+            # Removing an `assert` from production source code is perfectly legitimate.
+            if in_test_file and line.startswith("-") and not line.startswith("---"):
+                if "assert " in line or "assertEqual" in line or "expect(" in line:
+                    is_tampering = True
+                    breakdown["reasons"].append("Anti-cheat trigger: detected deletion of test assertions in patch.")
 
     if is_tampering:
         score -= 9999

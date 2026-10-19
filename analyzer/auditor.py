@@ -106,8 +106,7 @@ def audit_patch(diff_text, test_literals=None):
                 "file": f["file"],
                 "detail": "patch modifies a test file or test config",
             })
-
-        if is_test_path(f["file"]):
+            # Assert-counting only applies inside test files.
             removed_asserts += sum(1 for l in f["removed"] if ASSERT_RE.match(l))
             added_asserts += sum(1 for l in f["added"] if ASSERT_RE.match(l))
 

@@ -1,42 +1,21 @@
-<<<<<<< Updated upstream
-=======
 {
-  "target_package": "jinja2",
-  "blast_radius_score": 35,
-  "hero_file": "linkwatch/report.py",
+  "target_package": "appdirs",
+  "blast_radius_score": 25,
+  "hero_file": "linkwatch/cache.py",
   "call_sites": [
     {
-      "file": "linkwatch/report.py",
-      "line": 9,
-      "calling_function": "make_env",
-      "code_snippet": "return Environment(",
-      "symbol": "jinja2.Environment",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "linkwatch/report.py",
+      "file": "linkwatch/cache.py",
       "line": 10,
-      "calling_function": "make_env",
-      "code_snippet": "loader=FileSystemLoader(template_dir()),",
-      "symbol": "jinja2.FileSystemLoader",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "linkwatch/report.py",
-      "line": 11,
-      "calling_function": "make_env",
-      "code_snippet": "autoescape=select_autoescape([\"html\", \"j2\"]),",
-      "symbol": "jinja2.select_autoescape",
+      "calling_function": "cache_dir",
+      "code_snippet": "path = os.environ.get(\"LINKWATCH_CACHE_DIR\") or user_cache_dir(\"linkwatch\")",
+      "symbol": "appdirs.user_cache_dir",
       "kind": "call",
       "private_api": false
     }
   ],
   "test_call_sites": [],
-  "context_code": "# file: linkwatch/report.py\nfrom jinja2 import Environment, FileSystemLoader, select_autoescape\n\ndef make_env():\n    return Environment(\n        loader=FileSystemLoader(template_dir()),\n        autoescape=select_autoescape([\"html\", \"j2\"]),\n    )",
+  "context_code": "# file: linkwatch/cache.py\nfrom appdirs import user_cache_dir\n\ndef cache_dir():\n    path = os.environ.get(\"LINKWATCH_CACHE_DIR\") or user_cache_dir(\"linkwatch\")\n    os.makedirs(path, exist_ok=True)\n    return path",
   "context_truncated": false,
   "unparsed_files": [],
   "files_scanned": 15
 }
->>>>>>> Stashed changes

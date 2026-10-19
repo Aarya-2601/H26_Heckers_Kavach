@@ -41,20 +41,48 @@ class GemmaClient:
         backend: Optional[str] = None,  # "hosted", "local", "mock", or None for auto-detect
         local_url: Optional[str] = None,
     ):
-        configured_model = os.environ.get("GEMMA_MODEL_NAME") or os.environ.get("GEMINI_MODEL_NAME")
-        if configured_model:
-            model_name = configured_model
-        elif model_name == "gemma-4-it":
-            # Set sensible defaults based on typical backends
-            if os.environ.get("GEMMA_BACKEND") == "local" or os.environ.get("USE_LOCAL_GEMMA"):
-                model_name = "gemma4:e4b"
-            else:
-                model_name = "gemini-2.5-flash"
-
-        self.metadata = GemmaModelMetadata(model_name=model_name)
+        # ------------------------------------------------------------------
+        # Step 1: Resolve backend FIRST so model-name defaulting can use it.
+        # ------------------------------------------------------------------
+        env_backend = os.environ.get("GEMMA_BACKEND", "").strip().lower()
         self.api_key = api_key or os.environ.get("GEMMA_API_KEY") or os.environ.get("GEMINI_API_KEY")
 
-        # Build local URL: prefer OLLAMA_HOST env var, then GEMMA_LOCAL_URL, then hardcoded default
+        if backend:
+            self.backend = backend
+        elif env_backend in ("hosted", "local", "mock"):
+            self.backend = env_backend
+        elif self.api_key:
+            self.backend = "hosted"
+        elif os.environ.get("USE_LOCAL_GEMMA") or os.environ.get("OLLAMA_HOST"):
+            self.backend = "local"
+        else:
+            self.backend = "mock"
+
+        # ------------------------------------------------------------------
+        # Step 2: Resolve model name now that we know the backend.
+        # Priority: GEMMA_MODEL_NAME env > GEMINI_MODEL_NAME env > per-backend default.
+        # ------------------------------------------------------------------
+        configured_model = os.environ.get("GEMMA_MODEL_NAME") or os.environ.get("GEMINI_MODEL_NAME")
+        if configured_model:
+            # Only use the env-configured model when it makes sense for the backend.
+            # gemma4:e4b is an Ollama tag — don't send it to the Google AI REST API.
+            if self.backend == "hosted" and ":" in configured_model:
+                # Ollama-style tag (e.g. "gemma4:e4b") — ignore for hosted, use safe default.
+                model_name = "gemini-3.5-flash"
+            else:
+                model_name = configured_model
+        elif model_name == "gemma-4-it":
+            # Set sensible defaults based on resolved backend.
+            if self.backend == "local":
+                model_name = "gemma4:e4b"
+            else:
+                model_name = "gemini-3.5-flash"
+
+        self.metadata = GemmaModelMetadata(model_name=model_name)
+
+        # ------------------------------------------------------------------
+        # Step 3: Build local URL.
+        # ------------------------------------------------------------------
         ollama_host = os.environ.get("OLLAMA_HOST", "").rstrip("/")
         default_local_url = (
             f"{ollama_host}/v1/chat/completions"
@@ -62,19 +90,6 @@ class GemmaClient:
             else "http://localhost:11434/v1/chat/completions"
         )
         self.local_url = local_url or os.environ.get("GEMMA_LOCAL_URL") or default_local_url
-
-        # Backend resolution priority: explicit arg > GEMMA_BACKEND env var > api_key > USE_LOCAL_GEMMA > mock
-        env_backend = os.environ.get("GEMMA_BACKEND", "").strip().lower()
-        if backend:
-            self.backend = backend
-        elif env_backend in ("hosted", "local", "mock"):
-            self.backend = env_backend
-        elif self.api_key:
-            self.backend = "hosted"
-        elif os.environ.get("USE_LOCAL_GEMMA"):
-            self.backend = "local"
-        else:
-            self.backend = "mock"
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         """Generate text from Gemma backend."""
@@ -94,6 +109,16 @@ class GemmaClient:
         system_prompt: str = ""
     ) -> T:
         """Generate text and parse/validate into a Pydantic schema."""
+        if self.backend != "mock" and hasattr(response_model, "model_json_schema"):
+            schema_json = json.dumps(response_model.model_json_schema(), indent=2)
+            prompt = (
+                f"{prompt}\n\n"
+                f"STRICT OUTPUT REQUIREMENT:\n"
+                f"You MUST return ONLY a JSON object that strictly adheres to this JSON Schema:\n"
+                f"```json\n{schema_json}\n```\n"
+                f"Ensure all required fields are present with correct types."
+            )
+
         raw_text = self.generate(prompt, system_prompt)
         cleaned_json = self.extract_json(raw_text)
         try:
@@ -136,19 +161,22 @@ class GemmaClient:
             },
         }
 
-        # Try active model name, then fallback to valid models on Google AI Studio
-        model_candidates = [
+        # Try active model name (if not an Ollama tag), then fallback to valid models on Google AI Studio
+        raw_candidates = [
             self.metadata.model_name,
-            "gemini-2.5-flash",
-            "gemini-flash-latest",
-            "gemma-4-31b-it",
+            "gemini-3.5-flash",
+            "gemini-3.5-flash-lite",
             "gemma-4-26b-a4b-it",
+            "gemini-3-flash-preview",
         ]
+        # Filter out empty names, duplicates, and Ollama tags (e.g. "gemma4:e4b")
+        model_candidates = []
+        for m in raw_candidates:
+            if m and ":" not in m and m not in model_candidates:
+                model_candidates.append(m)
 
         last_error = None
         for model in model_candidates:
-            if not model:
-                continue
             # Strip models/ prefix if present
             clean_model = model.replace("models/", "")
             url = (
@@ -156,8 +184,8 @@ class GemmaClient:
                 f"{clean_model}:generateContent?key={self.api_key}"
             )
             try:
-                resp = requests.post(url, json=payload, timeout=45)
-                if resp.status_code == 404:
+                resp = requests.post(url, json=payload, timeout=20)
+                if resp.status_code in (404, 500, 503):
                     continue
                 resp.raise_for_status()
                 data = resp.json()
@@ -173,6 +201,10 @@ class GemmaClient:
 
         print(f"[Whisperer Warning] Hosted Google AI call failed ({last_error}). Falling back to Deterministic Mock Engine.")
         return self._generate_mock(prompt)
+
+    def _is_explicit_backend(self) -> bool:
+        """Return True when the backend was explicitly set (not auto-selected as mock)."""
+        return self.backend in ("hosted", "local")
 
     def _generate_local(self, prompt: str, system_prompt: str = "") -> str:
         messages = []
@@ -212,7 +244,17 @@ class GemmaClient:
                 last_err = e
                 continue
 
-        print(f"[Whisperer Warning] Local Gemma call failed ({last_err}). Falling back to Deterministic Mock Engine.")
+        msg = f"[Whisperer Warning] Local Gemma call failed ({last_err})."
+        if self._is_explicit_backend():
+            raise RuntimeError(
+                f"{msg}\n"
+                "Ollama appears to be unreachable. Please ensure:\n"
+                "  1. Ollama is running:  ollama serve\n"
+                f"  2. The model is pulled: ollama pull {self.metadata.model_name}\n"
+                f"  3. OLLAMA_HOST is correct: {self.local_url}\n"
+                "Or set GEMMA_BACKEND=mock in .env to use the offline mock engine."
+            )
+        print(f"{msg} Falling back to Deterministic Mock Engine.")
         return self._generate_mock(prompt)
 
     def _generate_mock(self, prompt: str) -> str:

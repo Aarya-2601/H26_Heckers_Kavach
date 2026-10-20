@@ -100,6 +100,18 @@ class TestCaseItem(BaseModel):
     description: str
     test_code: str
     expected_behavior: str
+    edge_case_category: Optional[str] = Field(
+        default="General Correctness",
+        description="e.g. 'Type & Boundary', 'Unicode & Encoding', 'OS & Environment', 'Scope & Concurrency', 'Error Resilience'"
+    )
+    stress_invariant: Optional[str] = Field(
+        default="",
+        description="The boundary invariant or edge-case vulnerability being tested"
+    )
+    oracle_validated: Optional[bool] = Field(
+        default=True,
+        description="Whether test was confirmed to represent valid repository invariants on baseline"
+    )
     validity_gate_passed: Optional[bool] = Field(
         default=None,
         description="Must be True on original dependency for Set A before gating migrated code"

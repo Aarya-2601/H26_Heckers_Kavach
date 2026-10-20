@@ -45,7 +45,7 @@ TASK:
 Respond with ONLY a valid JSON object conforming to the schema.
 """
 
-SET_A_SET_B_TEST_PROMPT_TEMPLATE = """You are the Red Team Compatibility Test Writer for dependency migration.
+SET_A_SET_B_TEST_PROMPT_TEMPLATE = """You are the Red Team Adversarial Test Synthesizer and Fuzzer for software dependency migration.
 
 TARGET DEPENDENCY: {dependency_name}
 PROPOSED REPLACEMENT: {replacement_library}
@@ -58,15 +58,30 @@ AST CALL SITES:
 {call_sites}
 
 TASK:
-Generate two distinct test suites:
-1. SET A: Compatibility Gate Tests (2-3 tests)
-   - These tests MUST validate the CURRENT contract and MUST PASS on the old library first!
-   - They define the regression gate: if the migrated code fails Set A, it has broken existing behavior.
-2. SET B: Differential & Edge-Case Tests (2-3 tests)
-   - These tests stress-test the boundary between old and new behavior.
-   - They probe edge cases, unicode/encoding, missing inputs, strict types, or performance differences.
+Generate two distinct, executable pytest test suites:
+1. SET A: Compatibility Gate Tests (2 tests)
+   - These tests MUST validate the CURRENT contract and MUST PASS on the unmigrated library first (Oracle Gate).
+   - They define the regression baseline: if the migrated code fails Set A, it broke existing functionality.
 
-Respond with ONLY a valid JSON object.
+2. SET B: Adversarial Edge-Case Suite (3-4 tests)
+   - Stress-test the subtle boundary between the legacy library and the modern replacement across 4 dimensions:
+     a) Type & Boundary Invariants (null arguments, empty payloads, boundary limits)
+     b) Unicode & Encoding Resilience (non-ASCII strings, accented unicode like 'Café Crème', byte vs string streams)
+     c) OS & Environment Isolation (missing/unset environment variables, cross-platform path separators)
+     d) Scope Contamination & Timeout Bounds (no global monkey-patching of third-party classes, bounded socket timeouts)
+   - For each test, provide:
+     * `test_id` (e.g. 'SET_B_01')
+     * `name` (e.g. 'test_edge_unicode_path_resolution')
+     * `category` ('SET_B_DIFFERENTIAL')
+     * `edge_case_category` ('Unicode & Encoding', 'Type & Boundary', 'OS & Environment', or 'Scope & Concurrency')
+     * `stress_invariant` (brief explanation of the invariant tested)
+     * `description` (human-readable explanation)
+     * `test_code` (runnable pytest test function)
+     * `expected_behavior` (what a resilient migration must do)
+
+3. `full_pytest_file_content`: A complete, self-contained pytest file containing all required imports, fixtures, and tests.
+
+Respond with ONLY a valid JSON object conforming to the schema.
 """
 
 CODE_MIGRATION_PROMPT_TEMPLATE = """You are the Blue Team Code Fixer.

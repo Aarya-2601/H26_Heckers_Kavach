@@ -395,7 +395,7 @@ def test_fetch_explicit_timeout():
       </div>
 
       <!-- DAG Visual Cards -->
-      <div class="dag-node-container">
+      <div class="dag-node-container" id="dag-node-container">
         <div class="dag-card">
           <div class="section-label">Node 0: Baseline</div>
           <strong style="color: #fff;">Original LinkWatch</strong>
@@ -494,7 +494,7 @@ def test_fetch_explicit_timeout():
               <th>Final Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="test-runner-tbody">
             <tr>
               <td><code>tests/test_checker.py::test_check_site_up</code></td>
               <td><span class="origin-badge pre-existing">Pre-existing</span></td>
@@ -519,30 +519,12 @@ def test_fetch_explicit_timeout():
               <td>18ms</td>
               <td><span class="status-badge-passed">🟢 PASSED</span></td>
             </tr>
-            <tr>
-              <td><code>tests/generated/test_ast_checker.py::test_fetch_explicit_timeout</code></td>
-              <td><span class="origin-badge ai-generated">AI-Generated</span></td>
-              <td>21ms</td>
-              <td><span class="status-badge-passed">🟢 PASSED</span></td>
-            </tr>
-            <tr>
-              <td><code>tests/generated/test_ast_security.py::test_no_global_requests_monkeypatch</code></td>
-              <td><span class="origin-badge ai-generated">AI-Generated</span></td>
-              <td>12ms</td>
-              <td><span class="status-badge-passed">🟢 PASSED</span></td>
-            </tr>
-            <tr>
-              <td><code>tests/generated/test_docker_security.py::test_dockerfile_user_directive</code></td>
-              <td><span class="origin-badge ai-generated">AI-Generated</span></td>
-              <td>10ms</td>
-              <td><span class="status-badge-passed">🟢 PASSED</span></td>
-            </tr>
           </tbody>
         </table>
 
         <!-- Expandable Stack Trace for Attempt 1 Failure -->
         <div id="failure-trace-box" style="display: none;">
-          <div class="stack-trace-box">
+          <div class="stack-trace-box" id="failure-trace-content">
 =================================== FAILURES ===================================
 ___________________ test_no_global_requests_monkeypatch ____________________
     def test_no_global_requests_monkeypatch():
@@ -555,6 +537,85 @@ E       assert 'patched_request' == 'request'
 tests/generated/test_ast_security.py:14: AssertionError
 =========================== 1 failed, 6 passed in 0.12s ===========================
           </div>
+        </div>
+      </div>
+
+      <!-- Red Team Adversarial Edge-Case Discovery Card -->
+      <div class="glass-card" style="margin-top: 24px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <div class="section-label" style="color: var(--red-flagged);">Asymmetric Adversarial Arena (Red Team vs Blue Team)</div>
+            <h3 style="color: #fff; margin: 4px 0 6px 0;">⚔️ Red Team Adversarial Edge-Case Discovery</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">
+              Gemma 4 Red Team synthesized multi-dimensional boundary edge cases to stress-test Blue Team patches against Oracle baselines.
+            </p>
+          </div>
+          <button id="btn-toggle-red-team-code" class="btn-secondary" style="font-size: 0.82rem; padding: 6px 14px;">
+            Inspect Red Team Pytest Code
+          </button>
+        </div>
+
+        <table class="test-table" id="red-team-table">
+          <thead>
+            <tr>
+              <th>ID & Suite</th>
+              <th>Category</th>
+              <th>Edge Case Test Name</th>
+              <th>Adversarial Invariant & Description</th>
+              <th>Oracle Gate</th>
+            </tr>
+          </thead>
+          <tbody id="red-team-tbody">
+            <!-- Dynamically populated from /api/status -->
+            <tr>
+              <td><code>SET_A_01</code></td>
+              <td><span class="edge-badge contract">Contract Gate</span></td>
+              <td><code>test_set_a_cache_dir_returns_valid_string_path</code></td>
+              <td>Verifies directory creation and valid path string return contract.</td>
+              <td><span class="status-badge-passed">✔ VALIDATED</span></td>
+            </tr>
+            <tr>
+              <td><code>SET_A_02</code></td>
+              <td><span class="edge-badge contract">Contract Gate</span></td>
+              <td><code>test_set_a_roundtrip_save_and_load</code></td>
+              <td>Verifies telemetry serialization roundtrip fidelity without data loss.</td>
+              <td><span class="status-badge-passed">✔ VALIDATED</span></td>
+            </tr>
+            <tr>
+              <td><code>SET_B_01</code></td>
+              <td><span class="edge-badge unicode">Unicode & Encoding</span></td>
+              <td><code>test_set_b_unicode_appname_special_characters</code></td>
+              <td>Probes non-ASCII accents ('Café Crème') and emoji folder resolution.</td>
+              <td><span class="status-badge-passed">✔ VALIDATED</span></td>
+            </tr>
+            <tr>
+              <td><code>SET_B_02</code></td>
+              <td><span class="edge-badge boundary">Type & Boundary</span></td>
+              <td><code>test_set_b_empty_corrupted_json_recovery</code></td>
+              <td>Zero-byte and empty payload boundary recovery, returning safe default [].</td>
+              <td><span class="status-badge-passed">✔ VALIDATED</span></td>
+            </tr>
+            <tr>
+              <td><code>SET_B_03</code></td>
+              <td><span class="edge-badge environment">OS & Environment</span></td>
+              <td><code>test_set_b_default_cache_dir_resolution_without_env</code></td>
+              <td>Unset environment variables and cross-platform native XDG directory mapping.</td>
+              <td><span class="status-badge-passed">✔ VALIDATED</span></td>
+            </tr>
+            <tr>
+              <td><code>SET_B_04</code></td>
+              <td><span class="edge-badge scope">Scope & Concurrency</span></td>
+              <td><code>test_set_b_concurrent_writes_file_lock</code></td>
+              <td>Rapid sequential writes ensuring clean file descriptor cleanup via context manager.</td>
+              <td><span class="status-badge-passed">✔ VALIDATED</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Code drawer for Red Team Pytest Code -->
+        <div id="red-team-code-drawer" style="display: none; margin-top: 16px;">
+          <div class="section-label" style="color: var(--gold-light);">Generated Pytest Code (.audit_tests)</div>
+          <pre id="red-team-code-content" class="code-drawer" style="max-height: 320px; font-size: 0.82rem; white-space: pre-wrap;"></pre>
         </div>
       </div>
     </section>

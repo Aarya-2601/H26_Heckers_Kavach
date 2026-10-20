@@ -231,40 +231,33 @@ def test_write_capsule_file(tmp_path: Path):
     assert "```mermaid" in content
 
 
-def test_generate_mermaid_diagram():
-    """Verify Mermaid diagram syntax contains standard graph TD structure."""
-    mermaid = generate_mermaid_diagram()
-    assert "```mermaid" in mermaid
-    assert "graph TD" in mermaid
-    assert "Attempt #1" in mermaid
-    assert "Rewind: Trigger Auto-Heal Loop" in mermaid
-    assert "Attempt #2" in mermaid
-    assert "All 7/7 Tests Passed" in mermaid
+def test_dynamic_auto_heal_cot_generation():
+    """Verify auto-heal CoT steps dynamically change based on target dependency."""
+    from src.auto_heal import build_auto_heal_cot_steps
+
+    steps_appdirs = build_auto_heal_cot_steps("appdirs", "platformdirs", "linkwatch/cache.py")
+    assert any("platformdirs" in s for s in steps_appdirs)
+    assert not any("requests.Session" in s for s in steps_appdirs)
+
+    steps_toml = build_auto_heal_cot_steps("toml", "tomllib", "linkwatch/config.py")
+    assert any("tomllib" in s for s in steps_toml)
+    assert not any("platformdirs" in s for s in steps_toml)
+
+    steps_jinja = build_auto_heal_cot_steps("jinja2", "jinja2-modern", "linkwatch/report.py")
+    assert any("soft_unicode" in s or "markupsafe" in s for s in steps_jinja)
+
+    steps_req = build_auto_heal_cot_steps("requests", "httpx", "linkwatch/checker.py")
+    assert any("LinkWatchSession" in s or "Session" in s for s in steps_req)
 
 
-def test_generate_capsule_markdown_strict_separation():
-    """Verify CAPSULE.md maintains strict separation between AI reasoning and telemetry."""
-    doc = generate_capsule_markdown()
+def test_dynamic_capsule_markdown():
+    """Verify CAPSULE.md text is dynamic for different packages."""
+    doc_appdirs = generate_capsule_markdown(target_package="appdirs", replacement_pkg="platformdirs", hero_file="linkwatch/cache.py")
+    assert "appdirs" in doc_appdirs
+    assert "platformdirs" in doc_appdirs
+    assert "LINKWATCH_CACHE_DIR" in doc_appdirs
 
-    # Verify key sections
-    assert "1. Execution Path & Auto-Heal Topology" in doc
-    assert "2. AI Reasoning Layer (Cognitive Trace)" in doc
-    assert "3. Ground-Truth Telemetry Layer (Deterministic Verifications)" in doc
-    assert "```mermaid" in doc
-
-    # Verify AST metrics and test logs
-    assert "AST & Codebase Metrics" in doc
-    assert "Deterministic Auditor Checklist" in doc
-    assert "Test Suite Execution Logs" in doc
-    assert "rishrek/LinkWatch" in doc
-
-
-def test_write_capsule_file(tmp_path: Path):
-    """Verify write_capsule_file writes the artifact to disk successfully."""
-    target_file = tmp_path / "CAPSULE_TEST.md"
-    written_path = write_capsule_file(output_path=str(target_file), console=console)
-    assert written_path.exists()
-    content = written_path.read_text(encoding="utf-8")
-    assert "# 🛡️ CAPSULE:" in content
-    assert "```mermaid" in content
+    doc_toml = generate_capsule_markdown(target_package="toml", replacement_pkg="tomllib", hero_file="linkwatch/config.py")
+    assert "tomllib" in doc_toml
+    assert "open(path, \"rb\")" in doc_toml
 

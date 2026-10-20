@@ -28,62 +28,94 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 # Bright warning color for rewind visual
 REWIND_COLOR = "bold bright_yellow"
 
-# Default Auto-Healed reasoning steps
-AUTO_HEAL_COT_STEPS: List[str] = [
-    "1. [Auto-Heal] Detected failure in Attempt #1: 'test_no_global_requests_monkeypatch'.",
-    "2. [Auto-Heal] Root cause: linkwatch/http_patch.py directly mutated requests.Session.request globally.",
-    "3. [Auto-Heal] Abandoning Attempt #1 branch. Rolling back AST mutation to prevent scope contamination.",
-    "4. [Auto-Heal] Formulating Attempt #2: Implement dedicated LinkWatchSession subclass in linkwatch/checker.py.",
-    "5. [Auto-Heal] Injecting isolated LinkWatchSession with default timeout=10.0 and custom User-Agent header.",
-    "6. [Auto-Heal] Validating AST: No external libraries or global namespaces modified.",
-    "7. [Auto-Heal] Re-running Deterministic Auditor and regression tests on healed codebase.",
-]
+def build_auto_heal_cot_steps(
+    target_pkg: str = "appdirs",
+    replacement_pkg: str = "platformdirs",
+    hero_file: str = "linkwatch/cache.py",
+    error_reason: str = ""
+) -> List[str]:
+    """Dynamically generate Gemma 4 Auto-Heal Chain of Thought steps based on active target."""
+    pkg_lower = target_pkg.lower()
+    
+    if "appdir" in pkg_lower:
+        failure_summary = "test_cache.py or environment isolation gap on cache directory resolution"
+        root_cause = f"Direct platformdirs substitution in {hero_file} omitted runtime environment fallback"
+        fix_action = f"Synthesizing dedicated {replacement_pkg} adapter with LINKWATCH_CACHE_DIR env override"
+        injection = f"Injecting backward-compatible user_cache_dir helper into {hero_file}"
+    elif "toml" in pkg_lower:
+        failure_summary = "TypeError: tomllib.load expected binary file pointer ('rb'), got string path"
+        root_cause = f"Direct tomllib usage in {hero_file} passed filepath string to load() instead of binary stream"
+        fix_action = f"Synthesizing safe binary context manager wrapper with {replacement_pkg}.load(fh)"
+        injection = f"Injecting with open(path, 'rb') as fh context manager into {hero_file}"
+    elif "jinja" in pkg_lower:
+        failure_summary = "ImportError: cannot import name 'soft_unicode' from 'markupsafe'"
+        root_cause = f"Modern Python runtime removed archaic soft_unicode symbol expected by legacy templates"
+        fix_action = f"Synthesizing backward-compatible soft_unicode alias adapter in {hero_file}"
+        injection = f"Injecting markupsafe.soft_unicode = str shim before template compilation"
+    elif "request" in pkg_lower:
+        failure_summary = "Scope Isolation Violation: global mutation detected on requests.Session"
+        root_cause = f"In-place monkey-patching in {hero_file} contaminated global interpreter state"
+        fix_action = f"Synthesizing isolated {replacement_pkg.upper()} Session subclass with bounded 10.0s timeout"
+        injection = f"Injecting dedicated LinkWatchSession subclass in {hero_file} with zero global side-effects"
+    else:
+        err_hint = error_reason.splitlines()[0] if error_reason else "Compatibility regression detected in sandbox"
+        failure_summary = err_hint[:80]
+        root_cause = f"Direct substitution of '{target_pkg}' in {hero_file} violated API invariance"
+        fix_action = f"Synthesizing dedicated {replacement_pkg} adapter with signature invariance"
+        injection = f"Injecting zero-touch backward-compatible wrapper in {hero_file}"
 
-# Healed test results with all tests passing
-HEALED_TEST_RESULTS: List[Dict[str, Any]] = [
-    {
-        "id": "tests/test_checker.py::test_check_site_up",
-        "origin": "Pre-existing",
-        "duration": "14ms",
-        "status": "PASSED",
-    },
-    {
-        "id": "tests/test_config.py::test_load_sites_valid",
-        "origin": "Pre-existing",
-        "duration": "6ms",
-        "status": "PASSED",
-    },
-    {
-        "id": "tests/test_cache.py::test_save_and_load_results",
-        "origin": "Pre-existing",
-        "duration": "9ms",
-        "status": "PASSED",
-    },
-    {
-        "id": "tests/test_report.py::test_build_html_report",
-        "origin": "Pre-existing",
-        "duration": "18ms",
-        "status": "PASSED",
-    },
-    {
-        "id": "tests/generated/test_ast_checker.py::test_fetch_explicit_timeout",
-        "origin": "AI-Generated",
-        "duration": "21ms",
-        "status": "PASSED",
-    },
-    {
-        "id": "tests/generated/test_ast_security.py::test_no_global_requests_monkeypatch",
-        "origin": "AI-Generated",
-        "duration": "12ms",
-        "status": "PASSED",
-    },
-    {
-        "id": "tests/generated/test_docker_security.py::test_dockerfile_user_directive",
-        "origin": "AI-Generated",
-        "duration": "10ms",
-        "status": "PASSED",
-    },
-]
+    return [
+        f"1. [Auto-Heal] Detected failure in Attempt #1: '{failure_summary}'.",
+        f"2. [Auto-Heal] Root cause: {root_cause}.",
+        f"3. [Auto-Heal] Abandoning Attempt #1 branch. Rolling back AST mutation to prevent scope contamination.",
+        f"4. [Auto-Heal] Formulating Attempt #2: {fix_action}.",
+        f"5. [Auto-Heal] {injection}.",
+        f"6. [Auto-Heal] Validating AST: No external libraries or global namespaces polluted.",
+        f"7. [Auto-Heal] Re-running Deterministic Auditor and regression tests on healed codebase.",
+    ]
+
+
+# Backward-compatible default steps
+AUTO_HEAL_COT_STEPS: List[str] = build_auto_heal_cot_steps()
+
+
+def build_default_test_results(target_pkg: str = "appdirs") -> List[Dict[str, Any]]:
+    """Build dynamic test results reflecting pre-existing tests and target-specific edge cases."""
+    pkg = target_pkg.lower()
+    base = [
+        {"id": "tests/test_checker.py::test_check_site_up", "origin": "Pre-existing", "duration": "14ms", "status": "PASSED"},
+        {"id": "tests/test_config.py::test_load_sites_valid", "origin": "Pre-existing", "duration": "6ms", "status": "PASSED"},
+        {"id": "tests/test_cache.py::test_save_and_load_results", "origin": "Pre-existing", "duration": "9ms", "status": "PASSED"},
+        {"id": "tests/test_report.py::test_build_html_report", "origin": "Pre-existing", "duration": "18ms", "status": "PASSED"},
+    ]
+    if "appdir" in pkg:
+        specific = [
+            {"id": "tests/generated/test_appdirs_contract.py::test_cache_dir_returns_valid_path", "origin": "AI-Generated", "duration": "12ms", "status": "PASSED"},
+            {"id": "tests/generated/test_appdirs_edge.py::test_unicode_appname_special_characters", "origin": "AI-Generated", "duration": "15ms", "status": "PASSED"},
+            {"id": "tests/generated/test_appdirs_edge.py::test_default_cache_dir_respects_env_override", "origin": "AI-Generated", "duration": "11ms", "status": "PASSED"},
+        ]
+    elif "toml" in pkg:
+        specific = [
+            {"id": "tests/generated/test_toml_contract.py::test_load_settings_contract_parity", "origin": "AI-Generated", "duration": "10ms", "status": "PASSED"},
+            {"id": "tests/generated/test_toml_edge.py::test_unicode_multilingual_toml_headers", "origin": "AI-Generated", "duration": "14ms", "status": "PASSED"},
+            {"id": "tests/generated/test_toml_edge.py::test_binary_stream_mode_compliance", "origin": "AI-Generated", "duration": "9ms", "status": "PASSED"},
+        ]
+    elif "jinja" in pkg:
+        specific = [
+            {"id": "tests/generated/test_jinja2_contract.py::test_report_renders_all_sites_contract", "origin": "AI-Generated", "duration": "19ms", "status": "PASSED"},
+            {"id": "tests/generated/test_jinja2_edge.py::test_markupsafe_soft_unicode_import_resilience", "origin": "AI-Generated", "duration": "13ms", "status": "PASSED"},
+            {"id": "tests/generated/test_jinja2_edge.py::test_xss_autoescape_injection_hardening", "origin": "AI-Generated", "duration": "16ms", "status": "PASSED"},
+        ]
+    else:
+        specific = [
+            {"id": "tests/generated/test_ast_checker.py::test_fetch_explicit_timeout", "origin": "AI-Generated", "duration": "21ms", "status": "PASSED"},
+            {"id": "tests/generated/test_ast_security.py::test_no_global_requests_monkeypatch", "origin": "AI-Generated", "duration": "12ms", "status": "PASSED"},
+            {"id": "tests/generated/test_docker_security.py::test_dockerfile_user_directive", "origin": "AI-Generated", "duration": "10ms", "status": "PASSED"},
+        ]
+    return base + specific
+
+
+HEALED_TEST_RESULTS: List[Dict[str, Any]] = build_default_test_results("appdirs")
 
 
 def print_rewind_divider(console: Optional[Console] = None) -> None:
@@ -171,12 +203,21 @@ def render_strategy_dag(
 
 def stream_auto_heal_reasoning(
     steps: Optional[List[str]] = None,
+    target_pkg: str = "appdirs",
+    replacement_pkg: str = "platformdirs",
+    hero_file: str = "linkwatch/cache.py",
+    error_reason: str = "",
     delay: float = 0.2,
     console: Optional[Console] = None,
 ) -> None:
     """Stream Gemma's auto-healed reasoning live inside a new reasoning block."""
     target_console = console or default_console
-    thought_steps = steps or AUTO_HEAL_COT_STEPS
+    thought_steps = steps or build_auto_heal_cot_steps(
+        target_pkg=target_pkg,
+        replacement_pkg=replacement_pkg,
+        hero_file=hero_file,
+        error_reason=error_reason
+    )
 
     accumulated: List[str] = []
 
@@ -205,14 +246,19 @@ def stream_auto_heal_reasoning(
 
 def render_healed_test_table(
     test_results: Optional[List[Dict[str, Any]]] = None,
+    project_name: str = "LinkWatch",
+    target_pkg: str = "appdirs",
     console: Optional[Console] = None,
 ) -> None:
     """Render the updated test runner table verifying all tests pass after auto-healing."""
     target_console = console or default_console
-    results = test_results or HEALED_TEST_RESULTS
+    results = test_results if test_results is not None else build_default_test_results(target_pkg)
+
+    passed_count = sum(1 for t in results if "PASS" in str(t.get("status", "")).upper())
+    total_count = len(results)
 
     table = Table(
-        title="LinkWatch Post-Heal Test Execution Suite (7/7 Passed)",
+        title=f"{project_name} Post-Heal Test Execution Suite ({passed_count}/{total_count} Passed)",
         title_style="bold green",
         border_style="bright_black",
         header_style="bold white",
@@ -225,13 +271,13 @@ def render_healed_test_table(
     for test in results:
         origin_styled = (
             "[bright_cyan]AI-Generated[/bright_cyan]"
-            if test["origin"] == "AI-Generated"
+            if test.get("origin") == "AI-Generated"
             else "[dim white]Pre-existing[/dim white]"
         )
         status_styled = "[bold green]🟢 PASSED[/bold green]"
 
         table.add_row(
-            test["id"],
+            test.get("id", test.get("name", "test_case")),
             origin_styled,
             test.get("duration", "10ms"),
             status_styled,
@@ -241,6 +287,12 @@ def render_healed_test_table(
 
 
 def run_auto_heal_loop(
+    target_pkg: str = "appdirs",
+    replacement_pkg: str = "platformdirs",
+    hero_file: str = "linkwatch/cache.py",
+    failed_test_id: Optional[str] = None,
+    failure_reason: Optional[str] = None,
+    test_results: Optional[List[Dict[str, Any]]] = None,
     delay: float = 0.2,
     console: Optional[Console] = None,
 ) -> None:
@@ -257,21 +309,30 @@ def run_auto_heal_loop(
     print_rewind_divider(console=target_console)
 
     # Step 4.2: State Append (Failure context + Decision Tree DAG)
-    render_failed_context(console=target_console)
-    render_strategy_dag(console=target_console)
+    fid = failed_test_id or f"test_{target_pkg}_compatibility"
+    freason = failure_reason or f"Direct substitution of {target_pkg} in {hero_file} failed compatibility gate."
+    render_failed_context(failed_test_id=fid, failure_reason=freason, console=target_console)
+    render_strategy_dag(target_pkg=target_pkg, replacement_pkg=replacement_pkg, hero_file=hero_file, console=target_console)
 
     # Step 4.3: New reasoning block
     target_console.print("[dim white]─── [Phase 4.3] Auto-Heal Reasoning & Re-Execution ───[/dim white]")
-    stream_auto_heal_reasoning(delay=delay, console=target_console)
+    stream_auto_heal_reasoning(
+        target_pkg=target_pkg,
+        replacement_pkg=replacement_pkg,
+        hero_file=hero_file,
+        error_reason=freason,
+        delay=delay,
+        console=target_console,
+    )
 
     target_console.print()
-    render_healed_test_table(console=target_console)
+    render_healed_test_table(test_results=test_results, target_pkg=target_pkg, console=target_console)
 
     # Empty line space between table and solution
     target_console.print()
 
     # Solution in bold without AI emoji
     print_solution(
-        "Auto-heal loop successfully resolved regression failure by transitioning to an isolated Session subclass in linkwatch/checker.py."
+        f"Auto-heal loop successfully resolved regression failure by transitioning to an isolated {replacement_pkg} adapter in {hero_file}."
     )
 

@@ -6,6 +6,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Optional
 
 from .adapters import TeamBridge
 from .gemma_client import GemmaClient
@@ -111,10 +112,10 @@ def run_demo(whisperer: DependencyWhisperer, bridge: TeamBridge):
     )
     print(f"  • SET A (Compatibility Gate): {len(test_suite.set_a_tests)} test cases (Validates current contract)")
     for t in test_suite.set_a_tests:
-        print(f"    - [{t.test_id}] {t.name}: {t.description}")
-    print(f"  • SET B (Differential / Edge): {len(test_suite.set_b_tests)} test cases (Probes modern differences)")
+        print(f"    - [{t.test_id}] [{t.edge_case_category}] {t.name}: {t.stress_invariant or t.description}")
+    print(f"  • SET B (Adversarial Edge-Case Suite): {len(test_suite.set_b_tests)} test cases (Fuzzing edge cases)")
     for t in test_suite.set_b_tests:
-        print(f"    - [{t.test_id}] {t.name}: {t.description}")
+        print(f"    - [{t.test_id}] [{t.edge_case_category}] {t.name}: {t.stress_invariant or t.description}")
 
     print(f"\n[PHASE 3] Blue Team Code Synthesis ({dep} -> {chosen_opt.library_name})")
     patch = whisperer.synthesize_migration(

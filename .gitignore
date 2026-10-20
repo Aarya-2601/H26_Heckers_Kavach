@@ -27,3 +27,5 @@ build/
 
 # Cloned target test repositories
 target_repo/
+.audit_tests/
+linkedin_post.txt

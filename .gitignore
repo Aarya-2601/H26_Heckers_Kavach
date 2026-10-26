@@ -29,3 +29,4 @@ build/
 target_repo/
 .audit_tests/
 linkedin_post.txt
+.cloned_repos/

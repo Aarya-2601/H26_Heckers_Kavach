@@ -9,7 +9,15 @@ import subprocess
 import sys
 import tempfile
 import time
+from pathlib import Path
 from typing import Dict, Any, List, Optional
+
+# Ensure project root is importable when this file is run directly (python engine/<file>.py)
+_PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
+from engine.tamper import touched_test_files
 
 
 def execute_test_suite(
@@ -104,12 +112,10 @@ def run_in_ephemeral_sandbox(
 
         # Apply patch if provided
         if patch_diff and patch_diff.strip():
-            # Check for illegal file touches
-            lines = patch_diff.splitlines()
-            for line in lines:
-                if line.startswith("--- a/") or line.startswith("+++ b/"):
-                    if "test" in line.lower() or ".audit_tests" in line:
-                        tampering_detected = True
+            # Check for illegal file touches (path components, not substrings: `pytest/`,
+            # `latest/` and `contest.py` are ordinary source files)
+            if touched_test_files(patch_diff):
+                tampering_detected = True
 
             patch_file_path = os.path.join(temp_dir, "migration.patch")
             with open(patch_file_path, "w", encoding="utf-8") as f:

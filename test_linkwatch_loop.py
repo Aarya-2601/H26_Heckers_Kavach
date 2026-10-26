@@ -1,13 +1,25 @@
 """
-End-to-End Test of Person 1 Engine against the Organizer Target Repo: LinkWatch.
+End-to-end demo of the migration search engine on any target repository.
+
 Demonstrates:
-1. Baseline test capture (1 failing test in LinkWatch: Jinja2/markupsafe incompatibility).
-2. Auto-heal retry loop catching the error traceback.
-3. Successful sandboxed patch application passing 10/10 tests.
+1. Baseline test capture on the unmodified repo.
+2. Auto-heal retry loop catching the error traceback from a failed first patch.
+3. A sandboxed patch (a markupsafe compatibility shim) being applied and scored.
 4. Deterministic reward scoring and Mermaid DAG generation.
+
+The simulated "Gemma" patches are built from the real first lines of the hero file,
+so the diffs apply to whichever repository you point this script at.
+
+Usage:
+    python demo_engine_loop.py --hero-file pkg/report.py --repo-url https://github.com/owner/repo
+    python demo_engine_loop.py --hero-file pkg/report.py --repo-path target_repo
 """
 
+import argparse
+import difflib
+import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -17,57 +29,78 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from engine.search_loop import run_migration_search
-from engine.rewards import compute_reward
+
+NAIVE_COMMENT = ["# Naive migration attempt\n"]
+SOFT_UNICODE_SHIM = [
+    "import markupsafe\n",
+    "if not hasattr(markupsafe, 'soft_unicode'):\n",
+    "    markupsafe.soft_unicode = str\n",
+]
 
 
-def simulated_gemma_linkwatch_migrator(replacement_pkg: str, previous_error: str) -> str:
+def make_simulated_migrator(repo_path: str, hero_file: str):
     """
-    Simulates Gemma 4 generating:
+    Returns a patch generator that simulates Gemma 4:
     Attempt 1: A naive attempt that fails.
     Attempt 2: An auto-healed compatibility shim resolving the markupsafe soft_unicode break.
     """
-    if not previous_error:
-        # Attempt 1: Naive patch that still leaves the import broken
-        return (
-            "--- a/linkwatch/report.py\n"
-            "+++ b/linkwatch/report.py\n"
-            "@@ -1,3 +1,4 @@\n"
-            "+# Naive migration attempt\n"
-            " from datetime import datetime\n"
+    original = (Path(repo_path) / hero_file).read_text(encoding="utf-8").splitlines(keepends=True)
+    if original and not original[-1].endswith("\n"):
+        original[-1] += "\n"
+
+    def build_diff(prefix_lines):
+        return "".join(
+            difflib.unified_diff(
+                original,
+                prefix_lines + original,
+                fromfile=f"a/{hero_file}",
+                tofile=f"b/{hero_file}",
+            )
         )
-    else:
-        # Attempt 2: Auto-heal shim patch that fixes the soft_unicode incompatibility
-        return (
-            "--- a/linkwatch/report.py\n"
-            "+++ b/linkwatch/report.py\n"
-            "@@ -1,4 +1,7 @@\n"
-            "+import markupsafe\n"
-            "+if not hasattr(markupsafe, 'soft_unicode'):\n"
-            "+    markupsafe.soft_unicode = str\n"
-            " from datetime import datetime\n"
-            " \n"
-            " from jinja2 import Environment, FileSystemLoader, select_autoescape\n"
-        )
+
+    def simulated_gemma_migrator(replacement_pkg: str, previous_error: str) -> str:
+        if not previous_error:
+            return build_diff(NAIVE_COMMENT)
+        return build_diff(SOFT_UNICODE_SHIM)
+
+    return simulated_gemma_migrator
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run the migration search engine on a target repository.")
+    parser.add_argument("--hero-file", required=True, help="Path of the file to migrate, relative to the repo root.")
+    parser.add_argument("--repo-path", default="target_repo", help="Local repo directory (default: target_repo).")
+    parser.add_argument("--repo-url", help="Git URL to clone into --repo-path if it does not exist.")
+    parser.add_argument("--target-pkg", default="jinja2", help="Dependency being migrated away from.")
+    parser.add_argument("--replacement-pkg", default="jinja2-modern", help="Replacement dependency.")
+    parser.add_argument("--max-attempts", type=int, default=2)
+    return parser.parse_args()
 
 
 def main():
-    repo_path = os.path.abspath("target_repo")
+    args = parse_args()
+    repo_path = os.path.abspath(args.repo_path)
+
     if not os.path.exists(repo_path):
-        import subprocess
-        print("[*] target_repo not found locally. Cloning LinkWatch...")
-        subprocess.run(["git", "clone", "https://github.com/rishrek/LinkWatch", repo_path], check=True)
+        if not args.repo_url:
+            sys.exit(f"[!] {repo_path} not found. Pass --repo-url to clone it or --repo-path to an existing repo.")
+        print(f"[*] {args.repo_path} not found locally. Cloning {args.repo_url}...")
+        subprocess.run(["git", "clone", args.repo_url, repo_path], check=True)
+
+    if not (Path(repo_path) / args.hero_file).is_file():
+        sys.exit(f"[!] Hero file not found: {Path(repo_path) / args.hero_file}")
 
     print("=" * 60)
-    print("RUNNING PERSON 1 ENGINE ON REAL LINKWATCH TARGET REPOSITORY")
+    print(f"RUNNING PERSON 1 ENGINE ON TARGET REPOSITORY: {Path(repo_path).name}")
     print("=" * 60)
 
     best_node, history, mermaid = run_migration_search(
         repo_path=repo_path,
-        target_pkg="jinja2",
-        replacement_pkg="jinja2-modern",
-        hero_file="linkwatch/report.py",
-        patch_generator_fn=simulated_gemma_linkwatch_migrator,
-        max_attempts=2
+        target_pkg=args.target_pkg,
+        replacement_pkg=args.replacement_pkg,
+        hero_file=args.hero_file,
+        patch_generator_fn=make_simulated_migrator(repo_path, args.hero_file),
+        max_attempts=args.max_attempts,
     )
 
     print("\n--- SEARCH TREE EVALUATION SUMMARY ---")
@@ -93,10 +126,10 @@ def main():
         "winning_node": best_node.to_dict(),
         "total_nodes_explored": len(history),
         "history": [n.to_dict() for n in history],
-        "mermaid_dag": mermaid
+        "mermaid_dag": mermaid,
     }
+    os.makedirs("contracts", exist_ok=True)
     with open("contracts/run_result.json", "w", encoding="utf-8") as f:
-        import json
         json.dump(contract_data, f, indent=2)
     print("\n[+] Updated contracts/run_result.json with full execution telemetry!")
 

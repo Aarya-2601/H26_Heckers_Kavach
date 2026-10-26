@@ -17,6 +17,32 @@ if PROJECT_ROOT not in sys.path:
 from typing import Dict, Any, List, Optional, Callable, Tuple
 from engine.sandbox import run_in_ephemeral_sandbox, execute_test_suite
 from engine.rewards import compute_reward
+from engine.patch_guard import check_patch
+
+# Score for a candidate that never reached the sandbox. Negative, so it can never beat the baseline.
+REJECTED_SCORE = -500
+
+
+class SandboxEnvironmentError(RuntimeError):
+    """Raised when the baseline test run fails because of the environment, not the repo's code."""
+
+
+def _baseline_environment_problem(result: Dict[str, Any]) -> Optional[str]:
+    """Return a human-readable reason if the baseline failure is environmental, else None.
+
+    Searching is meaningless in these cases: every candidate would fail identically,
+    so no patch could ever be distinguished from another.
+    """
+    if result.get("passed"):
+        return None
+    stderr = (result.get("raw_stderr") or "") + "\n" + (result.get("stdout") or "")
+    if "No module named pytest" in stderr:
+        return "pytest is not installed in the interpreter running the sandbox (pip install pytest)."
+    if result.get("timed_out"):
+        return "baseline test run timed out."
+    if result.get("exit_code") == 5:
+        return "pytest collected no tests in the target repository."
+    return None
 
 
 class SearchNode:
@@ -63,6 +89,8 @@ def generate_mermaid_dag(nodes: List[SearchNode]) -> str:
             label = f'{node.node_id}["{node.action_name}<br/>Score: {node.reward_score} (PASSED)"]'
         elif node.status == "TAMPERED":
             label = f'{node.node_id}["{node.action_name}<br/>Score: {node.reward_score} (TAMPERED)"]'
+        elif node.status == "REJECTED":
+            label = f'{node.node_id}["{node.action_name}<br/>(REJECTED before execution)"]'
         elif node.node_id == "node_0":
             label = f'{node.node_id}["{node.action_name}<br/>(Baseline)"]'
         else:
@@ -98,6 +126,12 @@ def run_migration_search(
 
     # --- Node 0: Establish Baseline ---
     baseline_result = execute_test_suite(repo_path, test_cmd=test_cmd)
+    env_problem = _baseline_environment_problem(baseline_result)
+    if env_problem:
+        raise SandboxEnvironmentError(
+            f"Baseline test run is unusable: {env_problem}\n"
+            f"Raw stderr: {(baseline_result.get('raw_stderr') or '')[:300]}"
+        )
     baseline_time_ms = baseline_result.get("execution_time_ms", 150)
     
     root_node = SearchNode(
@@ -138,6 +172,22 @@ def run_migration_search(
             action_name=action_name,
             patch_diff=patch
         )
+
+        # Pre-flight: refuse patches that are not plausibly a migration of the hero file
+        verdict = check_patch(repo_path, patch, hero_file=hero_file)
+        if not verdict.ok:
+            message = "Patch rejected before execution: " + verdict.summary()
+            node.status = "REJECTED"
+            node.reward_score = REJECTED_SCORE
+            node.reward_breakdown = {"rejected": True, "reasons": verdict.reasons, "stats": verdict.stats}
+            node.run_result = {
+                "exit_code": -1, "passed": False, "stdout": "", "raw_stderr": message,
+                "execution_time_ms": 0, "timed_out": False, "tampering_detected": False,
+            }
+            history.append(node)
+            last_stderr = message
+            current_parent_id = node_id
+            continue
 
         # Execute in ephemeral sandbox
         run_res = run_in_ephemeral_sandbox(repo_path, patch_diff=patch, test_cmd=test_cmd)
@@ -208,7 +258,7 @@ if __name__ == "__main__":
             replacement_pkg="httpx",
             hero_file="app.py",
             patch_generator_fn=mock_ai_generator,
-            test_cmd=["pytest"]
+            test_cmd=[sys.executable, "-m", "pytest"]
         )
 
         print(f"\nSearch Finished in {len(history)} nodes.")

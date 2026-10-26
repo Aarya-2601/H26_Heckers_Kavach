@@ -6,6 +6,7 @@ Includes sandboxed execution, deterministic reward calculation, and MCTS search 
 from engine.sandbox import execute_test_suite, run_in_ephemeral_sandbox
 from engine.rewards import compute_reward
 from engine.search_loop import run_migration_search, SearchNode, generate_mermaid_dag
+from engine.patch_guard import check_patch, PatchVerdict
 
 __all__ = [
     "execute_test_suite",
@@ -13,5 +14,7 @@ __all__ = [
     "compute_reward",
     "run_migration_search",
     "SearchNode",
-    "generate_mermaid_dag"
+    "generate_mermaid_dag",
+    "check_patch",
+    "PatchVerdict",
 ]

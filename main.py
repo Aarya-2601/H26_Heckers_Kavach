@@ -59,7 +59,8 @@ from src.prompts import (
     prompt_select_flagged_file,
     prompt_select_input_method,
     prompt_remediation_input,
-    run_interactive_workflow
+    run_interactive_workflow,
+    detect_repo_dependency_choices
 )
 from src.capsule import (
     generate_capsule_markdown,
@@ -107,27 +108,30 @@ def run_pipeline(
 
     if interactive:
         console.rule("[bold cyan]PHASE 2: Interactive Maintainer Approval[/bold cyan]")
-        user_choice = prompt_select_dependency()
+        user_choice = prompt_select_dependency(repo_path=repo_path)
         if user_choice:
-            choice_lower = user_choice.lower()
-            if "jinja" in choice_lower:
-                target_pkg = "jinja2"
-                chosen_replacement = "jinja2-modern (shim)"
-            elif "toml" in choice_lower:
-                target_pkg = "toml"
-                chosen_replacement = "tomllib"
-            elif "request" in choice_lower:
-                target_pkg = "requests"
-                chosen_replacement = "httpx"
-            elif "certifi" in choice_lower:
-                target_pkg = "certifi"
-                chosen_replacement = "ssl-native"
-            elif "appdir" in choice_lower:
-                target_pkg = "appdirs"
-                chosen_replacement = "platformdirs"
+            if user_choice == "Skip dependency replacement":
+                print_human("Selected: Skip dependency replacement")
+                return
+
+            if "-> replace with " in user_choice:
+                part, _, repl = user_choice.partition("-> replace with ")
+                target_pkg = part.split()[0].strip()
+                chosen_replacement = repl.rstrip(")").strip()
+            elif "->" in user_choice:
+                part, _, repl = user_choice.partition("->")
+                target_pkg = part.split()[0].strip()
+                chosen_replacement = repl.rstrip(")").strip()
             else:
                 target_pkg = user_choice.split()[0].strip()
-                chosen_replacement = f"{target_pkg}-modern"
+                try:
+                    from web.analysis import KNOWN_REPLACEMENTS
+                    if target_pkg.lower() in KNOWN_REPLACEMENTS:
+                        chosen_replacement = KNOWN_REPLACEMENTS[target_pkg.lower()][0]
+                    else:
+                        chosen_replacement = f"{target_pkg}-modern"
+                except Exception:
+                    chosen_replacement = f"{target_pkg}-modern"
 
         print_human(f"Selected Dependency Target: {target_pkg} ➔ {chosen_replacement}")
 
@@ -156,15 +160,15 @@ def run_pipeline(
             f"Scheduled remediation AST rewrite for '{target_pkg}' with directive: '{confirmed_inst}'."
         )
     else:
-        # Map default replacement for non-interactive mode
-        if target_pkg == "appdirs":
-            chosen_replacement = "platformdirs"
-        elif target_pkg == "toml":
-            chosen_replacement = "tomllib"
-        elif target_pkg == "jinja2":
-            chosen_replacement = "jinja2-modern (shim)"
-        elif target_pkg == "requests":
-            chosen_replacement = "httpx"
+        # Map replacement for non-interactive mode
+        try:
+            from web.analysis import KNOWN_REPLACEMENTS
+            if target_pkg.lower() in KNOWN_REPLACEMENTS:
+                chosen_replacement = KNOWN_REPLACEMENTS[target_pkg.lower()][0]
+            else:
+                chosen_replacement = f"{target_pkg}-modern"
+        except Exception:
+            chosen_replacement = f"{target_pkg}-modern"
         confirmed_inst = f"migrate {target_pkg} to {chosen_replacement} with zero-touch adapter"
 
     # -------------------------------------------------------------

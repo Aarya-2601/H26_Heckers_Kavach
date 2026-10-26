@@ -4,7 +4,9 @@ Implements selection menus and text prompts styled in peachy-orange (#ffaf87).
 Supports optional dynamic voice capture and text editing.
 """
 
-from typing import Any, Dict, List, Optional
+import os
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 import questionary
 from questionary import Choice, Style
 
@@ -54,12 +56,64 @@ INPUT_METHOD_CHOICES: List[str] = [
 ]
 
 
+def detect_repo_dependency_choices(repo_path: Optional[Union[str, Path]] = None) -> List[str]:
+    """Dynamically scan repository dependencies from manifests and AST for the selection menu."""
+    if not repo_path or not os.path.exists(str(repo_path)):
+        return list(DEFAULT_DEPENDENCY_CHOICES)
+
+    repo = Path(repo_path)
+    choices: List[str] = []
+    seen = set()
+
+    try:
+        from web import analysis as kv_analysis
+        analysis = kv_analysis.analyze_repo(repo)
+        candidates = analysis.get("candidates", [])
+        for c in candidates:
+            pkg = c.get("package")
+            if not pkg or pkg.lower() in seen:
+                continue
+            seen.add(pkg.lower())
+            repl = c.get("suggested_replacement")
+            reason = c.get("reason")
+            call_count = c.get("call_sites", 0)
+
+            if repl and reason:
+                choices.append(f"{pkg} ({reason} -> replace with {repl})")
+            elif repl:
+                choices.append(f"{pkg} (detected -> replace with {repl})")
+            elif call_count > 0:
+                choices.append(f"{pkg} (found in {call_count} AST call site(s))")
+            else:
+                choices.append(f"{pkg} (declared in manifest)")
+
+        manifest = analysis.get("manifest", {})
+        for name in manifest.keys():
+            if name.lower() not in seen:
+                seen.add(name.lower())
+                choices.append(f"{name} (declared in manifest)")
+    except Exception:
+        pass
+
+    if not choices:
+        return list(DEFAULT_DEPENDENCY_CHOICES)
+
+    choices.append("Skip dependency replacement")
+    return choices
+
+
 def prompt_select_dependency(
     choices: Optional[List[str]] = None,
+    repo_path: Optional[Union[str, Path]] = None,
     style: Optional[Style] = None,
 ) -> Optional[str]:
     """Prompt the user to select a dependency to replace (styled in peachy-orange)."""
-    options = choices or DEFAULT_DEPENDENCY_CHOICES
+    if choices:
+        options = choices
+    elif repo_path:
+        options = detect_repo_dependency_choices(repo_path)
+    else:
+        options = DEFAULT_DEPENDENCY_CHOICES
     target_style = style or custom_questionary_style
 
     answer = questionary.select(

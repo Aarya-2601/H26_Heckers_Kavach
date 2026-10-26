@@ -108,6 +108,22 @@ def test_questionary_choices():
     assert any("Manual" in choice for choice in INPUT_METHOD_CHOICES)
 
 
+def test_dynamic_repo_dependency_choices():
+    """Verify detect_repo_dependency_choices inspects custom repository manifests dynamically."""
+    import tempfile
+    from pathlib import Path
+    from src.prompts import detect_repo_dependency_choices
+
+    with tempfile.TemporaryDirectory() as tmp:
+        p_tmp = Path(tmp)
+        (p_tmp / "requirements.txt").write_text("pyyaml==5.4.1\nurllib3==1.26.5\n", encoding="utf-8")
+        choices = detect_repo_dependency_choices(p_tmp)
+        assert any("pyyaml" in c for c in choices)
+        assert any("urllib3" in c for c in choices)
+        assert not any("linkwatch" in c.lower() for c in choices)
+        assert choices[-1] == "Skip dependency replacement" 
+
+
 def test_voice_wrapper_mock_and_fallback():
     """Verify VoiceInputWrapper handles mock input and fallback text gracefully."""
     wrapper = VoiceInputWrapper()

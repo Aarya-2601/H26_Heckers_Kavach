@@ -1,93 +1,104 @@
 {
-  "target_package": "requests",
-  "blast_radius_score": 100,
-  "hero_file": "linkwatch/checker.py",
+  "target_package": "yaml",
+  "blast_radius_score": 60,
+  "hero_file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
   "call_sites": [
     {
-      "file": "linkwatch/checker.py",
-      "line": 13,
-      "calling_function": "fetch",
-      "code_snippet": "session = S()",
-      "symbol": "requests.Session",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "linkwatch/checker.py",
-      "line": 15,
-      "calling_function": "fetch",
-      "code_snippet": "return session.get(url, verify=certifi.where())",
-      "symbol": "requests.Session().get",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "linkwatch/checker.py",
-      "line": 17,
-      "calling_function": "fetch",
-      "code_snippet": "session.close()",
-      "symbol": "requests.Session().close",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "linkwatch/checker.py",
-      "line": 35,
-      "calling_function": "check_site",
-      "code_snippet": "except requests.exceptions.ConnectionError:",
-      "symbol": "requests.exceptions.ConnectionError",
-      "kind": "reference",
-      "private_api": false
-    },
-    {
-      "file": "linkwatch/checker.py",
-      "line": 38,
-      "calling_function": "check_site",
-      "code_snippet": "except requests.exceptions.Timeout:",
-      "symbol": "requests.exceptions.Timeout",
-      "kind": "reference",
-      "private_api": false
-    },
-    {
-      "file": "linkwatch/encoding.py",
-      "line": 11,
-      "calling_function": "detect_encoding",
-      "code_snippet": "_, params = _parse_content_type_header(resp.headers.get(\"Content-Type\", \"\"))",
-      "symbol": "requests.utils._parse_content_type_header",
-      "kind": "call",
-      "private_api": true
-    },
-    {
-      "file": "linkwatch/http_patch.py",
-      "line": 5,
+      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
+      "line": 372,
       "calling_function": "<module>",
-      "code_snippet": "_original_request = requests.Session.request",
-      "symbol": "requests.Session.request",
-      "kind": "reference",
-      "private_api": false
-    },
-    {
-      "file": "linkwatch/http_patch.py",
-      "line": 11,
-      "calling_function": "_request",
-      "code_snippet": "return _original_request(self, method, url, headers=headers, **kwargs)",
-      "symbol": "requests.Session.request",
+      "code_snippet": "config = yaml.safe_load(f)",
+      "symbol": "yaml.safe_load",
       "kind": "call",
       "private_api": false
     },
     {
-      "file": "linkwatch/http_patch.py",
-      "line": 14,
+      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
+      "line": 378,
       "calling_function": "<module>",
-      "code_snippet": "requests.Session.request = _request",
-      "symbol": "requests.Session.request",
-      "kind": "assign",
+      "code_snippet": "worktrees = WorkTrees(config.get('root', '.'))",
+      "symbol": "yaml.safe_load().get",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
+      "line": 381,
+      "calling_function": "<module>",
+      "code_snippet": "infos = socket.getaddrinfo(config.get('bind', None), config.get('port', 8443),",
+      "symbol": "yaml.safe_load().get",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
+      "line": 381,
+      "calling_function": "<module>",
+      "code_snippet": "infos = socket.getaddrinfo(config.get('bind', None), config.get('port', 8443),",
+      "symbol": "yaml.safe_load().get",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
+      "line": 387,
+      "calling_function": "<module>",
+      "code_snippet": "https = config.get('https', {})",
+      "symbol": "yaml.safe_load().get",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
+      "line": 388,
+      "calling_function": "<module>",
+      "code_snippet": "if https.get('enabled', True):",
+      "symbol": "yaml.safe_load().get().get",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
+      "line": 389,
+      "calling_function": "<module>",
+      "code_snippet": "cert_file = https.get('cert_file', 'localhost.pem')",
+      "symbol": "yaml.safe_load().get().get",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
+      "line": 390,
+      "calling_function": "<module>",
+      "code_snippet": "key_file = https.get('key_file', 'localhost-key.pem')",
+      "symbol": "yaml.safe_load().get().get",
+      "kind": "call",
       "private_api": false
     }
   ],
   "test_call_sites": [],
-  "context_code": "# file: linkwatch/checker.py\nimport requests\n\nfrom requests import Session as S\n\ndef fetch(url):\n    session = S()\n    try:\n        return session.get(url, verify=certifi.where())\n    finally:\n        session.close()\n\ndef check_site(site):\n    result = {\n        \"name\": site.name,\n        \"url\": site.url,\n        \"up\": False,\n        \"status\": None,\n        \"reason\": \"\",\n        \"title\": \"\",\n        \"elapsed_ms\": None,\n        \"last_modified\": None,\n        \"checked_at\": datetime.now(timezone.utc).isoformat(timespec=\"seconds\"),\n    }\n    started = time.monotonic()\n    try:\n        resp = fetch(site.url)\n    except requests.exceptions.ConnectionError:\n        result[\"reason\"] = \"connection error\"\n        return result\n    except requests.exceptions.Timeout:\n        result[\"reason\"] = \"timed out\"\n        return result\n    result[\"elapsed_ms\"] = int((time.monotonic() - started) * 1000)\n    result[\"status\"] = resp.status_code\n    result[\"up\"] = resp.ok\n    result[\"reason\"] = resp.reason or \"\"\n    result[\"title\"] = page_title(resp)\n    modified = parse_last_modified(resp.headers.get(\"Last-Modified\"))\n    if modified:\n        result[\"last_modified\"] = modified.isoformat()\n    return result\n\n# file: linkwatch/http_patch.py\nimport requests\n\ndef _request(self, method, url, **kwargs):\n    headers = dict(kwargs.pop(\"headers\", None) or {})\n    headers[\"User-Agent\"] = USER_AGENT\n    return _original_request(self, method, url, headers=headers, **kwargs)\n\n_original_request = requests.Session.request\n\nrequests.Session.request = _request\n\n# file: linkwatch/encoding.py\nfrom requests.utils import _parse_content_type_header\n\ndef detect_encoding(resp):\n    _, params = _parse_content_type_header(resp.headers.get(\"Content-Type\", \"\"))\n    charset = params.get(\"charset\")\n    if charset and charset is not True:\n        return charset\n    guess = chardet.detect(resp.content)\n    return guess[\"encoding\"] or \"utf-8\"",
+  "context_code": "# file: CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py\nimport yaml\n\nconfig = yaml.safe_load(f)\n\nworktrees = WorkTrees(config.get('root', '.'))\n\ninfos = socket.getaddrinfo(config.get('bind', None), config.get('port', 8443),\n\nhttps = config.get('https', {})\n\nif https.get('enabled', True):\n\ncert_file = https.get('cert_file', 'localhost.pem')\n\nkey_file = https.get('key_file', 'localhost-key.pem')",
   "context_truncated": false,
-  "unparsed_files": [],
-  "files_scanned": 15
+  "unparsed_files": [
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/bom.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/crlf.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/different_encoding.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/false_encoding.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/py2_test_grammar.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/dbapi.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/factory.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/hooks.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/regression.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/transactions.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/types.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_3131.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_future3.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_future8.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_future9.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_pep3120.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/test_source_encoding.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/encoded_modules/module_iso_8859_1.py",
+    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/encoded_modules/module_koi8_r.py"
+  ],
+  "files_scanned": 1848
 }

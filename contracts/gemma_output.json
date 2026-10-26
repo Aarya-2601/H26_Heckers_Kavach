@@ -1,6 +1,6 @@
 {
-  "replacement_candidate": "httpx",
-  "migration_strategy": "Deterministic migration with httpx adapter",
+  "replacement_candidate": "ruamel.yaml",
+  "migration_strategy": "Deterministic migration with ruamel.yaml adapter",
   "set_a_tests": [
     {
       "test_id": "SET_A_01",

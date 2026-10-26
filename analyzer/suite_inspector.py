@@ -3,7 +3,7 @@ Person 2: Test suite inspector (AST).
 
 Reads the repo's test files WITHOUT running them and records:
   - every test (name, line, number of assert statements, fixtures it asks for)
-  - which project functions/classes each test touches (e.g. linkwatch.checker.check_site)
+  - which project functions/classes each test touches (e.g. mypkg.checker.check_site)
   - the fixtures defined in conftest.py
   - a SHA-256 of each test file (baseline to prove nobody edited the tests later)
   - assert_literals: values the tests expect -> feed to auditor.audit_patch(test_literals=...)
@@ -11,7 +11,7 @@ Reads the repo's test files WITHOUT running them and records:
 Named suite_inspector.py (not test_*.py) so pytest never tries to collect it.
 
 Run:
-    python analyzer/suite_inspector.py <tests_dir>                      # package defaults to 'linkwatch'
+    python analyzer/suite_inspector.py <tests_dir> <package>            # package = the project's own top-level package
     python analyzer/suite_inspector.py <tests_dir> <package> out.json   # also save JSON
 """
 import ast
@@ -52,7 +52,7 @@ def project_imports(tree, package):
 
 
 def project_refs(node, origins):
-    """Project symbols used inside `node`, e.g. {'linkwatch.cache.save_results'}."""
+    """Project symbols used inside `node`, e.g. {'mypkg.cache.save_results'}."""
     found = set()
     for n in ast.walk(node):
         if isinstance(n, (ast.Name, ast.Attribute)) and isinstance(n.ctx, ast.Load):
@@ -62,7 +62,7 @@ def project_refs(node, origins):
             root, _, rest = d.partition(".")
             if root in origins:
                 found.add(origins[root] + (f".{rest}" if rest else ""))
-    # keep only the most specific ones ('linkwatch.cache' is dropped if 'linkwatch.cache.save_results' exists)
+    # keep only the most specific ones ('mypkg.cache' is dropped if 'mypkg.cache.save_results' exists)
     return {r for r in found if not any(o != r and o.startswith(r + ".") for o in found)}
 
 
@@ -160,7 +160,7 @@ def inspect_file(path, rel_path, package):
     }
 
 
-def inspect_suite(tests_dir, package="linkwatch"):
+def inspect_suite(tests_dir, package):
     if not os.path.isdir(tests_dir):
         raise SystemExit(f"ERROR: tests folder not found: {os.path.abspath(tests_dir)}")
     files, unparsed, all_literals, all_refs = [], [], set(), set()
@@ -194,8 +194,9 @@ def inspect_suite(tests_dir, package="linkwatch"):
 
 
 if __name__ == "__main__":
-    tests_dir = sys.argv[1] if len(sys.argv) > 1 else "tests"
-    package = sys.argv[2] if len(sys.argv) > 2 else "linkwatch"
+    if len(sys.argv) < 3:
+        raise SystemExit("Usage: python analyzer/suite_inspector.py <tests_dir> <package> [out.json]")
+    tests_dir, package = sys.argv[1], sys.argv[2]
 
     report = inspect_suite(tests_dir, package)
     print(f"[Person 2] Inspected '{tests_dir}' (project package: {package})")

@@ -1,14 +1,1731 @@
 {
-  "target_package": "requests",
-  "blast_radius_score": 78,
-  "hero_file": "src/api_client.py",
+  "target_package": "click",
+  "blast_radius_score": 100,
+  "hero_file": "src/black/__init__.py",
   "call_sites": [
     {
-      "file": "src/api_client.py",
-      "line": 42,
-      "calling_function": "fetch_user_data",
-      "code_snippet": "response = requests.get(url, timeout=5)"
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 111,
+      "calling_function": "main",
+      "code_snippet": "@click.group()",
+      "symbol": "click.group",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 161,
+      "calling_function": "comment_body",
+      "code_snippet": "@click.argument(\"baseline\", type=click.Path(exists=True, path_type=Path))",
+      "symbol": "click.argument",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 161,
+      "calling_function": "comment_body",
+      "code_snippet": "@click.argument(\"baseline\", type=click.Path(exists=True, path_type=Path))",
+      "symbol": "click.Path",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 162,
+      "calling_function": "comment_body",
+      "code_snippet": "@click.argument(\"target\", type=click.Path(exists=True, path_type=Path))",
+      "symbol": "click.argument",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 162,
+      "calling_function": "comment_body",
+      "code_snippet": "@click.argument(\"target\", type=click.Path(exists=True, path_type=Path))",
+      "symbol": "click.Path",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 163,
+      "calling_function": "comment_body",
+      "code_snippet": "@click.argument(\"style\")",
+      "symbol": "click.argument",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 164,
+      "calling_function": "comment_body",
+      "code_snippet": "@click.argument(\"mode\")",
+      "symbol": "click.argument",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 197,
+      "calling_function": "comment_details",
+      "code_snippet": "@click.argument(\"pr\")",
+      "symbol": "click.argument",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 198,
+      "calling_function": "comment_details",
+      "code_snippet": "@click.argument(\"run-id\")",
+      "symbol": "click.argument",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/diff_shades_gha_helper.py",
+      "line": 199,
+      "calling_function": "comment_details",
+      "code_snippet": "@click.argument(\"styles\", nargs=-1)",
+      "symbol": "click.argument",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 10,
+      "calling_function": "generate_schema_from_click",
+      "code_snippet": "cmd: click.Command,",
+      "symbol": "click.Command",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 13,
+      "calling_function": "generate_schema_from_click",
+      "code_snippet": "for param in cmd.params:",
+      "symbol": "click.Command().params",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 14,
+      "calling_function": "generate_schema_from_click",
+      "code_snippet": "if not isinstance(param, click.Option) or param.is_eager:",
+      "symbol": "click.Option",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 23,
+      "calling_function": "generate_schema_from_click",
+      "code_snippet": "case click.types.IntParamType():",
+      "symbol": "click.types.IntParamType",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 25,
+      "calling_function": "generate_schema_from_click",
+      "code_snippet": "case click.types.StringParamType() | click.types.Path():",
+      "symbol": "click.types.StringParamType",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 25,
+      "calling_function": "generate_schema_from_click",
+      "code_snippet": "case click.types.StringParamType() | click.types.Path():",
+      "symbol": "click.types.Path",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 27,
+      "calling_function": "generate_schema_from_click",
+      "code_snippet": "case click.types.Choice(choices=choices):",
+      "symbol": "click.types.Choice",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 29,
+      "calling_function": "generate_schema_from_click",
+      "code_snippet": "case click.types.BoolParamType():",
+      "symbol": "click.types.BoolParamType",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 47,
+      "calling_function": "main",
+      "code_snippet": "@click.command(context_settings={\"help_option_names\": [\"-h\", \"--help\"]})",
+      "symbol": "click.command",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 48,
+      "calling_function": "main",
+      "code_snippet": "@click.option(\"--schemastore\", is_flag=True, help=\"SchemaStore format\")",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 49,
+      "calling_function": "main",
+      "code_snippet": "@click.option(\"--outfile\", type=click.File(mode=\"w\"), help=\"Write to file\")",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "scripts/generate_schema.py",
+      "line": 49,
+      "calling_function": "main",
+      "code_snippet": "@click.option(\"--outfile\", type=click.File(mode=\"w\"), help=\"Write to file\")",
+      "symbol": "click.File",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 120,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "ctx: click.Context, param: click.Parameter | None, value: str | None",
+      "symbol": "click.Context",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 120,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "ctx: click.Context, param: click.Parameter | None, value: str | None",
+      "symbol": "click.Parameter",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 129,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "ctx.params.get(\"src\", ()), ctx.params.get(\"stdin_filename\", None)",
+      "symbol": "click.Context().params.get",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 129,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "ctx.params.get(\"src\", ()), ctx.params.get(\"stdin_filename\", None)",
+      "symbol": "click.Context().params.get",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 137,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "raise click.FileError(",
+      "symbol": "click.FileError",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 155,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "raise click.BadOptionUsage(",
+      "symbol": "click.BadOptionUsage",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 161,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "raise click.BadOptionUsage(\"exclude\", \"Config key exclude must be a string\")",
+      "symbol": "click.BadOptionUsage",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 165,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "raise click.BadOptionUsage(\"include\", \"Config key include must be a string\")",
+      "symbol": "click.BadOptionUsage",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 169,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "raise click.BadOptionUsage(",
+      "symbol": "click.BadOptionUsage",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 175,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "raise click.BadOptionUsage(",
+      "symbol": "click.BadOptionUsage",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 181,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "raise click.BadOptionUsage(",
+      "symbol": "click.BadOptionUsage",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 186,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "if ctx.default_map:",
+      "symbol": "click.Context().default_map",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 187,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "default_map.update(ctx.default_map)",
+      "symbol": "click.Context().default_map",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 190,
+      "calling_function": "read_pyproject_toml",
+      "code_snippet": "ctx.default_map = default_map",
+      "symbol": "click.Context().default_map",
+      "kind": "assign",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 195,
+      "calling_function": "spellcheck_pyproject_toml_keys",
+      "code_snippet": "ctx: click.Context, config_keys: list[str], config_file_path: str",
+      "symbol": "click.Context",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 198,
+      "calling_function": "spellcheck_pyproject_toml_keys",
+      "code_snippet": "available_config_options = {param.name for param in ctx.command.params}",
+      "symbol": "click.Context().command.params",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 209,
+      "calling_function": "target_version_option_callback",
+      "code_snippet": "c: click.Context, p: click.Option | click.Parameter, v: tuple[str, ...]",
+      "symbol": "click.Context",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 209,
+      "calling_function": "target_version_option_callback",
+      "code_snippet": "c: click.Context, p: click.Option | click.Parameter, v: tuple[str, ...]",
+      "symbol": "click.Option",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 209,
+      "calling_function": "target_version_option_callback",
+      "code_snippet": "c: click.Context, p: click.Option | click.Parameter, v: tuple[str, ...]",
+      "symbol": "click.Parameter",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 247,
+      "calling_function": "enable_unstable_feature_callback",
+      "code_snippet": "c: click.Context, p: click.Option | click.Parameter, v: tuple[str, ...]",
+      "symbol": "click.Context",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 247,
+      "calling_function": "enable_unstable_feature_callback",
+      "code_snippet": "c: click.Context, p: click.Option | click.Parameter, v: tuple[str, ...]",
+      "symbol": "click.Option",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 247,
+      "calling_function": "enable_unstable_feature_callback",
+      "code_snippet": "c: click.Context, p: click.Option | click.Parameter, v: tuple[str, ...]",
+      "symbol": "click.Parameter",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 265,
+      "calling_function": "validate_regex",
+      "code_snippet": "ctx: click.Context,",
+      "symbol": "click.Context",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 266,
+      "calling_function": "validate_regex",
+      "code_snippet": "param: click.Parameter,",
+      "symbol": "click.Parameter",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 272,
+      "calling_function": "validate_regex",
+      "code_snippet": "raise click.BadParameter(f\"Not a valid regular expression: {e}\") from None",
+      "symbol": "click.BadParameter",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 563,
+      "calling_function": "main",
+      "code_snippet": "ctx: click.Context,",
+      "symbol": "click.Context",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 596,
+      "calling_function": "main",
+      "code_snippet": "ctx.ensure_object(dict)",
+      "symbol": "click.Context().ensure_object",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 605,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 612,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 615,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 623,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 628,
+      "calling_function": "main",
+      "code_snippet": "ctx.obj[\"root\"] = root",
+      "symbol": "click.Context().obj",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 634,
+      "calling_function": "main",
+      "code_snippet": "and ctx.get_parameter_source(\"config\") != ParameterSource.COMMANDLINE",
+      "symbol": "click.Context().get_parameter_source",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 634,
+      "calling_function": "main",
+      "code_snippet": "and ctx.get_parameter_source(\"config\") != ParameterSource.COMMANDLINE",
+      "symbol": "click.core.ParameterSource.COMMANDLINE",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 652,
+      "calling_function": "main",
+      "code_snippet": "config_source = ctx.get_parameter_source(\"config\")",
+      "symbol": "click.Context().get_parameter_source",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 661,
+      "calling_function": "main",
+      "code_snippet": "ParameterSource.DEFAULT,",
+      "symbol": "click.core.ParameterSource.DEFAULT",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 662,
+      "calling_function": "main",
+      "code_snippet": "ParameterSource.DEFAULT_MAP,",
+      "symbol": "click.core.ParameterSource.DEFAULT_MAP",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 667,
+      "calling_function": "main",
+      "code_snippet": "if ctx.default_map:",
+      "symbol": "click.Context().default_map",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 668,
+      "calling_function": "main",
+      "code_snippet": "for param, value in ctx.default_map.items():",
+      "symbol": "click.Context().default_map.items",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 681,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 684,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 692,
+      "calling_function": "main",
+      "code_snippet": "and ctx.get_parameter_source(\"cache_dir\") == ParameterSource.DEFAULT_MAP",
+      "symbol": "click.Context().get_parameter_source",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 692,
+      "calling_function": "main",
+      "code_snippet": "and ctx.get_parameter_source(\"cache_dir\") == ParameterSource.DEFAULT_MAP",
+      "symbol": "click.core.ParameterSource.DEFAULT_MAP",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 741,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 747,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 780,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 789,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(0)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 807,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(1)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 824,
+      "calling_function": "main",
+      "code_snippet": "click.echo(str(report), err=True)",
+      "symbol": "click.echo",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 827,
+      "calling_function": "main",
+      "code_snippet": "ctx.exit(report.return_code)",
+      "symbol": "click.Context().exit",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 275,
+      "calling_function": "main",
+      "code_snippet": "@click.command(",
+      "symbol": "click.command",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 281,
+      "calling_function": "main",
+      "code_snippet": "@click.option(\"-c\", \"--code\", type=str, help=\"Format the code passed in as a string.\")",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 282,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 290,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 293,
+      "calling_function": "main",
+      "code_snippet": "type=click.Choice([v.name.lower() for v in TargetVersion]),",
+      "symbol": "click.Choice",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 303,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 311,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 319,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 329,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 335,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 341,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 347,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 355,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 364,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 366,
+      "calling_function": "main",
+      "code_snippet": "type=click.Choice([v.name for v in Preview]),",
+      "symbol": "click.Choice",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 375,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 384,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 392,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 397,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 410,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 419,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 430,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 443,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 452,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 463,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 473,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 487,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 490,
+      "calling_function": "main",
+      "code_snippet": "type=click.IntRange(min=1),",
+      "symbol": "click.IntRange",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 499,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 508,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 518,
+      "calling_function": "main",
+      "code_snippet": "@click.version_option(",
+      "symbol": "click.version_option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 525,
+      "calling_function": "main",
+      "code_snippet": "@click.argument(",
+      "symbol": "click.argument",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 528,
+      "calling_function": "main",
+      "code_snippet": "type=click.Path(",
+      "symbol": "click.Path",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 534,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 536,
+      "calling_function": "main",
+      "code_snippet": "type=click.Path(",
+      "symbol": "click.Path",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 548,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 550,
+      "calling_function": "main",
+      "code_snippet": "type=click.Path(file_okay=False, path_type=Path),",
+      "symbol": "click.Path",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 553,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/__init__.py",
+      "line": 561,
+      "calling_function": "main",
+      "code_snippet": "@click.pass_context",
+      "symbol": "click.pass_context",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "src/black/concurrency.py",
+      "line": 99,
+      "calling_function": "reformat_many",
+      "code_snippet": "raise click.BadParameter(",
+      "symbol": "click.BadParameter",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/concurrency.py",
+      "line": 104,
+      "calling_function": "reformat_many",
+      "code_snippet": "raise click.BadParameter(",
+      "symbol": "click.BadParameter",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/output.py",
+      "line": 22,
+      "calling_function": "_out",
+      "code_snippet": "echo(message, nl=nl, err=True)",
+      "symbol": "click.echo",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/output.py",
+      "line": 31,
+      "calling_function": "_err",
+      "code_snippet": "echo(message, nl=nl, err=True)",
+      "symbol": "click.echo",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/black/output.py",
+      "line": 118,
+      "calling_function": "style_output",
+      "code_snippet": "return style(message, **styles)",
+      "symbol": "click.style",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/blackd/__init__.py",
+      "line": 71,
+      "calling_function": "main",
+      "code_snippet": "@click.command(context_settings={\"help_option_names\": [\"-h\", \"--help\"]})",
+      "symbol": "click.command",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/blackd/__init__.py",
+      "line": 72,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/blackd/__init__.py",
+      "line": 79,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/blackd/__init__.py",
+      "line": 82,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/blackd/__init__.py",
+      "line": 88,
+      "calling_function": "main",
+      "code_snippet": "@click.option(",
+      "symbol": "click.option",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/blackd/__init__.py",
+      "line": 90,
+      "calling_function": "main",
+      "code_snippet": "type=click.IntRange(min=1),",
+      "symbol": "click.IntRange",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "src/blackd/__init__.py",
+      "line": 95,
+      "calling_function": "main",
+      "code_snippet": "@click.version_option(version=black.__version__)",
+      "symbol": "click.version_option",
+      "kind": "call",
+      "private_api": false
     }
   ],
-  "context_code": "import requests\n\ndef fetch_user_data(url):\n    return requests.get(url, timeout=5).json()\n"
+  "test_call_sites": [
+    {
+      "file": "tests/test_black.py",
+      "line": 101,
+      "calling_function": "class FakeContext",
+      "code_snippet": "class FakeContext(click.Context):",
+      "symbol": "click.Context",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 107,
+      "calling_function": "__init__",
+      "code_snippet": "self.command: click.Command = black.main",
+      "symbol": "click.Command",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 112,
+      "calling_function": "class BlackRunner",
+      "code_snippet": "class BlackRunner(_CliRunner):",
+      "symbol": "click.testing.CliRunner",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 639,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "self.assertEqual(unstyle(str(report)), \"1 file left unchanged.\")",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 646,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)), \"1 file reformatted, 1 file left unchanged.\"",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 655,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)), \"1 file reformatted, 2 files left unchanged.\"",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 666,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 676,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 686,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 696,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 706,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 713,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 720,
+      "calling_function": "test_report_verbose",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 740,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "self.assertEqual(unstyle(str(report)), \"1 file left unchanged.\")",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 746,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)), \"1 file reformatted, 1 file left unchanged.\"",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 752,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)), \"1 file reformatted, 2 files left unchanged.\"",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 763,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 772,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 782,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 791,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 800,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 807,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 814,
+      "calling_function": "test_report_quiet",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 878,
+      "calling_function": "test_report_normal",
+      "code_snippet": "self.assertEqual(unstyle(str(report)), \"1 file left unchanged.\")",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 885,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)), \"1 file reformatted, 1 file left unchanged.\"",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 892,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)), \"1 file reformatted, 2 files left unchanged.\"",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 903,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 913,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 923,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 932,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 941,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 948,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 955,
+      "calling_function": "test_report_normal",
+      "code_snippet": "unstyle(str(report)),",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 965,
+      "calling_function": "test_report_respects_no_color",
+      "code_snippet": "self.assertEqual(output, unstyle(output))",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 1618,
+      "calling_function": "test_format_stdin_to_stdout_without_buffer",
+      "code_snippet": "actual = unstyle(output.getvalue())",
+      "symbol": "click.unstyle",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 2007,
+      "calling_function": "test_read_pyproject_toml_rejects_non_string_regex_configs",
+      "code_snippet": "with pytest.raises(click.BadOptionUsage) as exc_info:",
+      "symbol": "click.BadOptionUsage",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 2312,
+      "calling_function": "compare_results",
+      "code_snippet": "result: click.testing.Result, expected_value: str, expected_exit_code: int",
+      "symbol": "click.testing.Result",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 2316,
+      "calling_function": "compare_results",
+      "code_snippet": "result.stdout == expected_value",
+      "symbol": "click.testing.Result().stdout",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_black.py",
+      "line": 2318,
+      "calling_function": "compare_results",
+      "code_snippet": "assert result.exit_code == expected_exit_code, \"The exit code is incorrect.\"",
+      "symbol": "click.testing.Result().exit_code",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_blackd.py",
+      "line": 35,
+      "calling_function": "test_blackd_main",
+      "code_snippet": "result = CliRunner().invoke(blackd.main, [])",
+      "symbol": "click.testing.CliRunner",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 38,
+      "calling_function": "<module>",
+      "code_snippet": "runner = CliRunner()",
+      "symbol": "click.testing.CliRunner",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 499,
+      "calling_function": "test_ipynb_diff_with_change",
+      "code_snippet": "result = runner.invoke(",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 508,
+      "calling_function": "test_ipynb_diff_with_change",
+      "code_snippet": "assert expected in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 512,
+      "calling_function": "test_ipynb_diff_with_no_change",
+      "code_snippet": "result = runner.invoke(",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 521,
+      "calling_function": "test_ipynb_diff_with_no_change",
+      "code_snippet": "assert expected in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 533,
+      "calling_function": "test_cache_isnt_written_if_no_jupyter_deps_single",
+      "code_snippet": "result = runner.invoke(",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 536,
+      "calling_function": "test_cache_isnt_written_if_no_jupyter_deps_single",
+      "code_snippet": "assert \"No Python files are present to be formatted. Nothing to do\" in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 539,
+      "calling_function": "test_cache_isnt_written_if_no_jupyter_deps_single",
+      "code_snippet": "result = runner.invoke(",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 542,
+      "calling_function": "test_cache_isnt_written_if_no_jupyter_deps_single",
+      "code_snippet": "assert \"reformatted\" in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 556,
+      "calling_function": "test_cache_isnt_written_if_no_jupyter_deps_dir",
+      "code_snippet": "result = runner.invoke(main, [str(tmp_path), f\"--config={EMPTY_CONFIG}\"])",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 557,
+      "calling_function": "test_cache_isnt_written_if_no_jupyter_deps_dir",
+      "code_snippet": "assert \"No Python files are present to be formatted. Nothing to do\" in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 562,
+      "calling_function": "test_cache_isnt_written_if_no_jupyter_deps_dir",
+      "code_snippet": "result = runner.invoke(main, [str(tmp_path), f\"--config={EMPTY_CONFIG}\"])",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 563,
+      "calling_function": "test_cache_isnt_written_if_no_jupyter_deps_dir",
+      "code_snippet": "assert \"reformatted\" in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 570,
+      "calling_function": "test_ipynb_flag",
+      "code_snippet": "result = runner.invoke(",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 580,
+      "calling_function": "test_ipynb_flag",
+      "code_snippet": "assert expected in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 585,
+      "calling_function": "test_ipynb_and_pyi_flags",
+      "code_snippet": "result = runner.invoke(",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 595,
+      "calling_function": "test_ipynb_and_pyi_flags",
+      "code_snippet": "assert isinstance(result.exception, SystemExit)",
+      "symbol": "click.testing.CliRunner().invoke().exception",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 597,
+      "calling_function": "test_ipynb_and_pyi_flags",
+      "code_snippet": "assert result.output == expected",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 616,
+      "calling_function": "test_stdin_crlf_without_trailing_newline",
+      "code_snippet": "result = runner.invoke(",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 621,
+      "calling_function": "test_stdin_crlf_without_trailing_newline",
+      "code_snippet": "assert result.exit_code == 0",
+      "symbol": "click.testing.CliRunner().invoke().exit_code",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_ipynb.py",
+      "line": 622,
+      "calling_function": "test_stdin_crlf_without_trailing_newline",
+      "code_snippet": "assert result.stdout_bytes == contents.encode() + b\"\\r\\n\"",
+      "symbol": "click.testing.CliRunner().invoke().stdout_bytes",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_no_ipynb.py",
+      "line": 11,
+      "calling_function": "<module>",
+      "code_snippet": "runner = CliRunner()",
+      "symbol": "click.testing.CliRunner",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_no_ipynb.py",
+      "line": 17,
+      "calling_function": "test_ipynb_diff_with_no_change_single",
+      "code_snippet": "result = runner.invoke(main, [str(path)])",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_no_ipynb.py",
+      "line": 22,
+      "calling_function": "test_ipynb_diff_with_no_change_single",
+      "code_snippet": "assert expected_output in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_no_ipynb.py",
+      "line": 27,
+      "calling_function": "test_ipynb_diff_with_no_change_dir",
+      "code_snippet": "runner = CliRunner()",
+      "symbol": "click.testing.CliRunner",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_no_ipynb.py",
+      "line": 31,
+      "calling_function": "test_ipynb_diff_with_no_change_dir",
+      "code_snippet": "result = runner.invoke(main, [str(tmp_path)])",
+      "symbol": "click.testing.CliRunner().invoke",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "tests/test_no_ipynb.py",
+      "line": 36,
+      "calling_function": "test_ipynb_diff_with_no_change_dir",
+      "code_snippet": "assert expected_output in result.output",
+      "symbol": "click.testing.CliRunner().invoke().output",
+      "kind": "reference",
+      "private_api": false
+    }
+  ],
+  "context_code": "# file: src/black/__init__.py\nimport click\n\nfrom click.core import ParameterSource\n\ndef read_pyproject_toml(\n    ctx: click.Context, param: click.Parameter | None, value: str | None\n) -> str | None:\n    \"\"\"Inject Black configuration from \"pyproject.toml\" into defaults in `ctx`.\n\n    Returns the path to a successfully found and read configuration file, None\n    otherwise.\n    \"\"\"\n    if not value:\n        value = find_pyproject_toml(\n            ctx.params.get(\"src\", ()), ctx.params.get(\"stdin_filename\", None)\n        )\n        if value is None:\n            return None\n\n    try:\n        config = parse_pyproject_toml(value)\n    except (OSError, ValueError) as e:\n        raise click.FileError(\n            filename=value, hint=f\"Error reading configuration file: {e}\"\n        ) from None\n\n    if not config:\n        return None\n    else:\n        spellcheck_pyproject_toml_keys(ctx, list(config), value)\n        # Sanitize the values to be Click friendly. For more information please see:\n        # https://github.com/psf/black/issues/1458\n        # https://github.com/pallets/click/issues/1567\n        config = {\n            k: str(v) if not isinstance(v, (list, dict)) else v\n            for k, v in config.items()\n        }\n\n    target_version = config.get(\"target_version\")\n    if target_version is not None and not isinstance(target_version, list):\n        raise click.BadOptionUsage(\n            \"target-version\", \"Config key target-version must be a list\"\n        )\n\n    exclude = config.get(\"exclude\")\n    if exclude is not None and not isinstance(exclude, str):\n        raise click.BadOptionUsage(\"exclude\", \"Config key exclude must be a string\")\n\n    include = config.get(\"include\")\n    if include is not None and not isinstance(include, str):\n        raise click.BadOptionUsage(\"include\", \"Config key include must be a string\")\n\n    extend_exclude = config.get(\"extend_exclude\")\n    if extend_exclude is not None and not isinstance(extend_exclude, str):\n        raise click.BadOptionUsage(\n            \"extend-exclude\", \"Config key extend-exclude must be a string\"\n        )\n\n    force_exclude = config.get(\"force_exclude\")\n    if force_exclude is not None and not isinstance(force_exclude, str):\n        raise click.BadOptionUsage(\n            \"force-exclude\", \"Config key force-exclude must be a string\"\n        )\n\n    line_ranges = config.get(\"line_ranges\")\n    if line_ranges is not None:\n        raise click.BadOptionUsage(\n            \"line-ranges\", \"Cannot use line-ranges in the pyproject.toml file.\"\n        )\n\n    default_map: dict[str, Any] = {}\n    if ctx.default_map:\n        default_map.update(ctx.default_map)\n    default_map.update(config)\n\n    ctx.default_map = default_map\n    return value\n\ndef spellcheck_pyproject_toml_keys(\n    ctx: click.Context, config_keys: list[str], config_file_path: str\n) -> None:\n    invalid_keys: list[str] = []\n    available_config_options = {param.name for param in ctx.command.params}\n    invalid_keys = [key for key in config_keys if key not in available_config_options]\n    if invalid_keys:\n        keys_str = \", \".join(map(repr, invalid_keys))\n        out(\n            f\"Invalid config keys detected: {keys_str} (in {config_file_path})\",\n            fg=\"red\",\n        )\n\ndef target_version_option_callback(\n    c: click.Context, p: click.Option | click.Parameter, v: tuple[str, ...]\n) -> list[TargetVersion]:\n    \"\"\"Compute the target versions from a --target-version flag.\n\n    This is its own function because mypy couldn't infer the type correctly\n    when it was a lambda, causing mypyc trouble.\n    \"\"\"\n    return [TargetVersion[val.upper()] for val in v]\n\ndef enable_unstable_feature_callback(\n    c: click.Context, p: click.Option | click.Parameter, v: tuple[str, ...]\n) -> list[Preview]:\n    \"\"\"Compute the features from an --enable-unstable-feature flag.\"\"\"\n    return [Preview[val] for val in v]\n\ndef validate_regex(\n    ctx: click.Context,\n    param: click.Parameter,\n    value: str | None,\n) -> Pattern[str] | None:\n    try:\n        return re_compile_maybe_verbose(value) if value is not None else None\n    except re.error as e:\n        raise click.BadParameter(f\"Not a valid regular expression: {e}\") from None\n\n@click.command(\n    context_settings={\"help_option_names\": [\"-h\", \"--help\"]},\n    # While Click does set this field automatically using the docstring, mypyc\n    # (annoyingly) strips 'em so we need to set it here too.\n    help=\"The uncompromising code formatter.\",\n)\n@click.option(\"-c\", \"--code\", type=str, help=\"Format the code passed in as a string.\")\n@click.option(\n    \"-l\",\n    \"--line-length\",\n    type=int,\n    default=DEFAULT_LINE_LENGTH,\n    help=\"How many characters per line to allow.\",\n    show_default=True,\n)\n@click.option(\n    \"-t\",\n    \"--target-version\",\n    type=click.Choice([v.name.lower() for v in TargetVersion]),\n    callback=target_version_option_callback,\n    multiple=True,\n    help=(\n        \"Python versions that should be supported by Black's output. You should\"\n        \" include all versions that your code supports. By default, Black will infer\"\n        \" target versions from the project metadata in pyproject.toml. If this does\"\n        \" not yield conclusive results, Black will use per-file auto-detection.\"\n    ),\n)\n@click.option(\n    \"--pyi\",\n    is_flag=True,\n    help=(\n        \"Format all input files like typing stubs regardless of file extension. This\"\n        \" is useful when piping source on standard input.\"\n    ),\n)\n@click.option(\n    \"--ipynb\",\n    is_flag=True,\n    help=(\n        \"Format all input files like Jupyter Notebooks regardless of file extension.\"\n        \" This is useful when piping source on standard input.\"\n    ),\n)\n@click.option(\n    \"--python-cell-magics\",\n    multiple=True,\n    help=(\n        \"When processing Jupyter Notebooks, add the given magic to the list\"\n        f\" of known python-magics ({', '.join(sorted(PYTHON_CELL_MAGICS))}).\"\n        \" Useful for formatting cells with custom python magics.\"\n    ),\n    default=[],\n)\n@click.option(\n    \"-x\",\n    \"--skip-source-first-line\",\n    is_flag=True,\n    help=\"Skip the first line of the source code.\",\n)\n@click.option(\n    \"-S\",\n    \"--skip-string-normalization\",\n    is_flag=True,\n    help=\"Don't normalize string quotes or prefixes.\",\n)\n@click.option(\n    \"-C\",\n    \"--skip-magic-trailing-comma\",\n    is_flag=True,\n    help=\"Don't use trailing commas as a reason to split lines.\",\n)\n@click.option(\n    \"--preview\",\n    is_flag=True,\n    help=(\n        \"Enable potentially disruptive style changes that may be added to Black's main\"\n        \" functionality in the next major release.\"\n    ),\n)\n@click.option(\n    \"--unstable\",\n    is_flag=True,\n    help=(\n        \"Enable potentially disruptive style changes that have known bugs or are not\"\n        \" currently expected to make it into the stable style Black's next major\"\n        \" release. Implies --preview.\"\n    ),\n)\n@click.option(\n    \"--enable-unstable-feature\",\n    type=click.Choice([v.name for v in Preview]),\n    callback=enable_unstable_feature_callback,\n    multiple=True,\n    help=(\n        \"Enable specific features included in the `--unstable` style. Requires\"\n        \" `--preview`. No compatibility guarantees are provided on the behavior\"\n        \" or existence of any unstable features.\"\n    ),\n)\n@click.option(\n    \"--check\",\n    is_flag=True,\n    help=(\n        \"Don't write the files back, just return the status. Return code 0 means\"\n        \" nothing would change. Return code 1 means some files would be reformatted.\"\n        \" Return code 123 means there was an internal error.\"\n    ),\n)\n@click.option(\n    \"--diff\",\n    is_flag=True,\n    help=(\n        \"Don't write the files back, just output a diff to indicate what changes\"\n        \" Black would've made. They are printed to stdout so capturing them is simple.\"\n    ),\n)\n@click.option(\n    \"--color/--no-color\",\n    is_flag=True,\n    help=\"Show (or do not show) colored diff. Only applies when --diff is given.\",\n)\n@click.option(\n    \"--line-ranges\n# ... truncated\n\n# ... 5 more file(s) omitted (context limit)",
+  "context_truncated": true,
+  "unparsed_files": [
+    "tests/data/cases/pep_572_do_not_remove_parens.py",
+    "tests/data/cases/python315.py",
+    "tests/data/miscellaneous/async_as_identifier.py",
+    "tests/data/miscellaneous/invalid_header.py",
+    "tests/data/miscellaneous/pattern_matching_invalid.py",
+    "tests/data/miscellaneous/python2_detection.py"
+  ],
+  "files_scanned": 371,
+  "repo_path": "C:\\Users\\Omisha Iyer\\VJTI\\Projects\\Kavach\\.cloned_repos\\psf_black"
 }

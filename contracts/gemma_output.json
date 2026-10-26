@@ -1,6 +1,82 @@
 {
-  "replacement_candidate": "httpx",
-  "migration_strategy": "Direct async refactor",
-  "red_team_tests": "def test_edge_timeout():\n    import httpx\n    # synthetic adversarial test\n    pass\n",
-  "blue_team_patch": "--- a/src/api_client.py\n+++ b/src/api_client.py\n@@ -1,4 +1,4 @@\n-import requests\n+import httpx\n\n def fetch_user_data(url):\n-    return requests.get(url, timeout=5).json()\n+    return httpx.get(url, timeout=5).json()\n"
+  "replacement_candidate": "click-modern",
+  "migration_strategy": "Deterministic migration with click-modern adapter",
+  "set_a_tests": [
+    {
+      "test_id": "SET_A_01",
+      "name": "test_set_a_load_settings_contract",
+      "category": "SET_A_COMPATIBILITY_GATE",
+      "description": "Verifies load_settings() loads standard TOML file into Settings model accurately.",
+      "test_code": "def test_set_a_load_settings_contract(tmp_path):\n    pass",
+      "expected_behavior": "Must pass on both old and new implementations",
+      "edge_case_category": "Contract Invariance",
+      "stress_invariant": "Basic TOML file parsing and schema population",
+      "oracle_validated": true,
+      "validity_gate_passed": true
+    },
+    {
+      "test_id": "SET_A_02",
+      "name": "test_set_a_site_list_types",
+      "category": "SET_A_COMPATIBILITY_GATE",
+      "description": "Verifies deserialization of [[sites]] table arrays into Site typed models.",
+      "test_code": "def test_set_a_site_list_types(tmp_path):\n    pass",
+      "expected_behavior": "Must pass on both old and new implementations",
+      "edge_case_category": "Contract Invariance",
+      "stress_invariant": "Array of tables deserialization fidelity",
+      "oracle_validated": true,
+      "validity_gate_passed": true
+    }
+  ],
+  "set_b_tests": [
+    {
+      "test_id": "SET_B_01",
+      "name": "test_set_b_binary_stream_rb_mode_invariant",
+      "category": "SET_B_DIFFERENTIAL",
+      "description": "Verifies that load_settings opens the TOML file in binary mode ('rb') as strictly mandated by standard library tomllib.",
+      "test_code": "def test_set_b_binary_stream_rb_mode_invariant(tmp_path):\n    ...",
+      "expected_behavior": "Opens file with 'rb' mode safely without TypeError",
+      "edge_case_category": "Type & Boundary",
+      "stress_invariant": "Python 3.11+ tomllib requiring binary 'rb' mode stream",
+      "oracle_validated": true,
+      "validity_gate_passed": true
+    },
+    {
+      "test_id": "SET_B_02",
+      "name": "test_set_b_utf8_multibyte_unicode_and_emojis",
+      "category": "SET_B_DIFFERENTIAL",
+      "description": "Probes parsing of TOML files containing unicode accents ('Caf\u00e9 Cr\u00e8me') and symbols ('\u2713 \ud83d\ude80') in site configuration.",
+      "test_code": "def test_set_b_utf8_multibyte_unicode_and_emojis(tmp_path):\n    ...",
+      "expected_behavior": "Preserves multibyte unicode without mojibake or UTF-8 decode error",
+      "edge_case_category": "Unicode & Encoding",
+      "stress_invariant": "Multi-byte UTF-8 strings and emojis inside TOML titles",
+      "oracle_validated": true,
+      "validity_gate_passed": true
+    },
+    {
+      "test_id": "SET_B_03",
+      "name": "test_set_b_malformed_syntax_error_resilience",
+      "category": "SET_B_DIFFERENTIAL",
+      "description": "Probes parser behavior on unclosed quotes or syntax errors, verifying predictable exception raising.",
+      "test_code": "def test_set_b_malformed_syntax_error_resilience(tmp_path):\n    ...",
+      "expected_behavior": "Cleanly raises parse exception instead of unhandled crash",
+      "edge_case_category": "Error Resilience",
+      "stress_invariant": "Syntax errors raise standard TOMLDecodeError cleanly",
+      "oracle_validated": true,
+      "validity_gate_passed": true
+    },
+    {
+      "test_id": "SET_B_04",
+      "name": "test_set_b_empty_and_default_settings_tables",
+      "category": "SET_B_DIFFERENTIAL",
+      "description": "Probes empty table declarations ([]) and empty files, verifying default model fields populate safely.",
+      "test_code": "def test_set_b_empty_and_default_settings_tables(tmp_path):\n    ...",
+      "expected_behavior": "Successfully instantiates Settings with default attributes",
+      "edge_case_category": "Type & Boundary",
+      "stress_invariant": "Empty TOML tables and missing optional keys",
+      "oracle_validated": true,
+      "validity_gate_passed": true
+    }
+  ],
+  "full_pytest_file_content": "from pathlib import Path\nimport pytest\nfrom black.config import load_settings, Settings\n\n# SET A: Compatibility Gate Tests\ndef test_set_a_load_settings_contract(tmp_path):\n    p = tmp_path / 'sites.toml'\n    p.write_text('title = \"Test\"\\noutput = \"out.html\"\\n', encoding='utf-8')\n    s = load_settings(str(p))\n    assert isinstance(s, Settings)\n    assert s.title == 'Test'\n\ndef test_set_a_site_list_types(tmp_path):\n    p = tmp_path / 'sites.toml'\n    p.write_text('title = \"Black\"\\n[[sites]]\\nname = \"Example\"\\nurl = \"https://example.com\"\\n', encoding='utf-8')\n    s = load_settings(str(p))\n    assert len(s.sites) == 1\n    assert s.sites[0].name == 'Example'\n\n# SET B: Adversarial Edge-Case Tests (Red Team Fuzzing)\ndef test_set_b_binary_stream_rb_mode_invariant(tmp_path):\n    p = tmp_path / 'sites.toml'\n    p.write_text('title = \"BinaryModeTest\"\\n', encoding='utf-8')\n    # Standard library tomllib mandates binary 'rb' mode\n    s = load_settings(str(p))\n    assert s.title == 'BinaryModeTest'\n\ndef test_set_b_utf8_multibyte_unicode_and_emojis(tmp_path):\n    p = tmp_path / 'sites.toml'\n    p.write_text('title = \"Caf\u00e9 Cr\u00e8me \u2713 \ud83d\ude80\"\\n[[sites]]\\nname = \"Caf\u00e9\"\\nurl = \"https://cafe.fr\"\\n', encoding='utf-8')\n    s = load_settings(str(p))\n    assert 'Caf\u00e9' in s.title\n    assert s.sites[0].name == 'Caf\u00e9'\n\ndef test_set_b_malformed_syntax_error_resilience(tmp_path):\n    p = tmp_path / 'broken.toml'\n    p.write_text('title = \"Unclosed String\\n[broken', encoding='utf-8')\n    with pytest.raises(Exception):\n        load_settings(str(p))\n\ndef test_set_b_empty_and_default_settings_tables(tmp_path):\n    p = tmp_path / 'empty.toml'\n    p.write_text('', encoding='utf-8')\n    s = load_settings(str(p))\n    assert isinstance(s, Settings)\n",
+  "edge_cases_count": 4
 }

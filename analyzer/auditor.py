@@ -188,19 +188,19 @@ if __name__ == "__main__":
     assert {"test_file_touched", "assert_removed", "assert_commented_out",
             "test_skipped", "hardcoded_literal"} <= kinds
 
-    RETURN_CHEAT = """--- a/src/linkwatch/checker.py
-+++ b/src/linkwatch/checker.py
+    RETURN_CHEAT = """--- a/src/app/checker.py
++++ b/src/app/checker.py
 @@ -1,2 +1,3 @@
  def fetch(url):
-+    return "linkwatch/1.0"
++    return "app/1.0"
 """
-    RETURN_OK = """--- a/src/linkwatch/checker.py
-+++ b/src/linkwatch/checker.py
+    RETURN_OK = """--- a/src/app/checker.py
++++ b/src/app/checker.py
 @@ -1,2 +1,3 @@
  def check(url):
 +    return {"up": False, "reason": "connection error"}
 """
-    lits = {"linkwatch/1.0", "connection error"}
+    lits = {"app/1.0", "connection error"}
     cheat = audit_patch(RETURN_CHEAT, test_literals=lits)
     ok = audit_patch(RETURN_OK, test_literals=lits)
     print(f"Bare return of test literal -> tampering_detected={cheat['tampering_detected']}")

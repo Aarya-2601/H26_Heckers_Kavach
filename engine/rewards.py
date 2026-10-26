@@ -3,7 +3,16 @@ Reward Scoring Engine for Dependency Resilience Migration.
 Evaluates sandboxed execution telemetry and generated patches deterministically.
 """
 
+import sys
+from pathlib import Path
 from typing import Dict, Any, Tuple, Optional, Set
+
+# Ensure project root is importable when this file is run directly (python engine/<file>.py)
+_PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
+from engine.tamper import scan_patch
 
 
 def compute_reward(
@@ -33,20 +42,27 @@ def compute_reward(
     # 1. Anti-Cheat & Tampering Checks (-9999 points)
     is_tampering = run_result.get("tampering_detected", False)
     
-    # Static sanity check on patch diff
+    # Run Person 2's deep AST auditor if available
+    auditor_ran = False
     if patch_diff:
-        lines = patch_diff.splitlines()
-        for line in lines:
-            # Check for deleting assertions
-            if line.startswith("-") and not line.startswith("---"):
-                if "assert " in line or "assertEqual" in line or "expect(" in line:
-                    is_tampering = True
-                    breakdown["reasons"].append("Anti-cheat trigger: detected deletion of test assertions in patch.")
-            # Check for modifying test files directly
-            if line.startswith("--- a/") or line.startswith("+++ b/"):
-                if "test_" in line or "/tests/" in line or ".audit_tests" in line:
-                    is_tampering = True
-                    breakdown["reasons"].append("Anti-cheat trigger: detected modification of test suites in patch.")
+        try:
+            from analyzer.auditor import audit_patch
+            audit_res = audit_patch(patch_diff)
+            auditor_ran = True
+            if audit_res.get("tampering_detected"):
+                is_tampering = True
+                for v in audit_res.get("violations", []):
+                    breakdown["reasons"].append(f"Auditor violation: {v}")
+        except Exception as exc:
+            breakdown["reasons"].append(
+                f"Auditor unavailable ({type(exc).__name__}: {exc}); using built-in scoped checks."
+            )
+
+    # Fallback: scoped checks (test files only, matched by path component) if the auditor did not run
+    if patch_diff and not auditor_ran and not is_tampering:
+        for violation in scan_patch(patch_diff):
+            is_tampering = True
+            breakdown["reasons"].append(f"Anti-cheat trigger: {violation}")
 
     if is_tampering:
         score -= 9999

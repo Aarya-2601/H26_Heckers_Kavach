@@ -23,6 +23,7 @@ import json
 import os
 import sys
 import textwrap
+import warnings
 
 try:
     from analyzer.blast_radius import compute_blast_radius
@@ -284,14 +285,39 @@ class FileScanner(ast.NodeVisitor):
         return f"# file: {self.rel_path}\n" + "\n\n".join(parts)
 
 
-def scan_file(path, rel_path, names):
-    """Returns (call_sites, context_block, parsed_ok)."""
+_PARSE_CACHE = {}   # (path, mtime, size) -> (src, tree or None); each file is parsed once across all packages
+
+
+def _load_tree(path, rel_path):
+    try:
+        st = os.stat(path)
+        key = (path, st.st_mtime_ns, st.st_size)
+    except OSError:
+        return None, None
+    if key in _PARSE_CACHE:
+        return _PARSE_CACHE[key]
     try:
         with open(path, "r", encoding="utf-8-sig") as f:    # -sig: tolerate a BOM
             src = f.read()
-        tree = ast.parse(src, filename=rel_path)
-    except (SyntaxError, UnicodeDecodeError, OSError, ValueError):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")                  # e.g. invalid escape sequences in fixtures
+            tree = ast.parse(src, filename=rel_path)
+        result = (src, tree)
+    except (SyntaxError, UnicodeDecodeError, OSError, ValueError, MemoryError, RecursionError):
+        result = (None, None)
+    if len(_PARSE_CACHE) > 4000:
+        _PARSE_CACHE.clear()
+    _PARSE_CACHE[key] = result
+    return result
+
+
+def scan_file(path, rel_path, names):
+    """Returns (call_sites, context_block, parsed_ok)."""
+    src, tree = _load_tree(path, rel_path)
+    if tree is None:
         return [], "", False
+    if not any(n in src for n in names):      # cannot contain a hit: skip the full visit
+        return [], "", True
     scanner = FileScanner(src, rel_path, names)
     scanner.visit(tree)
     if not scanner.call_sites:

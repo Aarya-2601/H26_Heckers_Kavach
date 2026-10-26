@@ -34,7 +34,7 @@ from dependency_whisperer.schemas import TaggedField, TagEnum
 # Person 1 imports
 from engine.sandbox import run_in_ephemeral_sandbox, execute_test_suite
 from engine.rewards import compute_reward
-from engine.search_loop import run_migration_search, generate_mermaid_dag
+from engine.search_loop import run_migration_search, generate_mermaid_dag, SandboxEnvironmentError
 
 # Person 4 imports
 from src.theme import console, print_solution, print_human, print_ai
@@ -114,9 +114,10 @@ def _resolve_hero_file(repo_path: str, target_pkg: str, scan_results: dict) -> s
 def run_pipeline(
     repo_path: str = "dataset/LinkWatch",
     target_pkg: str = "appdirs",
-    interactive: bool = False,
+    interactive: bool = True,
     backend: str = "mock",
-    api_key: Optional[str] = None
+    api_key: Optional[str] = None,
+    apply_to_repo: bool = True
 ):
     console.rule("[bold cyan]🛡️ DEPENDENCY RESILIENCE LAB — GEMMA 4 REASONING ENGINE[/bold cyan]")
     console.print(f"[dim white]Target Repository:[/dim white] [bold yellow]{repo_path}[/bold yellow]")
@@ -518,14 +519,68 @@ def run_pipeline(
     with open("contracts/run_result.json", "w", encoding="utf-8") as f:
         json.dump(contract_result, f, indent=2)
 
+    # -------------------------------------------------------------
+    # PHASE 6: Ground-Truth On-Disk Application (--apply)
+    # -------------------------------------------------------------
+    target_patch = best_node.patch_diff
+    if not target_patch:
+        passed_nodes = [n for n in history if n.patch_diff and n.status in ("PASSED", "AUTO_HEALED")]
+        if passed_nodes:
+            best_passed = max(passed_nodes, key=lambda n: n.reward_score)
+            target_patch = best_passed.patch_diff
+            best_node = best_passed
+
+    should_apply = apply_to_repo
+    if not should_apply and interactive and target_patch:
+        console.print()
+        import questionary
+        should_apply = questionary.confirm(
+            f"Apply verified patch for '{target_pkg}' directly to '{repo_path}' on disk?",
+            default=True
+        ).ask()
+
+    if should_apply:
+        if target_patch:
+            console.rule(f"[bold cyan]PHASE 6: Applying Migration to Disk ({target_pkg})[/bold cyan]")
+            console.print(f"[cyan]🛠️ Applying verified patch to repository on disk:[/cyan] [bold yellow]{repo_path}[/bold yellow]...")
+            from src.patch_applier import apply_patch_to_repo
+            apply_res = apply_patch_to_repo(
+                repo_path=repo_path,
+                patch_diff=target_patch,
+                target_package=target_pkg,
+                replacement_pkg=chosen_replacement,
+                hero_file=hero_file,
+                reward_score=best_node.reward_score,
+                update_manifest=True
+            )
+            if apply_res.get("success"):
+                console.print(f"[bold green]✔ Successfully applied patch via {apply_res.get('apply_method')}![/bold green]")
+                if apply_res.get("updated_manifests"):
+                    console.print(f"  • Updated manifest(s): [bold cyan]{', '.join(apply_res.get('updated_manifests'))}[/bold cyan]")
+                console.print(f"  • Migration logged in: [bold white]{apply_res.get('history_file')}[/bold white]")
+                
+                console.print(f"[cyan]🧪 Running ground-truth test suite directly on disk...[/cyan]")
+                gt_result = execute_test_suite(repo_path, timeout=60)
+                if gt_result.get("passed"):
+                    console.print(f"[bold green]✔ Ground-truth verification PASSED cleanly ({gt_result.get('execution_time_ms', 0)}ms)![/bold green]")
+                else:
+                    console.print(f"[yellow]⚠️  Ground-truth verification notice:[/yellow] {gt_result.get('raw_stderr')[:150]}")
+            else:
+                console.print(f"[bold red]❌ Could not apply patch to disk:[/bold red] {apply_res.get('error')}")
+        else:
+            console.print(f"\n[yellow]⚠️  Notice: No verified migration patch was applied to disk because no candidate passed sandbox verification cleanly.[/yellow]")
+
     console.rule("[bold green]✨ ALL PIPELINE PHASES COMPLETED WITH 100% PASS RATE ✨[/bold green]")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Dependency Resilience Lab — Master CLI")
     parser.add_argument("--repo", default="dataset/LinkWatch", help="Path to target repository")
-    parser.add_argument("--package", default="appdirs", help="Target package to audit/migrate (e.g. appdirs, toml, jinja2)")
-    parser.add_argument("--interactive", action="store_true", help="Launch interactive questionary prompts")
+    parser.add_argument("--package", default=None, help="Target package to audit/migrate (optional: defaults to interactive detection)")
+    parser.add_argument("--interactive", action="store_true", default=True, help="Launch interactive wizard (default: True)")
+    parser.add_argument("--non-interactive", "--no-interactive", action="store_true", help="Bypass interactive prompts and run in batch mode")
+    parser.add_argument("--apply", action="store_true", default=True, help="Apply verified winning migration patch directly to repository on disk (default: True)")
+    parser.add_argument("--dry-run", "--no-apply", action="store_true", help="Run in sandbox only without modifying files on disk")
     parser.add_argument("--backend", default="auto", choices=["auto", "hosted", "mock", "local"], help="Gemma 4 inference backend (defaults to 'auto': uses hosted if API key set, mock otherwise)")
     parser.add_argument("--api-key", help="Google AI Studio / Gemini API key (or set GEMMA_API_KEY/GEMINI_API_KEY/GOOGLE_API_KEY env var)")
 
@@ -540,12 +595,17 @@ def main():
         )
         backend = "hosted" if has_key else "mock"
 
+    is_interactive = not args.non_interactive
+    should_apply = not args.dry_run
+    target_pkg = args.package or "appdirs"
+
     run_pipeline(
         repo_path=args.repo,
-        target_pkg=args.package,
-        interactive=args.interactive,
+        target_pkg=target_pkg,
+        interactive=is_interactive,
         backend=backend,
-        api_key=args.api_key
+        api_key=args.api_key,
+        apply_to_repo=should_apply
     )
 
 

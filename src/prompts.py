@@ -4,6 +4,7 @@ Implements selection menus and text prompts styled in peachy-orange (#ffaf87).
 Supports optional dynamic voice capture and text editing.
 """
 
+import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -64,7 +65,26 @@ def detect_repo_dependency_choices(repo_path: Optional[Union[str, Path]] = None)
     repo = Path(repo_path)
     choices: List[str] = []
     seen = set()
+    migrated_records: Dict[str, Dict[str, Any]] = {}
+    history_file = repo / ".kavach_migrations.json"
+    if history_file.exists():
+        try:
+            hdata = json.loads(history_file.read_text(encoding="utf-8"))
+            for m in hdata.get("migrations", []):
+                tp = m.get("target_package")
+                if tp:
+                    migrated_records[tp.lower()] = m
+        except Exception:
+            pass
 
+    # 1. First show previously migrated packages so user clearly sees them as fixed
+    for tp_lower, m in migrated_records.items():
+        tp_name = m.get("target_package", tp_lower)
+        rep_name = m.get("replacement_package", "modernized")
+        seen.add(tp_lower)
+        choices.append(f"[ALREADY MIGRATED ✓] {tp_name} (resolved on disk -> replaced with {rep_name})")
+
+    # 2. Dynamic AST & Manifest analysis
     try:
         from web import analysis as kv_analysis
         analysis = kv_analysis.analyze_repo(repo)
@@ -94,6 +114,41 @@ def detect_repo_dependency_choices(repo_path: Optional[Union[str, Path]] = None)
                 choices.append(f"{name} (declared in manifest)")
     except Exception:
         pass
+
+    # 3. If repo has no manifests or known candidates, scan python files directly
+    unresolved_count = len([c for c in choices if not c.startswith("[ALREADY MIGRATED")])
+    if unresolved_count == 0:
+        try:
+            import ast
+            counts: Dict[str, int] = {}
+            for p in repo.rglob("*.py"):
+                if any(part in p.parts for part in (".git", "venv", ".venv", "__pycache__", ".pytest_cache", "build", "dist")):
+                    continue
+                try:
+                    tree = ast.parse(p.read_text(encoding="utf-8", errors="ignore"))
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.Import):
+                            for n in node.names:
+                                top = n.name.split(".")[0]
+                                counts[top] = counts.get(top, 0) + 1
+                        elif isinstance(node, ast.ImportFrom) and node.module:
+                            top = node.module.split(".")[0]
+                            counts[top] = counts.get(top, 0) + 1
+                except Exception:
+                    pass
+
+            from web.analysis import KNOWN_REPLACEMENTS
+            for mod_name, cnt in sorted(counts.items(), key=lambda kv: -kv[1]):
+                if mod_name.lower() in seen:
+                    continue
+                seen.add(mod_name.lower())
+                repl_info = KNOWN_REPLACEMENTS.get(mod_name.lower())
+                if repl_info:
+                    choices.append(f"{mod_name} ({repl_info[1]} -> replace with {repl_info[0]})")
+                else:
+                    choices.append(f"{mod_name} (imported in {cnt} file(s))")
+        except Exception:
+            pass
 
     if not choices:
         return list(DEFAULT_DEPENDENCY_CHOICES)

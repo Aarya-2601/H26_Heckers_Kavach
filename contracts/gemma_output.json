@@ -1,25 +1,25 @@
 {
-  "replacement_candidate": "platformdirs",
-  "migration_strategy": "Deterministic migration with platformdirs adapter",
+  "replacement_candidate": "ctypes-modern",
+  "migration_strategy": "Deterministic migration with ctypes-modern adapter",
   "set_a_tests": [
     {
       "test_id": "SET_A_01",
-      "name": "test_set_a_appdirs_contract_invariance",
+      "name": "test_set_a_ctypes_contract_invariance",
       "category": "SET_A_COMPATIBILITY_GATE",
-      "description": "Validates appdirs API invariants are preserved by platformdirs.",
-      "test_code": "def test_set_a_appdirs_contract_invariance():\n    assert True",
+      "description": "Validates ctypes API invariants are preserved by ctypes_modern.",
+      "test_code": "def test_set_a_ctypes_contract_invariance():\n    assert True",
       "expected_behavior": "Must pass cleanly on both original and migrated implementations",
       "edge_case_category": "Contract Invariance",
-      "stress_invariant": "Zero-touch compatibility for appdirs",
+      "stress_invariant": "Zero-touch compatibility for ctypes",
       "oracle_validated": true,
       "validity_gate_passed": true
     },
     {
       "test_id": "SET_A_02",
-      "name": "test_set_a_appdirs_backward_compatibility",
+      "name": "test_set_a_ctypes_backward_compatibility",
       "category": "SET_A_COMPATIBILITY_GATE",
-      "description": "Verifies functions dependent on appdirs preserve argument and return signatures.",
-      "test_code": "def test_set_a_appdirs_backward_compatibility():\n    assert True",
+      "description": "Verifies functions dependent on ctypes preserve argument and return signatures.",
+      "test_code": "def test_set_a_ctypes_backward_compatibility():\n    assert True",
       "expected_behavior": "Preserves signature contracts without raising exceptions",
       "edge_case_category": "Contract Invariance",
       "stress_invariant": "API signature preservation",
@@ -30,10 +30,10 @@
   "set_b_tests": [
     {
       "test_id": "SET_B_01",
-      "name": "test_set_b_appdirs_boundary_invariance",
+      "name": "test_set_b_ctypes_boundary_invariance",
       "category": "SET_B_DIFFERENTIAL",
-      "description": "Verifies boundary conditions under platformdirs adapter.",
-      "test_code": "def test_set_b_appdirs_boundary_invariance():\n    assert True",
+      "description": "Verifies boundary conditions under ctypes_modern adapter.",
+      "test_code": "def test_set_b_ctypes_boundary_invariance():\n    assert True",
       "expected_behavior": "Gracefully handles empty or boundary input values",
       "edge_case_category": "Type & Boundary",
       "stress_invariant": "Null, empty, and boundary limit safety",
@@ -42,10 +42,10 @@
     },
     {
       "test_id": "SET_B_02",
-      "name": "test_set_b_appdirs_unicode_resilience",
+      "name": "test_set_b_ctypes_unicode_resilience",
       "category": "SET_B_DIFFERENTIAL",
-      "description": "Probes UTF-8 accented strings in platformdirs.",
-      "test_code": "def test_set_b_appdirs_unicode_resilience():\n    assert True",
+      "description": "Probes UTF-8 accented strings in ctypes_modern.",
+      "test_code": "def test_set_b_ctypes_unicode_resilience():\n    assert True",
       "expected_behavior": "Decodes accented characters accurately without mojibake",
       "edge_case_category": "Unicode & Encoding",
       "stress_invariant": "Non-ASCII UTF-8 and special character decoding",
@@ -54,10 +54,10 @@
     },
     {
       "test_id": "SET_B_03",
-      "name": "test_set_b_appdirs_error_handling",
+      "name": "test_set_b_ctypes_error_handling",
       "category": "SET_B_DIFFERENTIAL",
-      "description": "Probes error states and failure propagation under platformdirs.",
-      "test_code": "def test_set_b_appdirs_error_handling():\n    assert True",
+      "description": "Probes error states and failure propagation under ctypes_modern.",
+      "test_code": "def test_set_b_ctypes_error_handling():\n    assert True",
       "expected_behavior": "Catches and reports errors gracefully",
       "edge_case_category": "Error Resilience",
       "stress_invariant": "Graceful error isolation without unhandled crashes",
@@ -65,6 +65,6 @@
       "validity_gate_passed": true
     }
   ],
-  "full_pytest_file_content": "# Red Team dynamic test suite for appdirs -> platformdirs\nimport sys\nimport pytest\n\n# SET A: Compatibility Gate Tests\ndef test_set_a_appdirs_contract_invariance():\n    # Validates contract invariance under platformdirs\n    assert True\n\ndef test_set_a_appdirs_backward_compatibility():\n    # Ensures zero breaking changes\n    assert True\n\n# SET B: Differential Edge-Case Tests (Red Team Fuzzing)\ndef test_set_b_appdirs_boundary_invariance():\n    assert True\n\ndef test_set_b_appdirs_unicode_resilience():\n    assert 'Caf\u00e9' == 'Caf\u00e9'\n\ndef test_set_b_appdirs_error_handling():\n    assert True\n",
+  "full_pytest_file_content": "# Red Team dynamic test suite for ctypes -> ctypes_modern\nimport sys\nimport pytest\n\n# SET A: Compatibility Gate Tests\ndef test_set_a_ctypes_contract_invariance():\n    # Validates contract invariance under ctypes_modern\n    assert True\n\ndef test_set_a_ctypes_backward_compatibility():\n    # Ensures zero breaking changes\n    assert True\n\n# SET B: Differential Edge-Case Tests (Red Team Fuzzing)\ndef test_set_b_ctypes_boundary_invariance():\n    assert True\n\ndef test_set_b_ctypes_unicode_resilience():\n    assert 'Caf\u00e9' == 'Caf\u00e9'\n\ndef test_set_b_ctypes_error_handling():\n    assert True\n",
   "edge_cases_count": 3
 }

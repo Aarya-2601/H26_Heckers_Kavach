@@ -1191,7 +1191,8 @@ class GemmaClient:
 
     def _mock_migration_code_response(self, prompt: str) -> str:
         prompt_lower = prompt.lower()
-        if "appdirs" in prompt_lower or "cache.py" in prompt_lower:
+        is_lw_cache = ("linkwatch" in prompt_lower and "cache.py" in prompt_lower) or ("linkwatch_cache_dir" in prompt_lower)
+        if is_lw_cache:
             return (
                 "import json\nimport os\n\nfrom platformdirs import user_cache_dir\n\n"
                 "RESULTS_FILE = \"results.json\"\n\n"
@@ -1299,8 +1300,9 @@ class GemmaClient:
                 "    for site in sites:\n"
                 "        yield check_site(site)\n"
             )
-        return (
-            "from typing import List\n\n"
+        elif "config.py" in prompt_lower or "toml" in prompt_lower:
+            return (
+                "from typing import List\n\n"
             "try:\n"
             "    import tomllib\n"
             "except ModuleNotFoundError:\n"
@@ -1352,7 +1354,8 @@ class GemmaClient:
 
     def _mock_repair_response(self, prompt: str) -> str:
         prompt_lower = prompt.lower()
-        if "appdir" in prompt_lower or "cache.py" in prompt_lower:
+        is_lw_cache = ("linkwatch" in prompt_lower and "cache.py" in prompt_lower) or ("linkwatch_cache_dir" in prompt_lower)
+        if is_lw_cache:
             return json.dumps({
                 "success": True,
                 "root_cause_diagnosis": "Direct substitution of appdirs lacked environment variable fallback. Injected platformdirs adapter with LINKWATCH_CACHE_DIR support.",

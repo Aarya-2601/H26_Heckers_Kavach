@@ -1,10 +1,29 @@
 {
-  "target_package": "appdirs",
-  "blast_radius_score": 0,
-  "hero_file": null,
-  "call_sites": [],
+  "target_package": "ctypes",
+  "blast_radius_score": 30,
+  "hero_file": "app v2.py",
+  "call_sites": [
+    {
+      "file": "app v2.py",
+      "line": 14,
+      "calling_function": "<module>",
+      "code_snippet": "ctypes.windll.wininet.InternetSetOptionW(0, 39, ctypes.c_void_p(0), 0)",
+      "symbol": "ctypes.windll.wininet.InternetSetOptionW",
+      "kind": "call",
+      "private_api": false
+    },
+    {
+      "file": "app v2.py",
+      "line": 14,
+      "calling_function": "<module>",
+      "code_snippet": "ctypes.windll.wininet.InternetSetOptionW(0, 39, ctypes.c_void_p(0), 0)",
+      "symbol": "ctypes.c_void_p",
+      "kind": "call",
+      "private_api": false
+    }
+  ],
   "test_call_sites": [],
-  "context_code": "",
+  "context_code": "# file: app v2.py\nimport ctypes\n\nctypes.windll.wininet.InternetSetOptionW(0, 39, ctypes.c_void_p(0), 0)",
   "context_truncated": false,
   "unparsed_files": [],
   "files_scanned": 2

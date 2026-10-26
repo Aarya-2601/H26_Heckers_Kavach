@@ -230,7 +230,7 @@ def run_migration_search(
         history.append(node)
 
         # Update best candidate
-        if node.reward_score > best_node.reward_score and node.status != "TAMPERED":
+        if (node.status == "PASSED" and best_node.status == "BASELINE") or (node.reward_score > best_node.reward_score and node.status not in ("TAMPERED", "REJECTED")):
             best_node = node
 
         # If tests passed cleanly, stop searching early

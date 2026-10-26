@@ -207,7 +207,7 @@ def stream_auto_heal_reasoning(
     replacement_pkg: str = "platformdirs",
     hero_file: str = "linkwatch/cache.py",
     error_reason: str = "",
-    delay: float = 0.2,
+    delay: float = 0.01,
     console: Optional[Console] = None,
 ) -> None:
     """Stream Gemma's auto-healed reasoning live inside a new reasoning block."""
@@ -293,7 +293,7 @@ def run_auto_heal_loop(
     failed_test_id: Optional[str] = None,
     failure_reason: Optional[str] = None,
     test_results: Optional[List[Dict[str, Any]]] = None,
-    delay: float = 0.2,
+    delay: float = 0.01,
     console: Optional[Console] = None,
 ) -> None:
     """Execute the complete Phase 4 auto-heal visualization loop.

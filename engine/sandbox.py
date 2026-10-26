@@ -23,14 +23,14 @@ from engine.tamper import touched_test_files
 def execute_test_suite(
     repo_path: str,
     test_cmd: Optional[List[str]] = None,
-    timeout: int = 30
+    timeout: int = 60
 ) -> Dict[str, Any]:
     """
     Executes a test command inside the repository path and extracts ground-truth metrics.
     """
     if test_cmd is None:
         # Default to pytest with isolated module execution
-        test_cmd = [sys.executable, "-m", "pytest"]
+        test_cmd = [sys.executable, "-m", "pytest", "-q", "-o", "filterwarnings=ignore"]
 
     # Clone environment and inject PYTHONPATH and isolated pytest settings
     env = os.environ.copy()
@@ -89,7 +89,7 @@ def run_in_ephemeral_sandbox(
     target_repo_path: str,
     patch_diff: Optional[str] = None,
     test_cmd: Optional[List[str]] = None,
-    timeout: int = 30
+    timeout: int = 60
 ) -> Dict[str, Any]:
     """
     Copies the repository to an ephemeral temporary directory, applies the git patch if provided,

@@ -92,11 +92,14 @@ class DependencyWhisperer:
             call_sites=call_sites_str,
         )
 
-        return self.client.generate_structured(
+        plan = self.client.generate_structured(
             prompt=prompt,
             response_model=TestSuitePlan,
             system_prompt=SYSTEM_PROMPT_WHISPERER,
         )
+        plan.target_dependency = dependency_name
+        plan.replacement_library = replacement_library
+        return plan
 
     def synthesize_migration(
         self,

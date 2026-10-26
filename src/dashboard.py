@@ -101,7 +101,7 @@ AssertionError: Global monkey-patch detected in active import scope!
 
 def stream_chain_of_thought(
     steps: Optional[List[str]] = None,
-    delay: float = 0.25,
+    delay: float = 0.01,
     console: Optional[Console] = None,
 ) -> None:
     """Stream Gemma's step-by-step reasoning live inside a dedicated panel.
@@ -139,7 +139,7 @@ def stream_chain_of_thought(
 
 def run_deterministic_auditor(
     checks: Optional[List[str]] = None,
-    delay: float = 0.25,
+    delay: float = 0.01,
     console: Optional[Console] = None,
 ) -> None:
     """Render the Deterministic Auditor checklist, updating [ ] to [X] live."""

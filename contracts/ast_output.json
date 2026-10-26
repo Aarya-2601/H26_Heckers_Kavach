@@ -1,104 +1,11 @@
 {
-  "target_package": "yaml",
-  "blast_radius_score": 60,
-  "hero_file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-  "call_sites": [
-    {
-      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-      "line": 372,
-      "calling_function": "<module>",
-      "code_snippet": "config = yaml.safe_load(f)",
-      "symbol": "yaml.safe_load",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-      "line": 378,
-      "calling_function": "<module>",
-      "code_snippet": "worktrees = WorkTrees(config.get('root', '.'))",
-      "symbol": "yaml.safe_load().get",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-      "line": 381,
-      "calling_function": "<module>",
-      "code_snippet": "infos = socket.getaddrinfo(config.get('bind', None), config.get('port', 8443),",
-      "symbol": "yaml.safe_load().get",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-      "line": 381,
-      "calling_function": "<module>",
-      "code_snippet": "infos = socket.getaddrinfo(config.get('bind', None), config.get('port', 8443),",
-      "symbol": "yaml.safe_load().get",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-      "line": 387,
-      "calling_function": "<module>",
-      "code_snippet": "https = config.get('https', {})",
-      "symbol": "yaml.safe_load().get",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-      "line": 388,
-      "calling_function": "<module>",
-      "code_snippet": "if https.get('enabled', True):",
-      "symbol": "yaml.safe_load().get().get",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-      "line": 389,
-      "calling_function": "<module>",
-      "code_snippet": "cert_file = https.get('cert_file', 'localhost.pem')",
-      "symbol": "yaml.safe_load().get().get",
-      "kind": "call",
-      "private_api": false
-    },
-    {
-      "file": "CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py",
-      "line": 390,
-      "calling_function": "<module>",
-      "code_snippet": "key_file = https.get('key_file', 'localhost-key.pem')",
-      "symbol": "yaml.safe_load().get().get",
-      "kind": "call",
-      "private_api": false
-    }
-  ],
+  "target_package": "appdirs",
+  "blast_radius_score": 0,
+  "hero_file": null,
+  "call_sites": [],
   "test_call_sites": [],
-  "context_code": "# file: CLI/vcpkg/buildtrees/nlohmann-json/src/v3.12.0-89fed620e6.clean/tools/serve_header/serve_header.py\nimport yaml\n\nconfig = yaml.safe_load(f)\n\nworktrees = WorkTrees(config.get('root', '.'))\n\ninfos = socket.getaddrinfo(config.get('bind', None), config.get('port', 8443),\n\nhttps = config.get('https', {})\n\nif https.get('enabled', True):\n\ncert_file = https.get('cert_file', 'localhost.pem')\n\nkey_file = https.get('key_file', 'localhost-key.pem')",
+  "context_code": "",
   "context_truncated": false,
-  "unparsed_files": [
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/bom.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/crlf.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/different_encoding.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/false_encoding.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/lib2to3/tests/data/py2_test_grammar.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/dbapi.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/factory.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/hooks.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/regression.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/transactions.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/sqlite3/test/types.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_3131.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_future3.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_future8.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_future9.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/badsyntax_pep3120.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/test_source_encoding.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/encoded_modules/module_iso_8859_1.py",
-    "CLI/vcpkg/downloads/tools/perl/5.42.2.1/c/lib/python3.9/test/encoded_modules/module_koi8_r.py"
-  ],
-  "files_scanned": 1848
+  "unparsed_files": [],
+  "files_scanned": 2
 }

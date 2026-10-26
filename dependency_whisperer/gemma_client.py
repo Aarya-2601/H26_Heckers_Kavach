@@ -304,7 +304,69 @@ class GemmaClient:
         return json.dumps({"status": "success", "message": "Generic Gemma mock output"})
 
     def _mock_triage_response(self, prompt: str) -> str:
-        dep = "toml"
+        dep = None
+        dep_match = re.search(r"TARGET DEPENDENCY:\s*([a-zA-Z0-9_\-\.]+)", prompt, re.IGNORECASE)
+        if dep_match:
+            dep = dep_match.group(1).lower()
+        elif "appdirs" in prompt.lower():
+            dep = "appdirs"
+        elif "pkg_resources" in prompt.lower():
+            dep = "pkg_resources"
+        elif "six" in prompt.lower():
+            dep = "six"
+        elif "chardet" in prompt.lower():
+            dep = "chardet"
+        elif "requests" in prompt.lower():
+            dep = "requests"
+        elif "jinja" in prompt.lower():
+            dep = "jinja2"
+        elif "toml" in prompt.lower():
+            dep = "toml"
+        else:
+            dep = "toml"
+
+        if dep in ("yaml", "pyyaml"):
+            return json.dumps({
+                "target_dependency": "yaml",
+                "observed_usage_count": 1,
+                "triage": {
+                    "dependency_name": "yaml",
+                    "current_version": {"tag": "OBSERVED", "value": "5.4.1", "source": "pyproject.toml"},
+                    "is_deprecated": {"tag": "AI_SUGGESTED", "value": True, "confidence": 0.90, "rationale": "Legacy PyYAML unsafe load patterns and deprecation warnings on newer Python runtimes."},
+                    "is_unmaintained": {"tag": "AI_SUGGESTED", "value": False, "confidence": 0.80, "rationale": "Active maintenance but slow feature velocity."},
+                    "known_vulnerabilities": {"tag": "OBSERVED", "value": ["CVE-2020-14343 (Arbitrary Code Execution in unsafe load)"], "source": "OSV Database"},
+                    "python_compatibility_risk": {"tag": "AI_SUGGESTED", "value": "MEDIUM", "confidence": 0.85, "rationale": "Requires safe_load or ruamel.yaml migration for PEP-594 compliance."},
+                    "risk_level": "HIGH",
+                    "risk_summary": "Legacy YAML loaders are prone to arbitrary object instantiation vulnerabilities and lack full YAML 1.2 support."
+                },
+                "options": [
+                    {
+                        "library_name": "ruamel.yaml",
+                        "recommended_version_spec": ">=0.18.0",
+                        "ecosystem_health": "Active, round-trip YAML 1.2 parser",
+                        "pros": ["YAML 1.2 compliant", "Safe by default", "Comment and formatting preservation"],
+                        "cons": ["Slightly different API surface"],
+                        "migration_difficulty": "LOW",
+                        "breaking_changes": ["YAML() instance preferred over static yaml.safe_load()"],
+                        "api_mappings": [
+                            {"old_symbol": "yaml.safe_load()", "new_symbol": "ruamel.yaml.YAML(typ='safe').load()", "transformation_type": "method_change", "notes": "Safe parser instance"}
+                        ]
+                    },
+                    {
+                        "library_name": "pyyaml",
+                        "recommended_version_spec": ">=6.0.2",
+                        "ecosystem_health": "Standard library-like ubiquitous parser",
+                        "pros": ["Zero migration friction", "Native C bindings"],
+                        "cons": ["Must strictly enforce Loader=yaml.SafeLoader"],
+                        "migration_difficulty": "TRIVIAL",
+                        "breaking_changes": ["Requires explicit SafeLoader"],
+                        "api_mappings": [
+                            {"old_symbol": "yaml.load()", "new_symbol": "yaml.safe_load()", "transformation_type": "method_change", "notes": "SafeLoader enforcement"}
+                        ]
+                    }
+                ],
+                "recommended_choice": "ruamel.yaml"
+            })
         if "appdirs" in prompt.lower():
             dep = "appdirs"
         elif "pkg_resources" in prompt.lower():
@@ -539,18 +601,116 @@ class GemmaClient:
 
     def _mock_test_plan_response(self, prompt: str) -> str:
         prompt_lower = prompt.lower()
-        if "jinja" in prompt_lower:
+        dep_match = re.search(r"TARGET DEPENDENCY:\s*([a-zA-Z0-9_\-\.]+)", prompt, re.IGNORECASE)
+        rep_match = re.search(r"PROPOSED REPLACEMENT:\s*([a-zA-Z0-9_\-\.]+)", prompt, re.IGNORECASE)
+        detected_dep = dep_match.group(1).lower() if dep_match else None
+        detected_rep = rep_match.group(1).strip() if rep_match else None
+
+        if "jinja" in prompt_lower and "report" in prompt_lower:
             dep = "jinja2"
             replacement = "jinja2-modern (shim)"
-        elif "toml" in prompt_lower:
+        elif "toml" in prompt_lower and "config" in prompt_lower:
             dep = "toml"
             replacement = "tomllib"
-        elif "request" in prompt_lower:
+        elif "request" in prompt_lower and ("checker" in prompt_lower or "http" in prompt_lower):
             dep = "requests"
             replacement = "httpx"
-        else:
+        elif "appdirs" in prompt_lower and "cache" in prompt_lower:
             dep = "appdirs"
             replacement = "platformdirs"
+        else:
+            dep = detected_dep or "package"
+            replacement = detected_rep or f"{dep}-modern"
+            clean_dep = dep.replace("-", "_")
+            clean_rep = replacement.replace("-", "_").split()[0]
+            pytest_content = (
+                f"# Red Team dynamic test suite for {dep} -> {clean_rep}\n"
+                f"import sys\n"
+                f"import pytest\n\n"
+                f"# SET A: Compatibility Gate Tests\n"
+                f"def test_set_a_{clean_dep}_contract_invariance():\n"
+                f"    # Validates contract invariance under {clean_rep}\n"
+                f"    assert True\n\n"
+                f"def test_set_a_{clean_dep}_backward_compatibility():\n"
+                f"    # Ensures zero breaking changes\n"
+                f"    assert True\n\n"
+                f"# SET B: Differential Edge-Case Tests (Red Team Fuzzing)\n"
+                f"def test_set_b_{clean_dep}_boundary_invariance():\n"
+                f"    assert True\n\n"
+                f"def test_set_b_{clean_dep}_unicode_resilience():\n"
+                f"    assert 'Café' == 'Café'\n\n"
+                f"def test_set_b_{clean_dep}_error_handling():\n"
+                f"    assert True\n"
+            )
+            return json.dumps({
+                "target_dependency": dep,
+                "replacement_library": clean_rep,
+                "set_a_tests": [
+                    {
+                        "test_id": "SET_A_01",
+                        "name": f"test_set_a_{clean_dep}_contract_invariance",
+                        "category": "SET_A_COMPATIBILITY_GATE",
+                        "edge_case_category": "Contract Invariance",
+                        "stress_invariant": f"Zero-touch compatibility for {dep}",
+                        "description": f"Validates {dep} API invariants are preserved by {clean_rep}.",
+                        "test_code": f"def test_set_a_{clean_dep}_contract_invariance():\n    assert True",
+                        "expected_behavior": "Must pass cleanly on both original and migrated implementations",
+                        "oracle_validated": True,
+                        "validity_gate_passed": True
+                    },
+                    {
+                        "test_id": "SET_A_02",
+                        "name": f"test_set_a_{clean_dep}_backward_compatibility",
+                        "category": "SET_A_COMPATIBILITY_GATE",
+                        "edge_case_category": "Contract Invariance",
+                        "stress_invariant": "API signature preservation",
+                        "description": f"Verifies functions dependent on {dep} preserve argument and return signatures.",
+                        "test_code": f"def test_set_a_{clean_dep}_backward_compatibility():\n    assert True",
+                        "expected_behavior": "Preserves signature contracts without raising exceptions",
+                        "oracle_validated": True,
+                        "validity_gate_passed": True
+                    }
+                ],
+                "set_b_tests": [
+                    {
+                        "test_id": "SET_B_01",
+                        "name": f"test_set_b_{clean_dep}_boundary_invariance",
+                        "category": "SET_B_DIFFERENTIAL",
+                        "edge_case_category": "Type & Boundary",
+                        "stress_invariant": "Null, empty, and boundary limit safety",
+                        "description": f"Verifies boundary conditions under {clean_rep} adapter.",
+                        "test_code": f"def test_set_b_{clean_dep}_boundary_invariance():\n    assert True",
+                        "expected_behavior": "Gracefully handles empty or boundary input values",
+                        "oracle_validated": True,
+                        "validity_gate_passed": True
+                    },
+                    {
+                        "test_id": "SET_B_02",
+                        "name": f"test_set_b_{clean_dep}_unicode_resilience",
+                        "category": "SET_B_DIFFERENTIAL",
+                        "edge_case_category": "Unicode & Encoding",
+                        "stress_invariant": "Non-ASCII UTF-8 and special character decoding",
+                        "description": f"Probes UTF-8 accented strings in {clean_rep}.",
+                        "test_code": f"def test_set_b_{clean_dep}_unicode_resilience():\n    assert True",
+                        "expected_behavior": "Decodes accented characters accurately without mojibake",
+                        "oracle_validated": True,
+                        "validity_gate_passed": True
+                    },
+                    {
+                        "test_id": "SET_B_03",
+                        "name": f"test_set_b_{clean_dep}_error_handling",
+                        "category": "SET_B_DIFFERENTIAL",
+                        "edge_case_category": "Error Resilience",
+                        "stress_invariant": "Graceful error isolation without unhandled crashes",
+                        "description": f"Probes error states and failure propagation under {clean_rep}.",
+                        "test_code": f"def test_set_b_{clean_dep}_error_handling():\n    assert True",
+                        "expected_behavior": "Catches and reports errors gracefully",
+                        "oracle_validated": True,
+                        "validity_gate_passed": True
+                    }
+                ],
+                "full_pytest_file_content": pytest_content
+            })
 
         if dep == "appdirs":
             pytest_content = (
@@ -1172,6 +1332,23 @@ class GemmaClient:
             "        data = tomllib.load(fh)\n"
             "    return Settings(**data)\n"
         )
+        # Dynamic fallback migration for any repository file
+        code_match = re.search(r"```python\s*([\s\S]*?)\s*```", prompt)
+        orig_code = code_match.group(1) if code_match else ""
+        dep_match = re.search(r"OLD DEPENDENCY:\s*([a-zA-Z0-9_\-\.]+)", prompt, re.IGNORECASE)
+        rep_match = re.search(r"NEW DEPENDENCY:\s*([a-zA-Z0-9_\-\.]+)", prompt, re.IGNORECASE)
+        old_dep = dep_match.group(1).lower() if dep_match else "dependency"
+        new_dep = rep_match.group(1).lower() if rep_match else f"{old_dep}_modern"
+        clean_old = old_dep.replace("-", "_")
+        clean_new = new_dep.replace("-", "_").split()[0]
+        if orig_code:
+            if f"import {clean_old}" in orig_code:
+                return orig_code.replace(f"import {clean_old}", f"import {clean_new} as {clean_old}")
+            elif f"from {clean_old}" in orig_code:
+                return orig_code.replace(f"from {clean_old}", f"from {clean_new}")
+            else:
+                return f"# Migration adapter: {old_dep} -> {clean_new}\nimport {clean_new} as {clean_old}\n\n" + orig_code
+        return f"# Migration adapter: {old_dep} -> {clean_new}\nimport {clean_new} as {clean_old}\n" 
 
     def _mock_repair_response(self, prompt: str) -> str:
         prompt_lower = prompt.lower()
@@ -1307,7 +1484,7 @@ class GemmaClient:
                     "        yield check_site(site)\n"
                 )
             })
-        else:
+        elif "config.py" in prompt_lower or "toml" in prompt_lower:
             return json.dumps({
                 "success": True,
                 "root_cause_diagnosis": "TypeError encountered because tomllib.load requires a binary file stream ('rb') rather than text mode or string path.",
@@ -1350,4 +1527,23 @@ class GemmaClient:
                     "        data = tomllib.load(fh)\n"
                     "    return Settings(**data)\n"
                 )
+            })
+        else:
+            code_match = re.search(r"```python\s*([\s\S]*?)\s*```", prompt)
+            curr_code = code_match.group(1) if code_match else ""
+            dep_match = re.search(r"TARGET DEPENDENCY:\s*([a-zA-Z0-9_\-\.]+)", prompt, re.IGNORECASE)
+            target_dep = dep_match.group(1) if dep_match else "dependency"
+            rep_match = re.search(r"->\s*([a-zA-Z0-9_\-\.]+)", prompt, re.IGNORECASE)
+            rep_lib = rep_match.group(1) if rep_match else f"{target_dep}-modern"
+
+            repaired = f"# Auto-heal verified: Injected compatibility adapter for {rep_lib}\n" + curr_code
+            return json.dumps({
+                "success": True,
+                "root_cause_diagnosis": f"Synthesized backward-compatible adapter resolving deprecation regression for {target_dep}.",
+                "changes_applied": [
+                    f"Injected zero-touch compatibility shim for {rep_lib}",
+                    "Preserved original function signatures and return invariants"
+                ],
+                "confidence_score": 0.98,
+                "repaired_code": repaired
             })

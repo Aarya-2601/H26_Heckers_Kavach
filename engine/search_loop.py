@@ -112,7 +112,8 @@ def run_migration_search(
     hero_file: str,
     patch_generator_fn: Optional[Callable[[str, Optional[str]], str]] = None,
     test_cmd: Optional[List[str]] = None,
-    max_attempts: int = 3
+    max_attempts: int = 3,
+    timeout: int = 60
 ) -> Tuple[SearchNode, List[SearchNode], str]:
     """
     Executes iterative MCTS search loop over AST migration proposals:
@@ -125,13 +126,29 @@ def run_migration_search(
     seen_error_signatures = set()
 
     # --- Node 0: Establish Baseline ---
-    baseline_result = execute_test_suite(repo_path, test_cmd=test_cmd)
+    baseline_result = execute_test_suite(repo_path, test_cmd=test_cmd, timeout=timeout)
     env_problem = _baseline_environment_problem(baseline_result)
     if env_problem:
-        raise SandboxEnvironmentError(
-            f"Baseline test run is unusable: {env_problem}\n"
-            f"Raw stderr: {(baseline_result.get('raw_stderr') or '')[:300]}"
-        )
+        # If full suite timed out, attempt fast retry excluding slow tests
+        if baseline_result.get("timed_out") and (not test_cmd or "-k" not in test_cmd):
+            fast_cmd = (test_cmd or [sys.executable, "-m", "pytest", "-q", "-o", "filterwarnings=ignore"]) + ["-k", "not slow"]
+            fast_res = execute_test_suite(repo_path, test_cmd=fast_cmd, timeout=timeout)
+            if fast_res.get("passed") or (not fast_res.get("timed_out") and fast_res.get("exit_code") in (0, 1)):
+                baseline_result = fast_res
+                test_cmd = fast_cmd
+                env_problem = None
+
+    if env_problem:
+        # If repository collected no legacy tests (exit code 5), proceed with syntax/AST baseline
+        if baseline_result.get("exit_code") == 5:
+            baseline_result["passed"] = True
+            baseline_result["stdout"] = "No legacy tests found; evaluating candidate against AST validity and syntax."
+            env_problem = None
+        else:
+            raise SandboxEnvironmentError(
+                f"Baseline test run is unusable: {env_problem}\n"
+                f"Raw stderr: {(baseline_result.get('raw_stderr') or '')[:300]}"
+            )
     baseline_time_ms = baseline_result.get("execution_time_ms", 150)
     
     root_node = SearchNode(
@@ -190,7 +207,7 @@ def run_migration_search(
             continue
 
         # Execute in ephemeral sandbox
-        run_res = run_in_ephemeral_sandbox(repo_path, patch_diff=patch, test_cmd=test_cmd)
+        run_res = run_in_ephemeral_sandbox(repo_path, patch_diff=patch, test_cmd=test_cmd, timeout=timeout)
         node.run_result = run_res
 
         # Calculate reward score

@@ -105,3 +105,22 @@ def test_api_run_search():
     data = response.get_json()
     assert data["status"] in ("simulated_success", "success")
     assert "winning_node" in data
+
+
+def test_api_active_repo():
+    """Verify /api/active-repo returns repository name and candidate dependencies."""
+    response = client.get("/api/active-repo")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert "repo_name" in data
+    assert "target_package" in data
+    assert "available_dependencies" in data
+
+
+def test_api_select_repo():
+    """Verify /api/select-repo can select a valid repository path."""
+    response = client.post("/api/select-repo", json={"repo": "dataset/LinkWatch"})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["status"] == "success"
+    assert "LinkWatch" in data["repo_name"]

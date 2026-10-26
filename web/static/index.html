@@ -378,9 +378,14 @@ def test_fetch_explicit_timeout():
 
     <!-- ================= SECTION 5: AUTO-HEAL DAG & REWARD ================= -->
     <section id="autoheal" class="section-view">
-      <div class="section-header">
-        <div class="section-label">Inference-Time Search</div>
-        <h2 class="section-title">Auto-Heal MCTS State Machine</h2>
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <div class="section-label">Inference-Time Search</div>
+          <h2 class="section-title">Auto-Heal MCTS State Machine</h2>
+        </div>
+        <button id="btn-trigger-search" class="btn-primary" style="padding: 10px 20px; font-size: 0.88rem; cursor: pointer;">
+          <span id="search-btn-icon">⚡</span> <span id="search-btn-text">Run Auto-Heal Search</span>
+        </button>
       </div>
 
       <!-- Rewind Banner -->

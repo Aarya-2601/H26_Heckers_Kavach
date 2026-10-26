@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTreeDataStructure();
   initChatbotParallax();
   initChatbotInteractions();
+  initAutoHealSearchTrigger();
   fetchCodebaseTelemetry();
 });
 
@@ -327,21 +328,11 @@ function initGoldenWaveNavigation() {
 /* ==========================================================================
    3. Interactive Tree Data Structure with AST Inspector
    ========================================================================== */
-function initTreeDataStructure() {
-  const treeNodes = document.querySelectorAll(".tree-file-node");
-  const inspectorTitle = document.getElementById("inspector-title");
-  const inspectorDesc = document.getElementById("inspector-desc");
-  const inspectorCode = document.getElementById("inspector-code-box");
-  const inspectorActions = document.getElementById("inspector-actions");
-  const btnFixInChat = document.getElementById("btn-fix-in-chat");
-
-  let currentTargetFile = "";
-
-  const fileData = {
-    "linkwatch/checker.py": {
-      title: "linkwatch/checker.py (Hero File)",
-      desc: "Vulnerability: High Blast Radius (78/100). Contains unhandled requests.get without bounded socket timeout across fetch() and check_site().",
-      code: `// File: linkwatch/checker.py (Lines 14-25)
+let activeFileData = {
+  "linkwatch/checker.py": {
+    title: "linkwatch/checker.py (Hero File)",
+    desc: "Vulnerability: High Blast Radius (78/100). Contains unhandled requests.get without bounded socket timeout across fetch() and check_site().",
+    code: `// File: linkwatch/checker.py (Lines 14-25)
 // Designation: Hero File (Caller Density: 78%)
 def fetch(url, session=None):
     # [AST VULNERABILITY] Unbounded connection attempt
@@ -356,12 +347,12 @@ def check_site(site, session=None):
     except requests.exceptions.RequestException as e:
         # Fails silently without retry or metric attribution
         return False`,
-      flagged: true
-    },
-    "linkwatch/http_patch.py": {
-      title: "linkwatch/http_patch.py",
-      desc: "Vulnerability: Global Scope Contamination. Monkey-patches requests.Session.request globally, breaking scope isolation in test suites.",
-      code: `// File: linkwatch/http_patch.py (Lines 8-18)
+    flagged: true
+  },
+  "linkwatch/http_patch.py": {
+    title: "linkwatch/http_patch.py",
+    desc: "Vulnerability: Global Scope Contamination. Monkey-patches requests.Session.request globally, breaking scope isolation in test suites.",
+    code: `// File: linkwatch/http_patch.py (Lines 8-18)
 // Designation: Contamination Source
 def apply_global_patch():
     # [CRITICAL AST VIOLATION]
@@ -374,12 +365,12 @@ def apply_global_patch():
 
     # Contaminates every module importing requests!
     requests.Session.request = patched_request`,
-      flagged: true
-    },
-    "Dockerfile": {
-      title: "Dockerfile",
-      desc: "Vulnerability: Container defaults to root execution, violating Non-Root Deterministic Auditor rule.",
-      code: `// File: Dockerfile (Lines 15-22)
+    flagged: true
+  },
+  "Dockerfile": {
+    title: "Dockerfile",
+    desc: "Vulnerability: Container defaults to root execution, violating Non-Root Deterministic Auditor rule.",
+    code: `// File: Dockerfile (Lines 15-22)
 // Designation: Container Build Spec
 FROM python:3.11-slim
 WORKDIR /app
@@ -390,12 +381,12 @@ RUN pip install -e .
 # Runs container as superuser
 USER root
 CMD ["linkwatch", "check"]`,
-      flagged: true
-    },
-    "linkwatch/cache.py": {
-      title: "linkwatch/cache.py",
-      desc: "Status: CLEAN. Interacts with local storage via appdirs.user_cache_dir; scheduled for platformdirs migration.",
-      code: `// File: linkwatch/cache.py (Lines 5-14)
+    flagged: true
+  },
+  "linkwatch/cache.py": {
+    title: "linkwatch/cache.py",
+    desc: "Status: CLEAN. Interacts with local storage via appdirs.user_cache_dir; scheduled for platformdirs migration.",
+    code: `// File: linkwatch/cache.py (Lines 5-14)
 import json
 import appdirs
 
@@ -404,12 +395,12 @@ CACHE_DIR = appdirs.user_cache_dir("linkwatch")
 def save_cache(data):
     with open(f"{CACHE_DIR}/cache.json", "w") as f:
         json.dump(data, f)`,
-      flagged: false
-    },
-    "tests/test_checker.py": {
-      title: "tests/test_checker.py",
-      desc: "Status: TARGET OF REGRESSION CHECK. Verifies fetch() and check_site() return codes.",
-      code: `// File: tests/test_checker.py (Lines 1-12)
+    flagged: false
+  },
+  "tests/test_checker.py": {
+    title: "tests/test_checker.py",
+    desc: "Status: TARGET OF REGRESSION CHECK. Verifies fetch() and check_site() return codes.",
+    code: `// File: tests/test_checker.py (Lines 1-12)
 import pytest
 from linkwatch.checker import check_site
 from linkwatch.config import Site
@@ -417,9 +408,20 @@ from linkwatch.config import Site
 def test_check_site_up():
     site = Site(url="https://example.com")
     assert check_site(site) is True`,
-      flagged: false
-    }
-  };
+    flagged: false
+  }
+};
+
+function initTreeDataStructure() {
+  const treeNodes = document.querySelectorAll(".tree-file-node");
+  const inspectorTitle = document.getElementById("inspector-title");
+  const inspectorDesc = document.getElementById("inspector-desc");
+  const inspectorCode = document.getElementById("inspector-code-box");
+  const inspectorActions = document.getElementById("inspector-actions");
+  const btnFixInChat = document.getElementById("btn-fix-in-chat");
+
+  let currentTargetFile = "";
+  const fileData = activeFileData;
 
   treeNodes.forEach((node) => {
     node.addEventListener("click", () => {
@@ -717,7 +719,71 @@ function initChatbotInteractions() {
 /* ==========================================================================
    6. Live Telemetry Fetching from Contracts & CAPSULE.md
    ========================================================================== */
+/* ==========================================================================
+   5b. Auto-Heal Search Trigger (Runs Live MCTS Search on Active Repo)
+   ========================================================================== */
+function initAutoHealSearchTrigger() {
+  const btnTrigger = document.getElementById("btn-trigger-search");
+  if (!btnTrigger) return;
+
+  btnTrigger.addEventListener("click", () => {
+    const btnText = document.getElementById("search-btn-text");
+    const btnIcon = document.getElementById("search-btn-icon");
+    if (btnText) btnText.textContent = "Executing MCTS Search...";
+    if (btnIcon) btnIcon.textContent = "⏳";
+    btnTrigger.disabled = true;
+
+    fetch("/api/run-search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ execute: true })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (btnText) btnText.textContent = "Search Completed ✔";
+        if (btnIcon) btnIcon.textContent = "✔";
+        setTimeout(() => {
+          if (btnText) btnText.textContent = "Run Auto-Heal Search";
+          if (btnIcon) btnIcon.textContent = "⚡";
+          btnTrigger.disabled = false;
+        }, 2500);
+        fetchCodebaseTelemetry();
+      })
+      .catch((err) => {
+        if (btnText) btnText.textContent = "Error in Search";
+        setTimeout(() => {
+          if (btnText) btnText.textContent = "Run Auto-Heal Search";
+          if (btnIcon) btnIcon.textContent = "⚡";
+          btnTrigger.disabled = false;
+        }, 2500);
+      });
+  });
+}
+
 function fetchCodebaseTelemetry() {
+  // Fetch dynamic tree & flagged files
+  fetch("/api/tree")
+    .then((res) => res.json())
+    .then((treeData) => {
+      if (!treeData) return;
+      const rootTitle = document.querySelector(".tree-root-card strong");
+      if (rootTitle && treeData.repo_name) {
+        rootTitle.textContent = `${treeData.repo_name} (Root)`;
+      }
+      if (treeData.flagged_details) {
+        Object.keys(treeData.flagged_details).forEach((f) => {
+          const detail = treeData.flagged_details[f];
+          activeFileData[f] = {
+            title: `${detail.file} (${detail.role || 'Target File'}`,
+            desc: detail.issue || `AST Blast Radius: ${detail.blast_radius || 50}/100`,
+            code: detail.code_snippet ? `// File: ${detail.file} (Line ${detail.line || 1})\n// Calling: ${detail.calling_function || 'n/a'}\n${detail.code_snippet}` : `// File: ${detail.file}`,
+            flagged: true
+          };
+        });
+      }
+    })
+    .catch(() => {});
+
   // Fetch CAPSULE.md artifact
   fetch("/api/capsule")
     .then((res) => res.json())
